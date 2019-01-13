@@ -1,23 +1,18 @@
-## Functions
+<a name="module_discogs-data-tools/dataManager"></a>
 
-<dl>
-<dt><a href="#getXMLPath">getXMLPath(version, type, [gz])</a> ⇒ <code>string</code></dt>
-<dd><p>Get the path where a data XML is saved</p>
-</dd>
-<dt><a href="#findXML">findXML(version, type, [gz])</a> ⇒ <code>Object</code> | <code>null</code></dt>
-<dd><p>Looks up an existing data xml on disk</p>
-</dd>
-<dt><a href="#findData">findData(version, types)</a> ⇒ <code>Array.&lt;(Object|null)&gt;</code></dt>
-<dd><p>Looks up the xml files on disk for a given version</p>
-</dd>
-</dl>
+## discogs-data-tools/dataManager
 
-<a name="getXMLPath"></a>
+* [discogs-data-tools/dataManager](#module_discogs-data-tools/dataManager)
+    * [~getXMLPath(version, type, [gz])](#module_discogs-data-tools/dataManager..getXMLPath) ⇒ <code>string</code>
+    * [~findXML(version, type, [gz])](#module_discogs-data-tools/dataManager..findXML) ⇒ <code>Object</code> \| <code>null</code>
+    * [~findData(version, types)](#module_discogs-data-tools/dataManager..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
 
-## getXMLPath(version, type, [gz]) ⇒ <code>string</code>
+<a name="module_discogs-data-tools/dataManager..getXMLPath"></a>
+
+### discogs-data-tools/dataManager~getXMLPath(version, type, [gz]) ⇒ <code>string</code>
 Get the path where a data XML is saved
 
-**Kind**: global function  
+**Kind**: inner method of [<code>discogs-data-tools/dataManager</code>](#module_discogs-data-tools/dataManager)  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -25,12 +20,12 @@ Get the path where a data XML is saved
 | type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
 
-<a name="findXML"></a>
+<a name="module_discogs-data-tools/dataManager..findXML"></a>
 
-## findXML(version, type, [gz]) ⇒ <code>Object</code> \| <code>null</code>
+### discogs-data-tools/dataManager~findXML(version, type, [gz]) ⇒ <code>Object</code> \| <code>null</code>
 Looks up an existing data xml on disk
 
-**Kind**: global function  
+**Kind**: inner method of [<code>discogs-data-tools/dataManager</code>](#module_discogs-data-tools/dataManager)  
 **Returns**: <code>Object</code> \| <code>null</code> - An object of the form `{ path: string, gz: boolean }`if the file was found, null otherwise  
 
 | Param | Type | Default | Description |
@@ -39,12 +34,12 @@ Looks up an existing data xml on disk
 | type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
 
-<a name="findData"></a>
+<a name="module_discogs-data-tools/dataManager..findData"></a>
 
-## findData(version, types) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+### discogs-data-tools/dataManager~findData(version, types) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
 Looks up the xml files on disk for a given version
 
-**Kind**: global function  
+**Kind**: inner method of [<code>discogs-data-tools/dataManager</code>](#module_discogs-data-tools/dataManager)  
 **Returns**: <code>Array.&lt;(Object\|null)&gt;</code> - An array of results for each type:An object of the form `{ path: string, gz: boolean }` if the file was found,null otherwise  
 
 | Param | Type | Description |
