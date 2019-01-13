@@ -4,11 +4,20 @@ const idx = require("idx");
 const _ = require("lodash");
 const { promisify } = require("es6-promisify");
 
+/** @module listings */
+
 const parseString = promisify(xml2js.parseString);
 
 const BUCKET_URL = "https://discogs-data.s3-us-west-2.amazonaws.com";
 const S3B_ROOT_DIR = "data/";
 
+/**
+ * Get the URL for a specific data dump
+ * @param version {string} The exact version name, eg '20180101'
+ * @param type {string} The type of data. Can be either "artists", "labels",
+ * "masters" or "releases"
+ * @returns {string}
+ */
 function getDumpURL(version, type) {
   return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
     0,
@@ -53,6 +62,11 @@ async function requestListing(yearPrefix) {
   return parsed;
 }
 
+/**
+ * Fetch a set of years available on the Discogs data S3 bucket with their
+ * paths on the bucket.
+ * @returns {Promise<Array<{path:string, year:number}>>}
+ */
 async function fetchYearListings() {
   console.log("Fetching year listings...");
 
@@ -69,6 +83,14 @@ async function fetchYearListings() {
   }));
 }
 
+
+
+/**
+ * Fetch the list of files available on the S3 bucket for a certain year
+ * @param yearPrefix {string} The year prefix of the file. For example:
+ * "data/2016/"
+ * @returns {Promise<Array<string>>} An array of paths
+ */
 async function fetchFileListing(yearPrefix) {
   console.log("Fetching file listings...");
 
@@ -81,6 +103,13 @@ async function fetchFileListing(yearPrefix) {
   return files.map(({ Key: [key] }) => key).filter(f => f.endsWith(".xml.gz"));
 }
 
+/**
+ * Parse a list of file paths (as returned by fetchFileListing). Groups them
+ * by year
+ * @param filenames {Array<string>}
+ * @returns {Object} An object with keys for each year and an array of parsed
+ * path objects as values.
+ */
 function parseFileNames(filenames) {
   const parsed = filenames.map(path => {
     const match = path.match(/discogs_([\d]+)_([^.]+)\.xml/);

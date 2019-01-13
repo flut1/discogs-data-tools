@@ -19,7 +19,7 @@
     "prettify": "prettier --write \"*.js\"",
     "help-to-readme": "node helpToReadme",
     "docs": "jsdoc2md ./*.js > api.md",
-    "prepublish": "npm run help-to-readme"
+    "prepublish": "npm run help-to-readme && npm run docs"
   },
   "engines" : { "node" : ">=8.2.1" },
   "dependencies": {

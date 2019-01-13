@@ -6,6 +6,8 @@ const path = require('path');
 const dataManager = require('./dataManager');
 const listings = require('./listings');
 
+/** @module fetcher */
+
 function fetchDump(version, type) {
   return new Promise((resolve, reject) => {
     const url = listings.getDumpURL(version, type);
@@ -16,19 +18,6 @@ function fetchDump(version, type) {
     console.log(`Fetching ${url}`);
     progress(request(url))
       .on('progress', function (state) {
-        // The state is an object that looks like this:
-        // {
-        //     percent: 0.5,               // Overall percent (between 0 to 1)
-        //     speed: 554732,              // The download speed in bytes/sec
-        //     size: {
-        //         total: 90044871,        // The total payload size in bytes
-        //         transferred: 27610959   // The transferred payload size in bytes
-        //     },
-        //     time: {
-        //         elapsed: 36.235,        // The total elapsed seconds since the start (3 decimals)
-        //         remaining: 81.403       // The remaining seconds to finish (3 decimals)
-        //     }
-        // }
         if (!started) {
           bar.start(state.size.total, 0);
           started = true;
@@ -49,6 +38,15 @@ function fetchDump(version, type) {
   });
 }
 
+/**
+ * Ensures a data dump file is downloaded to ./data/<version>/. Does
+ * nothing if a file already exists. Does not verify the file.
+ * @param version {string} The exact version name, eg '20180101'
+ * @param type {string} The type of data. Can be either "artists", "labels",
+ * "masters" or "releases"
+ * @returns {Promise<void>} A Promise that completes when all data is
+ * downloaded
+ */
 function ensureDump(version, type) {
   const [existingData] = dataManager.findData(version, [type]);
 
@@ -59,6 +57,15 @@ function ensureDump(version, type) {
   return Promise.resolve();
 }
 
+/**
+ * Ensures all the specified types for a specific data dump version are
+ * downloaded to ./data/<version>/
+ * @param version {string} The exact version name, eg '20180101'
+ * @param [types] {string[]} An array of types to get. Possible options:
+ * "artists", "labels", "masters" or "releases".  Defaults to all types
+ * @returns {Promise<void>} A Promise that completes when all data is
+ * downloaded
+ */
 async function ensureDumps(version, types = dataManager.DATA_TYPES) {
   for (const type of types) {
     await ensureDump(version, type);
