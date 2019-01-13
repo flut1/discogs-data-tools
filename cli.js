@@ -26,7 +26,7 @@ module.exports = yargs
             type: "array"
           }
         })
-        .example("$0 fetch --version 20180101 --types labels masters")
+        .example("$0 fetch --dumpVersion 20180101 --types labels masters")
         .conflicts("year", "version");
     },
     argv => {
