@@ -5,6 +5,14 @@ More to come.
 **This module is not officially affiliated with Discogs.** For license information on Discogs
 data dumps see: https://data.discogs.com/
 
+## Installation
+```
+npm install discogs-data-tools
+```
+Please note that some dependencies are built using `node-gyp`, which has additional prerequisites.
+See the (node-gyp documentation)[https://github.com/nodejs/node-gyp#Installation] for more info.
+
+
 ## CLI Usage
 
 <!-- below section is automatically generated. Do not modify -->
