@@ -6,12 +6,10 @@ More to come.
 data dumps see: https://data.discogs.com/
 
 ## Installation
-```
-npm install -g discogs-data-tools
-```
-Please note that some dependencies are built using `node-gyp`, which has additional prerequisites.
-See the [node-gyp documentation](https://github.com/nodejs/node-gyp#Installation) for more info.
 
+- Install Node.JS (min 8.2.1)
+- Some dependencies are built using `node-gyp`, which has additional prerequisites. See the [node-gyp documentation](https://github.com/nodejs/node-gyp#Installation) for more info.
+- Run `npm install -g discogs-data-tools`
 
 ## CLI Usage
 
