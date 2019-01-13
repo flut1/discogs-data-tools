@@ -4,7 +4,7 @@ const path = require("path");
 const DATA_DIR = "./data";
 const DATA_TYPES = ["artists", "labels", "masters", "releases"];
 
-/** @module discogs-data-tools/dataManager */
+/** @module dataManager */
 
 /**
  * Get the path where a data XML is saved

@@ -2,7 +2,7 @@
   "name": "discogs-data-tools",
   "version": "1.0.0",
   "description": "Tools to handle Discogs data dumps",
-  "main": "index.js",
+  "main": "cli.js",
   "author": "Floris Bernard",
   "license": "ISC",
   "scripts": {
@@ -11,6 +11,7 @@
     "docs": "jsdoc2md ./*.js > api.md",
     "prepublish": "npm run help-to-readme"
   },
+  "engines" : { "node" : ">=8.2.1" },
   "dependencies": {
     "big-xml": "^1.0.0",
     "cli-progress": "^2.1.1",
