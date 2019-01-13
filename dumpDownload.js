@@ -6,7 +6,10 @@ const path = require('path');
 const dataManager = require('./dataManager');
 const listings = require('./listings');
 
-/** @module fetcher */
+/**
+ * Util functions to download data dumps and show download progress
+ * @module fetcher
+ */
 
 function fetchDump(version, type) {
   return new Promise((resolve, reject) => {

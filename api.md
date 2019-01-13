@@ -2,16 +2,21 @@
 
 <dl>
 <dt><a href="#module_dataManager">dataManager</a></dt>
-<dd></dd>
+<dd><p>Look up data dump files that have already been downloaded</p>
+</dd>
 <dt><a href="#module_fetcher">fetcher</a></dt>
-<dd></dd>
+<dd><p>Util functions to download data dumps and show download progress</p>
+</dd>
 <dt><a href="#module_listings">listings</a></dt>
-<dd></dd>
+<dd><p>Functions to fetch listings of available data dumps from the S3 bucket</p>
+</dd>
 </dl>
 
 <a name="module_dataManager"></a>
 
 ## dataManager
+Look up data dump files that have already been downloaded
+
 
 * [dataManager](#module_dataManager)
     * [~getXMLPath(version, type, [gz])](#module_dataManager..getXMLPath) ⇒ <code>string</code>
@@ -61,6 +66,8 @@ Looks up the xml files on disk for a given version
 <a name="module_fetcher"></a>
 
 ## fetcher
+Util functions to download data dumps and show download progress
+
 
 * [fetcher](#module_fetcher)
     * [~ensureDump(version, type)](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
@@ -95,6 +102,8 @@ Ensures all the specified types for a specific data dump version aredownloaded 
 <a name="module_listings"></a>
 
 ## listings
+Functions to fetch listings of available data dumps from the S3 bucket
+
 
 * [listings](#module_listings)
     * [~getDumpURL(version, type)](#module_listings..getDumpURL) ⇒ <code>string</code>

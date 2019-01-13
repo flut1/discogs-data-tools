@@ -4,7 +4,10 @@ const idx = require("idx");
 const _ = require("lodash");
 const { promisify } = require("es6-promisify");
 
-/** @module listings */
+/**
+ * Functions to fetch listings of available data dumps from the S3 bucket
+ * @module listings
+ */
 
 const parseString = promisify(xml2js.parseString);
 

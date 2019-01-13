@@ -4,7 +4,10 @@ const path = require("path");
 const DATA_DIR = "./data";
 const DATA_TYPES = ["artists", "labels", "masters", "releases"];
 
-/** @module dataManager */
+/**
+ * Look up data dump files that have already been downloaded
+ * @module dataManager
+ */
 
 /**
  * Get the path where a data XML is saved
