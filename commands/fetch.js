@@ -1,11 +1,11 @@
 const inquirer = require("inquirer");
-const listings = require("../listings");
-const dataManager = require("../dataManager");
-const dumpDownload = require("../dumpDownload");
+const remoteDumps = require("../remoteDumps");
+const localDumps = require("../localDumps");
+const fetcher = require("../fetcher");
 
 async function main(argv) {
   async function getYear() {
-    const years = await listings.fetchYearListings();
+    const years = await remoteDumps.fetchYearListings();
 
     const { year } = await inquirer.prompt([
       {
@@ -25,8 +25,8 @@ async function main(argv) {
       year = await getYear();
     }
 
-    const files = await listings.fetchFileListing(`data/${year}/`);
-    const versions = listings.parseFileNames(files);
+    const files = await remoteDumps.fetchFileListing(`data/${year}/`);
+    const versions = remoteDumps.parseFileNames(files);
 
     const { version } = await inquirer.prompt([
       {
@@ -53,7 +53,7 @@ async function main(argv) {
     }
   }
 
-  const existingData = dataManager.findData(version, argv.types);
+  const existingData = localDumps.findData(version, argv.types);
   if (existingData.some(d => !d)) {
     console.log(
       `Some data is not yet downloaded: ${argv.types.filter(
@@ -61,7 +61,7 @@ async function main(argv) {
       ).join(', ')}`
     );
 
-    await dumpDownload.ensureDumps(version, argv.types, !argv.noProgress);
+    await fetcher.ensureDumps(version, argv.types, !argv.noProgress);
   } else {
     console.log('All data downloaded');
   }

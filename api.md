@@ -1,80 +1,21 @@
 ## Modules
 
 <dl>
-<dt><a href="#module_dataManager">dataManager</a></dt>
-<dd><p>Look up data dump files that have already been downloaded</p>
-</dd>
 <dt><a href="#module_fetcher">fetcher</a></dt>
-<dd><p>Util functions to download data dumps and show download progress</p>
+<dd><p>Download data dumps and show download progress</p>
 </dd>
-<dt><a href="#module_listings">listings</a></dt>
-<dd><p>Functions to fetch listings of available data dumps from the S3 bucket</p>
+<dt><a href="#module_localDumps">localDumps</a></dt>
+<dd><p>Lookup data dump files that have already been downloaded</p>
 </dd>
-</dl>
-
-## Functions
-
-<dl>
-<dt><a href="#getDumpURL">getDumpURL(version, type)</a> ⇒ <code>string</code></dt>
-<dd><p>Get the URL for a specific data dump</p>
+<dt><a href="#module_remoteDumps">remoteDumps</a></dt>
+<dd><p>Lookup available data dumps on the S3 bucket</p>
 </dd>
 </dl>
-
-<a name="module_dataManager"></a>
-
-## dataManager
-Look up data dump files that have already been downloaded
-
-
-* [dataManager](#module_dataManager)
-    * [~getXMLPath(version, type, [gz])](#module_dataManager..getXMLPath) ⇒ <code>string</code>
-    * [~findXML(version, type, [gz])](#module_dataManager..findXML) ⇒ <code>Object</code> \| <code>null</code>
-    * [~findData(version, types)](#module_dataManager..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
-
-<a name="module_dataManager..getXMLPath"></a>
-
-### dataManager~getXMLPath(version, type, [gz]) ⇒ <code>string</code>
-Get the path where a data XML is saved
-
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| version | <code>string</code> |  | The exact version name, eg '20180101' |
-| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
-| [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
-
-<a name="module_dataManager..findXML"></a>
-
-### dataManager~findXML(version, type, [gz]) ⇒ <code>Object</code> \| <code>null</code>
-Looks up an existing data xml on disk
-
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
-**Returns**: <code>Object</code> \| <code>null</code> - An object of the form `{ path: string, gz: boolean }`if the file was found, null otherwise  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| version | <code>string</code> |  | The exact version name, eg '20180101' |
-| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
-| [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
-
-<a name="module_dataManager..findData"></a>
-
-### dataManager~findData(version, types) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
-Looks up the xml files on disk for a given version
-
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
-**Returns**: <code>Array.&lt;(Object\|null)&gt;</code> - An array of results for each type:An object of the form `{ path: string, gz: boolean }` if the file was found,null otherwise  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| version | <code>string</code> | The exact version name, eg '20180101' |
-| types | <code>Array.&lt;string&gt;</code> | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
 
 <a name="module_fetcher"></a>
 
 ## fetcher
-Util functions to download data dumps and show download progress
+Download data dumps and show download progress
 
 
 * [fetcher](#module_fetcher)
@@ -109,56 +50,108 @@ Ensures all the specified types for a specific data dump version aredownloaded 
 | [types] | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
 | [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 
-<a name="module_listings"></a>
+<a name="module_localDumps"></a>
 
-## listings
-Functions to fetch listings of available data dumps from the S3 bucket
+## localDumps
+Lookup data dump files that have already been downloaded
 
 
-* [listings](#module_listings)
-    * [~fetchYearListings()](#module_listings..fetchYearListings) ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
-    * [~fetchFileListing(yearPrefix)](#module_listings..fetchFileListing) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
-    * [~parseFileNames(filenames)](#module_listings..parseFileNames) ⇒ <code>Object</code>
+* [localDumps](#module_localDumps)
+    * [~getXMLPath(version, type, [gz])](#module_localDumps..getXMLPath) ⇒ <code>string</code>
+    * [~findXML(version, type, [gz])](#module_localDumps..findXML) ⇒ <code>Object</code> \| <code>null</code>
+    * [~findData(version, types)](#module_localDumps..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
 
-<a name="module_listings..fetchYearListings"></a>
+<a name="module_localDumps..getXMLPath"></a>
 
-### listings~fetchYearListings() ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
+### localDumps~getXMLPath(version, type, [gz]) ⇒ <code>string</code>
+Get the path where a data XML is saved
+
+**Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| version | <code>string</code> |  | The exact version name, eg '20180101' |
+| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
+
+<a name="module_localDumps..findXML"></a>
+
+### localDumps~findXML(version, type, [gz]) ⇒ <code>Object</code> \| <code>null</code>
+Looks up an existing data xml on disk
+
+**Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
+**Returns**: <code>Object</code> \| <code>null</code> - An object of the form `{ path: string, gz: boolean }`if the file was found, null otherwise  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| version | <code>string</code> |  | The exact version name, eg '20180101' |
+| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
+
+<a name="module_localDumps..findData"></a>
+
+### localDumps~findData(version, types) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+Looks up the xml files on disk for a given version
+
+**Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
+**Returns**: <code>Array.&lt;(Object\|null)&gt;</code> - An array of results for each type:An object of the form `{ path: string, gz: boolean }` if the file was found,null otherwise  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| version | <code>string</code> | The exact version name, eg '20180101' |
+| types | <code>Array.&lt;string&gt;</code> | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
+
+<a name="module_remoteDumps"></a>
+
+## remoteDumps
+Lookup available data dumps on the S3 bucket
+
+
+* [remoteDumps](#module_remoteDumps)
+    * [~getDumpURL(version, type)](#module_remoteDumps..getDumpURL) ⇒ <code>string</code>
+    * [~fetchYearListings()](#module_remoteDumps..fetchYearListings) ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
+    * [~fetchFileListing(yearPrefix)](#module_remoteDumps..fetchFileListing) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
+    * [~parseFileNames(filenames)](#module_remoteDumps..parseFileNames) ⇒ <code>Object</code>
+
+<a name="module_remoteDumps..getDumpURL"></a>
+
+### remoteDumps~getDumpURL(version, type) ⇒ <code>string</code>
+Get the URL for a specific data dump
+
+**Kind**: inner method of [<code>remoteDumps</code>](#module_remoteDumps)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| version | <code>string</code> | The exact version name, eg '20180101' |
+| type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+
+<a name="module_remoteDumps..fetchYearListings"></a>
+
+### remoteDumps~fetchYearListings() ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
 Fetch a set of years available on the Discogs data S3 bucket with theirpaths on the bucket.
 
-**Kind**: inner method of [<code>listings</code>](#module_listings)  
-<a name="module_listings..fetchFileListing"></a>
+**Kind**: inner method of [<code>remoteDumps</code>](#module_remoteDumps)  
+<a name="module_remoteDumps..fetchFileListing"></a>
 
-### listings~fetchFileListing(yearPrefix) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
+### remoteDumps~fetchFileListing(yearPrefix) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
 Fetch the list of files available on the S3 bucket for a certain year
 
-**Kind**: inner method of [<code>listings</code>](#module_listings)  
+**Kind**: inner method of [<code>remoteDumps</code>](#module_remoteDumps)  
 **Returns**: <code>Promise.&lt;Array.&lt;string&gt;&gt;</code> - An array of paths  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | yearPrefix | <code>string</code> | The year prefix of the file. For example: "data/2016/" |
 
-<a name="module_listings..parseFileNames"></a>
+<a name="module_remoteDumps..parseFileNames"></a>
 
-### listings~parseFileNames(filenames) ⇒ <code>Object</code>
+### remoteDumps~parseFileNames(filenames) ⇒ <code>Object</code>
 Parse a list of file paths (as returned by fetchFileListing). Groups themby year
 
-**Kind**: inner method of [<code>listings</code>](#module_listings)  
+**Kind**: inner method of [<code>remoteDumps</code>](#module_remoteDumps)  
 **Returns**: <code>Object</code> - An object with keys for each year and an array of parsedpath objects as values.  
 
 | Param | Type |
 | --- | --- |
 | filenames | <code>Array.&lt;string&gt;</code> | 
-
-<a name="getDumpURL"></a>
-
-## getDumpURL(version, type) ⇒ <code>string</code>
-Get the URL for a specific data dump
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| version | <code>string</code> | The exact version name, eg '20180101' |
-| type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 

@@ -3,32 +3,19 @@ const request = require("request");
 const cliProgress = require("cli-progress");
 const progress = require("request-progress");
 const path = require("path");
-const dataManager = require("./dataManager");
+const localDumps = require("./localDumps");
+const remoteDumps = require("./remoteDumps");
 const createExitHandler = require("./util/createExitHandler");
 
 /**
- * Get the URL for a specific data dump
- * @param version {string} The exact version name, eg '20180101'
- * @param type {string} The type of data. Can be either "artists", "labels",
- * "masters" or "releases"
- * @returns {string}
- */
-function getDumpURL(version, type) {
-  return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
-    0,
-    4
-  )}/discogs_${version}_${type}.xml.gz`;
-}
-
-/**
- * Util functions to download data dumps and show download progress
+ * Download data dumps and show download progress
  * @module fetcher
  */
 
 function fetchDump(version, type, showProgress = false) {
   return new Promise((resolve, reject) => {
-    const url = getDumpURL(version, type);
-    const targetPath = dataManager.getXMLPath(version, type, true);
+    const url = remoteDumps.getDumpURL(version, type);
+    const targetPath = localDumps.getXMLPath(version, type, true);
     const bar = showProgress
       ? new cliProgress.Bar({}, cliProgress.Presets.shades_classic)
       : null;
@@ -84,7 +71,7 @@ function fetchDump(version, type, showProgress = false) {
  * downloaded
  */
 function ensureDump(version, type, showProgress = false) {
-  const [existingData] = dataManager.findData(version, [type]);
+  const [existingData] = localDumps.findData(version, [type]);
 
   if (!existingData) {
     return fetchDump(version, type, showProgress);
@@ -107,7 +94,7 @@ function ensureDump(version, type, showProgress = false) {
  */
 async function ensureDumps(
   version,
-  types = dataManager.DATA_TYPES,
+  types = localDumps.DATA_TYPES,
   showProgress = false
 ) {
   for (const type of types) {
@@ -115,4 +102,4 @@ async function ensureDumps(
   }
 }
 
-module.exports = { ensureDump, ensureDumps, getDumpURL };
+module.exports = { ensureDump, ensureDumps };

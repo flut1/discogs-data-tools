@@ -1,5 +1,5 @@
 const yargs = require("yargs");
-const DATA_TYPES = require("./dataManager").DATA_TYPES;
+const DATA_TYPES = require("./localDumps").DATA_TYPES;
 
 module.exports = yargs
   .command(

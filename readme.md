@@ -28,11 +28,11 @@ Options:
 
 ## Node.JS API
 ```
-const { listings, dataManager, fetcher } = require('discogs-data-tools');
+const { listings, localDumps, fetcher } = require('discogs-data-tools');
 ```
 
-- *dataManager* Look up data dump files that have already been downloaded
-- *fetcher* Util functions to download data dumps and show download progress
-- *dataManager* Functions to fetch listings of available data dumps from the S3 bucket
+- *localDumps* Lookup data dump files that have already been downloaded
+- *remoteDumps* Lookup available data dumps on the S3 bucket
+- *fetcher* Download data dumps and show download progress
 
 See [api.md](./api.md) for available methods per module

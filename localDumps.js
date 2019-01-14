@@ -5,8 +5,8 @@ const DATA_DIR = "./data";
 const DATA_TYPES = ["artists", "labels", "masters", "releases"];
 
 /**
- * Look up data dump files that have already been downloaded
- * @module dataManager
+ * Lookup data dump files that have already been downloaded
+ * @module localDumps
  */
 
 /**
