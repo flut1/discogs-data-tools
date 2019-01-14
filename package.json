@@ -17,7 +17,7 @@
   "license": "ISC",
   "scripts": {
     "prettify": "prettier --write \"*.js\"",
-    "help-to-readme": "node helpToReadme",
+    "help-to-readme": "node util/helpToReadme",
     "docs": "jsdoc2md ./*.js > api.md",
     "prepublish": "npm run help-to-readme && npm run docs"
   },

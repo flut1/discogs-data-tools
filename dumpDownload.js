@@ -4,6 +4,7 @@ const cliProgress = require("cli-progress");
 const progress = require("request-progress");
 const path = require("path");
 const dataManager = require("./dataManager");
+const createExitHandler = require("./util/createExitHandler");
 
 /**
  * Get the URL for a specific data dump
@@ -34,6 +35,12 @@ function fetchDump(version, type, showProgress = false) {
     let started = false;
     fs.ensureDirSync(path.dirname(targetPath));
     console.log(`Fetching ${url}`);
+
+    const removeExitHandler = createExitHandler(() => {
+      console.log('Download cancelled. Removing file');
+      fs.removeSync(targetPath);
+    });
+
     progress(request(url))
       .on("progress", function(state) {
         if (showProgress) {
@@ -49,12 +56,14 @@ function fetchDump(version, type, showProgress = false) {
         if (showProgress) {
           bar.stop();
         }
+        removeExitHandler();
         reject(new Error(`Error getting dump: ${err}`));
       })
       .on("end", function() {
         if (showProgress) {
           bar.stop();
         }
+        removeExitHandler();
         console.log("Finished");
         resolve();
       })
