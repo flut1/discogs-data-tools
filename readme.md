@@ -1,6 +1,6 @@
 # Discogs Data Tools
-Some utilities to download and process Discogs monthly data dumps. Under active development.
-More to come.
+Some utilities to download and process Discogs monthly data dumps. Currently only manages downloading
+the data dumps. More functionality (like processing) to come
 
 **This module is not officially affiliated with Discogs.** For license information on Discogs
 data dumps see: https://data.discogs.com/
@@ -27,4 +27,12 @@ Options:
 ```
 
 ## Node.JS API
-See [api.md](./api.md)
+```
+const { listings, dataManager, fetcher } = require('discogs-data-tools');
+```
+
+- *dataManager* Look up data dump files that have already been downloaded
+- *fetcher* Util functions to download data dumps and show download progress
+- *dataManager* Functions to fetch listings of available data dumps from the S3 bucket
+
+See [api.md](./api.md) for available methods per module
