@@ -38,6 +38,30 @@ module.exports = yargs
       require("./commands/fetch")(argv);
     }
   )
+  .command(
+    "mongo",
+    "import data dump into mongo database",
+    y => {
+      return y
+        .options({
+          dumpVersion: {
+            alias: "dv",
+            describe: "Full name of the version to fetch. ie: 20180101",
+            type: "string"
+          },
+          types: {
+            alias: "t",
+            describe: "List of types to get",
+            default: DATA_TYPES,
+            choices: DATA_TYPES,
+            type: "array"
+          }
+        });
+    },
+    argv => {
+      require("./commands/mongo")(argv);
+    }
+  )
   .demandCommand()
   .usage(
     '$0 <command> [...args]\nFor help on a command run "$0 <command> help"'
