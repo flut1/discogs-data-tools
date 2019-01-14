@@ -49,6 +49,12 @@ module.exports = yargs
             describe: "Full name of the version to fetch. ie: 20180101",
             type: "string"
           },
+          chunkSize: {
+            alias: "cs",
+            describe: "Size of processing chunks. Larger size is faster but takes more memory",
+            default: 1000,
+            type: "number"
+          },
           types: {
             alias: "t",
             describe: "List of types to get",
