@@ -1,10 +1,24 @@
-const fs = require('fs-extra');
-const request = require('request');
-const cliProgress = require('cli-progress');
-const progress = require('request-progress');
-const path = require('path');
-const dataManager = require('./dataManager');
-const listings = require('./listings');
+const fs = require("fs-extra");
+const request = require("request");
+const cliProgress = require("cli-progress");
+const progress = require("request-progress");
+const path = require("path");
+const dataManager = require("./dataManager");
+const listings = require("./listings");
+
+/**
+ * Get the URL for a specific data dump
+ * @param version {string} The exact version name, eg '20180101'
+ * @param type {string} The type of data. Can be either "artists", "labels",
+ * "masters" or "releases"
+ * @returns {string}
+ */
+function getDumpURL(version, type) {
+  return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
+    0,
+    4
+  )}/discogs_${version}_${type}.xml.gz`;
+}
 
 /**
  * Util functions to download data dumps and show download progress
@@ -13,14 +27,14 @@ const listings = require('./listings');
 
 function fetchDump(version, type) {
   return new Promise((resolve, reject) => {
-    const url = listings.getDumpURL(version, type);
+    const url = getDumpURL(version, type);
     const targetPath = dataManager.getXMLPath(version, type, true);
     const bar = new cliProgress.Bar({}, cliProgress.Presets.shades_classic);
     let started = false;
     fs.ensureDirSync(path.dirname(targetPath));
     console.log(`Fetching ${url}`);
     progress(request(url))
-      .on('progress', function (state) {
+      .on("progress", function(state) {
         if (!started) {
           bar.start(state.size.total, 0);
           started = true;
@@ -28,13 +42,13 @@ function fetchDump(version, type) {
           bar.update(state.size.transferred);
         }
       })
-      .on('error', function (err) {
+      .on("error", function(err) {
         bar.stop();
         reject(new Error(`Error getting dump: ${err}`));
       })
-      .on('end', function () {
+      .on("end", function() {
         bar.stop();
-        console.log('Finished');
+        console.log("Finished");
         resolve();
       })
       .pipe(fs.createWriteStream(targetPath));
@@ -75,4 +89,4 @@ async function ensureDumps(version, types = dataManager.DATA_TYPES) {
   }
 }
 
-module.exports = { ensureDump, ensureDumps };
+module.exports = { ensureDump, ensureDumps, getDumpURL };

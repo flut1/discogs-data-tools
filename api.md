@@ -12,6 +12,14 @@
 </dd>
 </dl>
 
+## Functions
+
+<dl>
+<dt><a href="#getDumpURL">getDumpURL(version, type)</a> ⇒ <code>string</code></dt>
+<dd><p>Get the URL for a specific data dump</p>
+</dd>
+</dl>
+
 <a name="module_dataManager"></a>
 
 ## dataManager
@@ -106,22 +114,9 @@ Functions to fetch listings of available data dumps from the S3 bucket
 
 
 * [listings](#module_listings)
-    * [~getDumpURL(version, type)](#module_listings..getDumpURL) ⇒ <code>string</code>
     * [~fetchYearListings()](#module_listings..fetchYearListings) ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
     * [~fetchFileListing(yearPrefix)](#module_listings..fetchFileListing) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
     * [~parseFileNames(filenames)](#module_listings..parseFileNames) ⇒ <code>Object</code>
-
-<a name="module_listings..getDumpURL"></a>
-
-### listings~getDumpURL(version, type) ⇒ <code>string</code>
-Get the URL for a specific data dump
-
-**Kind**: inner method of [<code>listings</code>](#module_listings)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| version | <code>string</code> | The exact version name, eg '20180101' |
-| type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 
 <a name="module_listings..fetchYearListings"></a>
 
@@ -152,4 +147,16 @@ Parse a list of file paths (as returned by fetchFileListing). Groups themby yea
 | Param | Type |
 | --- | --- |
 | filenames | <code>Array.&lt;string&gt;</code> | 
+
+<a name="getDumpURL"></a>
+
+## getDumpURL(version, type) ⇒ <code>string</code>
+Get the URL for a specific data dump
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| version | <code>string</code> | The exact version name, eg '20180101' |
+| type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 

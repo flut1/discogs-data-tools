@@ -14,20 +14,6 @@ const parseString = promisify(xml2js.parseString);
 const BUCKET_URL = "https://discogs-data.s3-us-west-2.amazonaws.com";
 const S3B_ROOT_DIR = "data/";
 
-/**
- * Get the URL for a specific data dump
- * @param version {string} The exact version name, eg '20180101'
- * @param type {string} The type of data. Can be either "artists", "labels",
- * "masters" or "releases"
- * @returns {string}
- */
-function getDumpURL(version, type) {
-  return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
-    0,
-    4
-  )}/discogs_${version}_${type}.xml.gz`;
-}
-
 function createS3QueryUrl(prefix = S3B_ROOT_DIR, marker) {
   let s3_rest_url = BUCKET_URL;
   s3_rest_url += "?delimiter=/";
@@ -135,6 +121,5 @@ function parseFileNames(filenames) {
 module.exports = {
   fetchYearListings,
   fetchFileListing,
-  getDumpURL,
   parseFileNames
 };
