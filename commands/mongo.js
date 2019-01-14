@@ -1,5 +1,10 @@
 const processor = require('../processor');
+const fs = require('fs-extra');
+const Ajv = require('ajv');
 const MongoClient = require('mongodb').MongoClient;
+
+const ajv = new Ajv({ verbose: true });
+const validateLabel = ajv.compile(require('../schema/label-xml.json'));
 
 // Connection URL
 const MONGO_URL = 'mongodb://root:development@localhost:27017';
@@ -22,20 +27,32 @@ async function main(argv) {
 
   const processors = {
     labels: async function processLabels(chunk) {
-      await db.collection('labels').bulkWrite(
-        chunk.map(entry => ({
-          updateOne: {
-            filter: { _id: entry.children.find(({ tag }) => tag === 'id').text },
-            upsert: true,
-            update: {
-              _id: entry.children.find(({ tag }) => tag === 'id').text,
-              name: entry.children.find(({ tag }) => tag === 'name').text
-            }
-          }
-        }))
-      );
 
-      throw new Error();
+      for (const entry of chunk) {
+        const valid = validateLabel(entry);
+
+        if (!valid) {
+          const lastError = validateLabel.errors[validateLabel.errors.length - 1];
+          console.log(validateLabel.errors);
+          console.log(JSON.stringify(lastError.data, null, '  '));
+          console.log(JSON.stringify(entry, null, '  '));
+          throw new Error();
+        }
+      }
+      //
+      // await db.collection('labels').bulkWrite(
+      //   chunk.map(entry => ({
+      //     updateOne: {
+      //       filter: { _id: entry.children.find(({ tag }) => tag === 'id').text },
+      //       upsert: true,
+      //       update: {
+      //         _id: entry.children.find(({ tag }) => tag === 'id').text,
+      //         name: entry.children.find(({ tag }) => tag === 'name').text
+      //       }
+      //     }
+      //   }))
+      // );
+
     },
     artist: async function processArtists(chunk) {
 
