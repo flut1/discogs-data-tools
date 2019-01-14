@@ -72,7 +72,7 @@ class XMLReader extends events.EventEmitter {
     this.level--;
     this.node = this.nodes.pop();
 
-    if (this.level === this.targetDepth) {
+    if (this.level === this.targetDepth - 1) {
       this.isCapturing = false;
       this.emit('record', this.record);
     }
