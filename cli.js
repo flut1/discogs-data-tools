@@ -13,6 +13,11 @@ module.exports = yargs
             describe: "The year to find monthly dumps for.",
             type: "number"
           },
+          "noProgress": {
+            alias: "np",
+            describe: "Hides the progress bar",
+            type: "boolean"
+          },
           dumpVersion: {
             alias: "dv",
             describe: "Full name of the version to fetch. ie: 20180101",

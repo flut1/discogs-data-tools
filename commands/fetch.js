@@ -61,7 +61,7 @@ async function main(argv) {
       ).join(', ')}`
     );
 
-    await dumpDownload.ensureDumps(version, argv.types, true);
+    await dumpDownload.ensureDumps(version, argv.types, !argv.noProgress);
   } else {
     console.log('All data downloaded');
   }
