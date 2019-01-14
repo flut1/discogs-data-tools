@@ -78,34 +78,36 @@ Util functions to download data dumps and show download progress
 
 
 * [fetcher](#module_fetcher)
-    * [~ensureDump(version, type)](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
-    * [~ensureDumps(version, [types])](#module_fetcher..ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~ensureDump(version, type, [showProgress])](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~ensureDumps(version, [types], [showProgress])](#module_fetcher..ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
 
 <a name="module_fetcher..ensureDump"></a>
 
-### fetcher~ensureDump(version, type) ⇒ <code>Promise.&lt;void&gt;</code>
+### fetcher~ensureDump(version, type, [showProgress]) ⇒ <code>Promise.&lt;void&gt;</code>
 Ensures a data dump file is downloaded to ./data/<version>/. Doesnothing if a file already exists. Does not verify the file.
 
 **Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - A Promise that completes when all data isdownloaded  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| version | <code>string</code> | The exact version name, eg '20180101' |
-| type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| version | <code>string</code> |  | The exact version name, eg '20180101' |
+| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 
 <a name="module_fetcher..ensureDumps"></a>
 
-### fetcher~ensureDumps(version, [types]) ⇒ <code>Promise.&lt;void&gt;</code>
+### fetcher~ensureDumps(version, [types], [showProgress]) ⇒ <code>Promise.&lt;void&gt;</code>
 Ensures all the specified types for a specific data dump version aredownloaded to ./data/<version>/
 
 **Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - A Promise that completes when all data isdownloaded  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| version | <code>string</code> | The exact version name, eg '20180101' |
-| [types] | <code>Array.&lt;string&gt;</code> | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| version | <code>string</code> |  | The exact version name, eg '20180101' |
+| [types] | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
+| [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 
 <a name="module_listings"></a>
 

@@ -4,7 +4,6 @@ const cliProgress = require("cli-progress");
 const progress = require("request-progress");
 const path = require("path");
 const dataManager = require("./dataManager");
-const listings = require("./listings");
 
 /**
  * Get the URL for a specific data dump
@@ -25,29 +24,37 @@ function getDumpURL(version, type) {
  * @module fetcher
  */
 
-function fetchDump(version, type) {
+function fetchDump(version, type, showProgress = false) {
   return new Promise((resolve, reject) => {
     const url = getDumpURL(version, type);
     const targetPath = dataManager.getXMLPath(version, type, true);
-    const bar = new cliProgress.Bar({}, cliProgress.Presets.shades_classic);
+    const bar = showProgress
+      ? new cliProgress.Bar({}, cliProgress.Presets.shades_classic)
+      : null;
     let started = false;
     fs.ensureDirSync(path.dirname(targetPath));
     console.log(`Fetching ${url}`);
     progress(request(url))
       .on("progress", function(state) {
-        if (!started) {
-          bar.start(state.size.total, 0);
-          started = true;
-        } else {
-          bar.update(state.size.transferred);
+        if (showProgress) {
+          if (!started) {
+            bar.start(state.size.total, 0);
+            started = true;
+          } else {
+            bar.update(state.size.transferred);
+          }
         }
       })
       .on("error", function(err) {
-        bar.stop();
+        if (showProgress) {
+          bar.stop();
+        }
         reject(new Error(`Error getting dump: ${err}`));
       })
       .on("end", function() {
-        bar.stop();
+        if (showProgress) {
+          bar.stop();
+        }
         console.log("Finished");
         resolve();
       })
@@ -61,14 +68,17 @@ function fetchDump(version, type) {
  * @param version {string} The exact version name, eg '20180101'
  * @param type {string} The type of data. Can be either "artists", "labels",
  * "masters" or "releases"
+ * @param [showProgress=false] {boolean} Show a progress indicator. For
+ * usage in an interactive CLI. On a server you probably want this set to
+ * false
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
-function ensureDump(version, type) {
+function ensureDump(version, type, showProgress = false) {
   const [existingData] = dataManager.findData(version, [type]);
 
   if (!existingData) {
-    return fetchDump(version, type);
+    return fetchDump(version, type, showProgress);
   }
   console.log(`${type} already downloaded. skipping...`);
   return Promise.resolve();
@@ -80,12 +90,19 @@ function ensureDump(version, type) {
  * @param version {string} The exact version name, eg '20180101'
  * @param [types] {string[]} An array of types to get. Possible options:
  * "artists", "labels", "masters" or "releases".  Defaults to all types
+ * @param [showProgress=false] {boolean} Show a progress indicator. For
+ * usage in an interactive CLI. On a server you probably want this set to
+ * false
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
-async function ensureDumps(version, types = dataManager.DATA_TYPES) {
+async function ensureDumps(
+  version,
+  types = dataManager.DATA_TYPES,
+  showProgress = false
+) {
   for (const type of types) {
-    await ensureDump(version, type);
+    await ensureDump(version, type, showProgress);
   }
 }
 
