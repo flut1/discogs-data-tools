@@ -51,9 +51,29 @@ module.exports = yargs
           },
           chunkSize: {
             alias: "cs",
-            describe: "Size of processing chunks. Larger size is faster but takes more memory",
+            describe: "Size of processing chunks. Larger size takes more memory",
             default: 1000,
             type: "number"
+          },
+          noIndex: {
+            alias: "ni",
+            describe: "Don't create indexes on collections",
+            type: "boolean"
+          },
+          noValidate: {
+            alias: "nv",
+            describe: "Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid rows",
+            type: "boolean"
+          },
+          restart: {
+            alias: "r",
+            describe: "Don't continue processing from where it last stopped but restart at the first row",
+            type: "boolean"
+          },
+          includeImageObjects: {
+            alias: "i",
+            describe: "Include image objects. By default, will only include the image count because image objects in data dumps are missing the URI",
+            type: "boolean"
           },
           types: {
             alias: "t",

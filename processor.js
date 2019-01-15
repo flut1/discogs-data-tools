@@ -9,7 +9,7 @@ const recordRegex = {
   releases: /^release$/
 };
 
-function processFile({ path, gz }, type, fn, chunkSize = 100) {
+function processFile({ path, gz }, type, fn, chunkSize = 100, restart = false) {
   return new Promise(resolve => {
     const progressFilePath = `${path}.processing`;
 
@@ -17,7 +17,7 @@ function processFile({ path, gz }, type, fn, chunkSize = 100) {
 
     let toSkip = 0;
     let processed = 0;
-    if (fs.existsSync(progressFilePath)) {
+    if (fs.existsSync(progressFilePath) && !restart) {
       toSkip = parseInt(
         fs.readFileSync(progressFilePath, { encoding: "utf8" }),
         10
@@ -83,7 +83,8 @@ async function processDumps(
   version,
   types = localDumps.DATA_TYPES,
   fn,
-  chunkSize = 100
+  chunkSize = 100,
+  restart = false
 ) {
   const targetFiles = localDumps.findData(version, types);
 
@@ -92,7 +93,7 @@ async function processDumps(
       throw new Error(`No ${types[i]} found for version "${version}"`);
     }
 
-    await processFile(targetFiles[i], types[i], fn, chunkSize);
+    await processFile(targetFiles[i], types[i], fn, chunkSize, restart);
   }
 }
 
