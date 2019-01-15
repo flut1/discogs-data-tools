@@ -1,0 +1,338 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Artist",
+  "description": "An artist object as parsed from a Discogs XML <artist>",
+  "properties": {
+    "tag": {
+      "type": "string",
+      "pattern": "^artist$"
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^images$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "pattern": "^image$"
+                    },
+                    "attrs": {
+                      "type": "object",
+                      "properties": {
+                        "height": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "uri": {
+                          "type": "string"
+                        },
+                        "uri150": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["height", "type", "uri", "uri150", "width"]
+                    }
+                  },
+                  "required": ["tag", "attrs"]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^id$"
+              },
+              "text": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              }
+            },
+            "required": ["tag", "text"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^name$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["tag"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^realname$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["tag"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^profile$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["tag"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^data_quality$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["tag", "text"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^urls$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "pattern": "^url$"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["tag"]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^namevariations$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "pattern": "^name$"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["tag", "text"]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^aliases$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "pattern": "^name$"
+                    },
+                    "text": {
+                      "type": "string"
+                    },
+                    "attrs": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^\\d+$"
+                        }
+                      },
+                      "required": ["id"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["tag", "attrs"]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^groups$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "pattern": "^name$"
+                    },
+                    "text": {
+                      "type": "string"
+                    },
+                    "attrs": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^\\d+$"
+                        }
+                      },
+                      "required": ["id"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": ["tag", "text", "attrs"]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^members$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "tag": {
+                          "type": "string",
+                          "pattern": "^name$"
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "attrs": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "pattern": "^\\d+$"
+                            }
+                          },
+                          "required": ["id"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": ["tag", "text", "attrs"]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "tag": {
+                          "type": "string",
+                          "pattern": "^id$"
+                        },
+                        "text": {
+                          "type": "string",
+                          "pattern": "^\\d+$"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": ["tag", "text"]
+                    }
+                  ]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^id$"
+              }
+            },
+            "required": ["tag"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^name$"
+              }
+            },
+            "required": ["tag"]
+          }
+        }
+      ]
+    }
+  },
+  "required": ["tag", "children"],
+  "type": "object"
+}
