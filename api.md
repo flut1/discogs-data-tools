@@ -12,6 +12,15 @@
 </dd>
 </dl>
 
+## Constants
+
+<dl>
+<dt><a href="#expat">expat</a></dt>
+<dd><p>Code based on node-big-xml
+<a href="https://github.com/jahewson/node-big-xml">https://github.com/jahewson/node-big-xml</a></p>
+</dd>
+</dl>
+
 <a name="module_fetcher"></a>
 
 ## fetcher
@@ -155,3 +164,9 @@ Parse a list of file paths (as returned by fetchFileListing). Groups themby yea
 | --- | --- |
 | filenames | <code>Array.&lt;string&gt;</code> | 
 
+<a name="expat"></a>
+
+## expat
+Code based on node-big-xmlhttps://github.com/jahewson/node-big-xml
+
+**Kind**: global constant  
