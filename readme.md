@@ -28,7 +28,9 @@ Options:
   --help               Show help                                                                               [boolean]
   --year, -y           The year to find monthly dumps for.                                                      [number]
   --noProgress, --np   Hides the progress bar                                                                  [boolean]
-  --dumpVersion, --dv  Full name of the version to fetch. ie: 20180101                                          [string]
+  --dumpVersion, --dv  Full name of the version to fetch. ie: 20180101. If not specified, will let you select
+                       interactively                                                                            [string]
+  --latest, -l         Automatically get the latest version                                                    [boolean]
   --types, -t          List of types to get
       [array] [choices: "artists", "labels", "masters", "releases"] [default: ["artists","labels","masters","releases"]]
 

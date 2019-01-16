@@ -41,6 +41,18 @@ async function main(argv) {
 
   let version = argv.dumpVersion;
 
+  if (argv.latest) {
+    const years = await remoteDumps.fetchYearListings();
+    const files = await remoteDumps.fetchFileListing(years[1].path);
+    const versions = remoteDumps.parseFileNames(files);
+
+    const versionNames = Object.keys(versions).map(v => parseInt(v, 10));
+    versionNames.sort((a, b) => (b - a));
+
+    version = versionNames[0].toString();
+    console.log(`Pulling version ${version}`);
+  }
+
   if (!version) {
     try {
       version = await getVersion();

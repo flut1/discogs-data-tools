@@ -80,10 +80,14 @@ async function fetchYearListings() {
     throw new Error("Could not find prefixes on S3 directory listings");
   }
 
-  return prefixes.map(({ Prefix: [Prefix] }) => ({
+  const years = prefixes.map(({ Prefix: [Prefix] }) => ({
     path: Prefix,
     year: parseInt(Prefix.replace(/^data\//, "").replace(/\/$/, ""), 10)
   }));
+
+  years.sort((a, b) => (b.year - a.year));
+
+  return years;
 }
 
 

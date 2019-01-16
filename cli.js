@@ -7,6 +7,7 @@ module.exports = yargs
       alias: "dd",
       describe: "Root directory where dumps and related files are stored.",
       default: "./data",
+      default: "./data",
       type: "string"
     },
   })
@@ -28,8 +29,13 @@ module.exports = yargs
           },
           dumpVersion: {
             alias: "dv",
-            describe: "Full name of the version to fetch. ie: 20180101",
+            describe: "Full name of the version to fetch. ie: 20180101. If not specified, will let you select interactively",
             type: "string"
+          },
+          latest: {
+            alias: "l",
+            describe: "Automatically get the latest version",
+            type: "boolean"
           },
           types: {
             alias: "t",
@@ -40,7 +46,9 @@ module.exports = yargs
           }
         })
         .example("$0 fetch --dumpVersion 20180101 --types labels masters")
-        .conflicts("year", "version");
+        .conflicts("year", "version")
+        .conflicts("year", "latest")
+        .conflicts("latest", "version");
     },
     argv => {
       require("./commands/fetch")(argv);
