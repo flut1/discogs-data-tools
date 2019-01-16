@@ -108,4 +108,4 @@ module.exports = yargs
   .usage(
     '$0 <command> [...args]\nFor help on a command run "$0 <command> help"'
   )
-  .help().wrap(120).argv;
+  .help().wrap(110).argv;
