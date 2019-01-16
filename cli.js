@@ -3,7 +3,7 @@ const DATA_TYPES = require("./localDumps").DATA_TYPES;
 
 module.exports = yargs
   .options({
-    dataDir: {
+    'data-dir': {
       alias: "dd",
       describe: "Root directory where dumps and related files are stored.",
       default: "./data",
@@ -22,12 +22,12 @@ module.exports = yargs
             describe: "The year to find monthly dumps for.",
             type: "number"
           },
-          "noProgress": {
+          "no-progress": {
             alias: "np",
             describe: "Hides the progress bar",
             type: "boolean"
           },
-          dumpVersion: {
+          "dump-version": {
             alias: "dv",
             describe: "Full name of the version to fetch. ie: 20180101. If not specified, will let you select interactively",
             type: "string"
@@ -60,23 +60,23 @@ module.exports = yargs
     y => {
       return y
         .options({
-          dumpVersion: {
+          "dump-version": {
             alias: "dv",
             describe: "Full name of the version to fetch. ie: 20180101",
             type: "string"
           },
-          chunkSize: {
+          "chunk-size": {
             alias: "cs",
             describe: "Size of processing chunks. Larger size takes more memory",
             default: 1000,
             type: "number"
           },
-          noIndex: {
+          "no-index": {
             alias: "ni",
             describe: "Don't create indexes on collections",
             type: "boolean"
           },
-          noValidate: {
+          "no-validate": {
             alias: "nv",
             describe: "Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid rows",
             type: "boolean"
@@ -86,7 +86,7 @@ module.exports = yargs
             describe: "Don't continue processing from where it last stopped but restart at the first row",
             type: "boolean"
           },
-          includeImageObjects: {
+          "include-image-objects": {
             alias: "i",
             describe: "Include image objects. By default, will only include the image count because image objects in data dumps are missing the URI",
             type: "boolean"

@@ -23,15 +23,15 @@ discogs-data-tools fetch
 fetch data dump from discogs
 
 Options:
-  --version            Show version number                                                                     [boolean]
-  --dataDir, --dd      Root directory where dumps and related files are stored.             [string] [default: "./data"]
-  --help               Show help                                                                               [boolean]
-  --year, -y           The year to find monthly dumps for.                                                      [number]
-  --noProgress, --np   Hides the progress bar                                                                  [boolean]
-  --dumpVersion, --dv  Full name of the version to fetch. ie: 20180101. If not specified, will let you select
-                       interactively                                                                            [string]
-  --latest, -l         Automatically get the latest version                                                    [boolean]
-  --types, -t          List of types to get
+  --version             Show version number                                                                    [boolean]
+  --data-dir, --dd      Root directory where dumps and related files are stored.            [string] [default: "./data"]
+  --help                Show help                                                                              [boolean]
+  --year, -y            The year to find monthly dumps for.                                                     [number]
+  --no-progress, --np   Hides the progress bar                                                                 [boolean]
+  --dump-version, --dv  Full name of the version to fetch. ie: 20180101. If not specified, will let you select
+                        interactively                                                                           [string]
+  --latest, -l          Automatically get the latest version                                                   [boolean]
+  --types, -t           List of types to get
       [array] [choices: "artists", "labels", "masters", "releases"] [default: ["artists","labels","masters","releases"]]
 
 Examples:
@@ -45,18 +45,19 @@ discogs-data-tools mongo
 import data dump into mongo database
 
 Options:
-  --version                  Show version number                                                               [boolean]
-  --dataDir, --dd            Root directory where dumps and related files are stored.       [string] [default: "./data"]
-  --help                     Show help                                                                         [boolean]
-  --dumpVersion, --dv        Full name of the version to fetch. ie: 20180101                                    [string]
-  --chunkSize, --cs          Size of processing chunks. Larger size takes more memory           [number] [default: 1000]
-  --noIndex, --ni            Don't create indexes on collections                                               [boolean]
-  --noValidate, --nv         Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid
-                             rows                                                                              [boolean]
-  --restart, -r              Don't continue processing from where it last stopped but restart at the first row [boolean]
-  --includeImageObjects, -i  Include image objects. By default, will only include the image count because image objects
-                             in data dumps are missing the URI                                                 [boolean]
-  --types, -t                List of types to get
+  --version                    Show version number                                                             [boolean]
+  --data-dir, --dd             Root directory where dumps and related files are stored.     [string] [default: "./data"]
+  --help                       Show help                                                                       [boolean]
+  --dump-version, --dv         Full name of the version to fetch. ie: 20180101                                  [string]
+  --chunk-size, --cs           Size of processing chunks. Larger size takes more memory         [number] [default: 1000]
+  --no-index, --ni             Don't create indexes on collections                                             [boolean]
+  --no-validate, --nv          Skip validation of XML nodes. Can considerably speed up processing, but you may get
+                               invalid rows                                                                    [boolean]
+  --restart, -r                Don't continue processing from where it last stopped but restart at the first row
+                                                                                                               [boolean]
+  --include-image-objects, -i  Include image objects. By default, will only include the image count because image
+                               objects in data dumps are missing the URI                                       [boolean]
+  --types, -t                  List of types to get
       [array] [choices: "artists", "labels", "masters", "releases"] [default: ["artists","labels","masters","releases"]]
 ```
 <!-- /CLI -->

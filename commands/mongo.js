@@ -44,7 +44,7 @@ async function main(argv) {
   const client = new MongoClient(MONGO_URL);
 
   const ajv = new Ajv({ verbose: true });
-  if (!argv.includeImageObjects) {
+  if (!argv['include-image-objects']) {
     // no need to verify the item content
     delete labelSchema.properties.children.items.oneOf[0].properties.children
       .items;
@@ -70,7 +70,7 @@ async function main(argv) {
     label.children.forEach(child => {
       switch (child.tag) {
         case "images":
-          if (argv.includeImageObjects) {
+          if (argv['include-image-objects']) {
             res.images = child.children.map(
               ({ attrs: { width, height, type, uri, uri150 } }) => ({
                 width: width ? parseIntSafe(width) : 0,
@@ -133,7 +133,7 @@ async function main(argv) {
     artist.children.forEach(child => {
       switch (child.tag) {
         case "images":
-          if (argv.includeImageObjects) {
+          if (argv['include-image-objects']) {
             res.images = child.children.map(
               ({ attrs: { width, height, type, uri, uri150 } }) => ({
                 width: width ? parseIntSafe(width) : 0,
@@ -231,7 +231,7 @@ async function main(argv) {
   const processors = {
     labels: async function processLabels(chunk) {
       for (const entry of chunk) {
-        if (!argv.noValidate) {
+        if (!argv['no-validate']) {
           const valid = validateLabel(entry);
 
           if (!valid) {
@@ -260,7 +260,7 @@ async function main(argv) {
     },
     artists: async function processArtists(chunk) {
       for (const entry of chunk) {
-        if (!argv.noValidate) {
+        if (!argv['no-validate']) {
           const valid = validateArtist(entry);
 
           if (!valid) {
@@ -298,7 +298,7 @@ async function main(argv) {
     return processors[type](chunk);
   }
 
-  if (!argv.noIndex) {
+  if (!argv['no-index']) {
     console.log("Ensuring indexes on labels collection...");
 
     if (argv.types.includes("labels")) {
@@ -356,12 +356,12 @@ async function main(argv) {
   }
 
   await processor.processDumps(
-    argv.dumpVersion,
+    argv['dump-version'],
     argv.types,
     processEntries,
-    argv.chunkSize,
+    argv['chunk-size'],
     argv.restart,
-    argv.dataDir
+    argv['data-dir']
   );
   client.close();
 }

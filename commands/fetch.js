@@ -39,7 +39,7 @@ async function main(argv) {
     return version;
   }
 
-  let version = argv.dumpVersion;
+  let version = argv['dump-version'];
 
   if (argv.latest) {
     const years = await remoteDumps.fetchYearListings();
@@ -50,7 +50,7 @@ async function main(argv) {
     versionNames.sort((a, b) => (b - a));
 
     version = versionNames[0].toString();
-    console.log(`Pulling version ${version}`);
+    console.log(`Latest version is "${version}"`);
   }
 
   if (!version) {
@@ -65,7 +65,7 @@ async function main(argv) {
     }
   }
 
-  const existingData = localDumps.findData(version, argv.types, argv.dataDir);
+  const existingData = localDumps.findData(version, argv.types, argv['data-dir']);
   if (existingData.some(d => !d)) {
     console.log(
       `Some data is not yet downloaded: ${argv.types.filter(
@@ -73,7 +73,7 @@ async function main(argv) {
       ).join(', ')}`
     );
 
-    await fetcher.ensureDumps(version, argv.types, !argv.noProgress, argv.dataDir);
+    await fetcher.ensureDumps(version, argv.types, !argv['no-progress'], argv['data-dir']);
   } else {
     console.log('All data downloaded');
   }
