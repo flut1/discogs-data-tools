@@ -53,7 +53,7 @@ async function main(argv) {
     }
   }
 
-  const existingData = localDumps.findData(version, argv.types);
+  const existingData = localDumps.findData(version, argv.types, argv.dataDir);
   if (existingData.some(d => !d)) {
     console.log(
       `Some data is not yet downloaded: ${argv.types.filter(
@@ -61,7 +61,7 @@ async function main(argv) {
       ).join(', ')}`
     );
 
-    await fetcher.ensureDumps(version, argv.types, !argv.noProgress);
+    await fetcher.ensureDumps(version, argv.types, !argv.noProgress, argv.dataDir);
   } else {
     console.log('All data downloaded');
   }

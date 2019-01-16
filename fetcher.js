@@ -12,10 +12,10 @@ const createExitHandler = require("./util/createExitHandler");
  * @module fetcher
  */
 
-function fetchDump(version, type, showProgress = false) {
+function fetchDump(version, type, showProgress = false, dataDir) {
   return new Promise((resolve, reject) => {
     const url = remoteDumps.getDumpURL(version, type);
-    const targetPath = localDumps.getXMLPath(version, type, true);
+    const targetPath = localDumps.getXMLPath(version, type, true, dataDir);
     const bar = showProgress
       ? new cliProgress.Bar({}, cliProgress.Presets.shades_classic)
       : null;
@@ -67,14 +67,16 @@ function fetchDump(version, type, showProgress = false) {
  * @param [showProgress=false] {boolean} Show a progress indicator. For
  * usage in an interactive CLI. On a server you probably want this set to
  * false
+ * @param [dataDir] {string} Set to overwrite the default data directory
+ * where dumps are stored (./data)
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
-function ensureDump(version, type, showProgress = false) {
-  const [existingData] = localDumps.findData(version, [type]);
+function ensureDump(version, type, showProgress = false, dataDir) {
+  const [existingData] = localDumps.findData(version, [type], dataDir);
 
   if (!existingData) {
-    return fetchDump(version, type, showProgress);
+    return fetchDump(version, type, showProgress, dataDir);
   }
   console.log(`${type} already downloaded. skipping...`);
   return Promise.resolve();
@@ -89,16 +91,19 @@ function ensureDump(version, type, showProgress = false) {
  * @param [showProgress=false] {boolean} Show a progress indicator. For
  * usage in an interactive CLI. On a server you probably want this set to
  * false
+ * @param [dataDir] {string} Set to overwrite the default data directory
+ * where dumps are stored (./data)
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
 async function ensureDumps(
   version,
   types = localDumps.DATA_TYPES,
-  showProgress = false
+  showProgress = false,
+  dataDir
 ) {
   for (const type of types) {
-    await ensureDump(version, type, showProgress);
+    await ensureDump(version, type, showProgress, dataDir);
   }
 }
 

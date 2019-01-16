@@ -360,7 +360,8 @@ async function main(argv) {
     argv.types,
     processEntries,
     argv.chunkSize,
-    argv.restart
+    argv.restart,
+    argv.dataDir
   );
   client.close();
 }

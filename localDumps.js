@@ -1,7 +1,7 @@
 const fs = require("fs-extra");
 const path = require("path");
 
-const DATA_DIR = "./data";
+const DEFAULT_DATA_DIR = "./data";
 const DATA_TYPES = ["artists", "labels", "masters", "releases"];
 
 /**
@@ -16,12 +16,13 @@ const DATA_TYPES = ["artists", "labels", "masters", "releases"];
  * "masters" or "releases"
  * @param [gz=false] {boolean} If this is the compressed file (.xml.gz) or
  * non-compressed (.gz)
+ * @param [dataDir="./data"] {string} Root directory where `discogs-data-tools`
+ * stores data files. Defaults to ./data relative to working directory
  * @returns {string}
  */
-function getXMLPath(version, type, gz = false) {
-  return path.join(
-    __dirname,
-    DATA_DIR,
+function getXMLPath(version, type, gz = false, dataDir = DEFAULT_DATA_DIR) {
+  return path.resolve(
+    dataDir,
     version,
     `discogs_${version}_${type}.xml${gz ? ".gz" : ""}`
   );
@@ -34,11 +35,13 @@ function getXMLPath(version, type, gz = false) {
  * "masters" or "releases"
  * @param [gz=false] {boolean} If this is the compressed file (.xml.gz) or
  * non-compressed (.gz)
+ * @param [dataDir="./data"] {string} Root directory where `discogs-data-tools`
+ * stores data files. Defaults to ./data relative to working directory
  * @returns {Object|null} An object of the form `{ path: string, gz: boolean }`
  * if the file was found, null otherwise
  */
-function findXML(version, type, gz = false) {
-  const targetPath = getXMLPath(version, type, gz);
+function findXML(version, type, gz = false, dataDir = DEFAULT_DATA_DIR) {
+  const targetPath = getXMLPath(version, type, gz, dataDir);
   if (fs.existsSync(targetPath)) {
     return { path: targetPath, gz };
   }
@@ -50,13 +53,17 @@ function findXML(version, type, gz = false) {
  * @param version {string} The exact version name, eg '20180101'
  * @param types {string[]} An array of types to get. Possible options:
  * "artists", "labels", "masters" or "releases".  Defaults to all types
+ * @param [dataDir="./data"] {string} Root directory where `discogs-data-tools`
+ * stores data files. Defaults to ./data relative to working directory
  * @returns {Array<Object|null>} An array of results for each type:
  * An object of the form `{ path: string, gz: boolean }` if the file was found,
  * null otherwise
  */
-function findData(version, types = DATA_TYPES) {
+function findData(version, types = DATA_TYPES, dataDir = DEFAULT_DATA_DIR) {
   return types.map(
-    type => findXML(version, type, true) || findXML(version, type)
+    type =>
+      findXML(version, type, true, dataDir) ||
+      findXML(version, type, false, dataDir)
   );
 }
 

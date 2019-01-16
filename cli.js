@@ -2,6 +2,14 @@ const yargs = require("yargs");
 const DATA_TYPES = require("./localDumps").DATA_TYPES;
 
 module.exports = yargs
+  .options({
+    dataDir: {
+      alias: "dd",
+      describe: "Root directory where dumps and related files are stored.",
+      default: "./data",
+      type: "string"
+    },
+  })
   .command(
     "fetch",
     "fetch data dump from discogs",
@@ -92,4 +100,4 @@ module.exports = yargs
   .usage(
     '$0 <command> [...args]\nFor help on a command run "$0 <command> help"'
   )
-  .help().argv;
+  .help().wrap(120).argv;

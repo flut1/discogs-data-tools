@@ -84,9 +84,10 @@ async function processDumps(
   types = localDumps.DATA_TYPES,
   fn,
   chunkSize = 100,
-  restart = false
+  restart = false,
+  dataDir
 ) {
-  const targetFiles = localDumps.findData(version, types);
+  const targetFiles = localDumps.findData(version, types, dataDir);
 
   for (let i = 0; i < targetFiles.length; i++) {
     if (!targetFiles[i]) {
