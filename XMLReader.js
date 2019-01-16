@@ -1,4 +1,4 @@
-/**
+/*
  * Code based on node-big-xml
  * https://github.com/jahewson/node-big-xml
  */
