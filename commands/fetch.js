@@ -43,7 +43,7 @@ async function main(argv) {
 
   if (argv.latest) {
     const years = await remoteDumps.fetchYearListings();
-    const files = await remoteDumps.fetchFileListing(years[1].path);
+    const files = await remoteDumps.fetchFileListing(years[0].path);
     const versions = remoteDumps.parseFileNames(files);
 
     const versionNames = Object.keys(versions).map(v => parseInt(v, 10));
