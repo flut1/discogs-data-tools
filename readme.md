@@ -12,11 +12,14 @@ data dumps see: https://data.discogs.com/
 - Run `npm install -g discogs-data-tools`
 
 ## CLI Usage
+```
+discogs-data-tools <command>
+```
 
 <!-- below section is automatically generated. Do not modify -->
 <!-- CLI -->
 
-#### discogs-data-tools fetch
+### fetch command
 ```
 discogs-data-tools fetch
 
@@ -39,7 +42,7 @@ Examples:
   discogs-data-tools fetch --dumpVersion 20180101 --types labels masters
 ```
 
-#### discogs-data-tools mongo
+### mongo command
 ```
 discogs-data-tools mongo
 

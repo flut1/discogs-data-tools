@@ -29,9 +29,7 @@ Promise.all(
     `<!-- CLI -->\n${output
       .map(
         (help, index) =>
-          `\n#### discogs-data-tools ${
-            commands[index]
-          }\n\`\`\`\n${help
+          `\n### ${commands[index]} command\n\`\`\`\n${help
             .trim()
             .replace(/cli/g, "discogs-data-tools")}\n\`\`\``
       )
