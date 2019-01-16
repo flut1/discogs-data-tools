@@ -10,6 +10,9 @@
 <dt><a href="#module_remoteDumps">remoteDumps</a></dt>
 <dd><p>Lookup available data dumps on the S3 bucket</p>
 </dd>
+<dt><a href="#module_util/parseUtils">util/parseUtils</a></dt>
+<dd><p>Small helpers for parsing discogs data</p>
+</dd>
 </dl>
 
 <a name="module_fetcher"></a>
@@ -159,4 +162,38 @@ Parse a list of file paths (as returned by fetchFileListing). Groups themby yea
 | Param | Type |
 | --- | --- |
 | filenames | <code>Array.&lt;string&gt;</code> | 
+
+<a name="module_util/parseUtils"></a>
+
+## util/parseUtils
+Small helpers for parsing discogs data
+
+
+* [util/parseUtils](#module_util/parseUtils)
+    * [~parseIntSafe(str)](#module_util/parseUtils..parseIntSafe) ⇒ <code>number</code>
+    * [~parseDiscogsName(name, target)](#module_util/parseUtils..parseDiscogsName) ⇒ <code>object</code>
+
+<a name="module_util/parseUtils..parseIntSafe"></a>
+
+### util/parseUtils~parseIntSafe(str) ⇒ <code>number</code>
+Runs parseInt and errors when the result is NaN
+
+**Kind**: inner method of [<code>util/parseUtils</code>](#module_util/parseUtils)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| str | <code>string</code> | The string to parse |
+
+<a name="module_util/parseUtils..parseDiscogsName"></a>
+
+### util/parseUtils~parseDiscogsName(name, target) ⇒ <code>object</code>
+Parses a name from Discogs that potentially has a "(n)" numeric postfix.Stores the result on the specified target object. Will set the followingproperties:name: the name with the "(n)" postfix removed \originalName: the name without modifications \nameIndex: the number n inside the postfix. 1 if there isn't any
+
+**Kind**: inner method of [<code>util/parseUtils</code>](#module_util/parseUtils)  
+**Returns**: <code>object</code> - A reference to target  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name to parse |
+| target | <code>object</code> | An object to store the results on |
 

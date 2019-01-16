@@ -4,40 +4,13 @@ const Ajv = require("ajv");
 const MongoClient = require("mongodb").MongoClient;
 const labelSchema = require("../schema/label-xml.json");
 const artistSchema = require("../schema/artist-xml.json");
+const { parseIntSafe, parseDiscogsName } = require('../util/parseUtils');
 
 // Connection URL
 const MONGO_URL = "mongodb://root:development@localhost:27017";
 
 // Database Name
 const DB_NAME = "discogs";
-
-function parseIntSafe(str) {
-  const res = parseInt(str, 10);
-  if (isNaN(res)) {
-    throw new Error(`Could not convert "${str}" to integer`);
-  }
-  return res;
-}
-
-function parseName(originalName, target) {
-  target.originalName = originalName;
-
-  if (originalName.endsWith(")")) {
-    const nameIndexMatch = originalName.match(/^(.+?)(?:\s?\((\d+)\))?$/);
-
-    if (!nameIndexMatch) {
-      throw new Error("Expected name to match regex pattern");
-    }
-
-    target.nameIndex = nameIndexMatch[2] ? parseInt(nameIndexMatch[2]) : 1;
-    target.name = nameIndexMatch[1];
-  } else {
-    target.nameIndex = 1;
-    target.name = originalName;
-  }
-
-  return target;
-}
 
 async function main(argv) {
   // Create a new MongoClient
@@ -93,7 +66,7 @@ async function main(argv) {
         case "sublabels":
           res.subLabels = child.children.map(({ text, attrs }) => {
             const sublabel = { id: parseIntSafe(attrs.id) };
-            parseName(text, sublabel);
+            parseDiscogsName(text, sublabel);
             return sublabel;
           });
           break;
@@ -102,10 +75,10 @@ async function main(argv) {
             id: parseIntSafe(child.attrs.id)
           };
 
-          parseName(child.text, res.parent);
+          parseDiscogsName(child.text, res.parent);
           break;
         case "name":
-          parseName(child.text, res);
+          parseDiscogsName(child.text, res);
           break;
         case "profile":
         case "contactinfo":
@@ -155,7 +128,7 @@ async function main(argv) {
             };
 
             if (text) {
-              parseName(text, childRes);
+              parseDiscogsName(text, childRes);
             }
             return childRes;
           });
@@ -169,12 +142,12 @@ async function main(argv) {
         case "namevariations":
           res.nameVariations = child.children
             .filter(({ text }) => !!text)
-            .map(({ text }) => parseName(text, {}));
+            .map(({ text }) => parseDiscogsName(text, {}));
 
           break;
         case "realname":
           if (child.text) {
-            res.realName = parseName(child.text, {});
+            res.realName = parseDiscogsName(child.text, {});
           }
           break;
         case "name":
@@ -182,7 +155,7 @@ async function main(argv) {
             console.log('Skipping artist with empty name');
             return null;
           }
-          parseName(child.text, res);
+          parseDiscogsName(child.text, res);
           break;
         case "profile":
           res[child.tag] = child.text || "";
@@ -196,10 +169,10 @@ async function main(argv) {
                   ({ id }) => idParsed === id
                 );
                 if (currentIndex >= 0) {
-                  parseName(text, res.members[currentIndex]);
+                  parseDiscogsName(text, res.members[currentIndex]);
                 } else {
                   const newMember = { id: idParsed };
-                  parseName(text, newMember);
+                  parseDiscogsName(text, newMember);
                   res.members.push(newMember);
                 }
 

@@ -18,7 +18,7 @@
   "scripts": {
     "prettify": "prettier --write \"*.js\"",
     "help-to-readme": "node util/helpToReadme",
-    "docs": "jsdoc2md ./*.js > api.md",
+    "docs": "jsdoc2md ./*.js ./util/*.js > api.md",
     "prepublish": "npm run help-to-readme && npm run docs"
   },
   "engines": {
