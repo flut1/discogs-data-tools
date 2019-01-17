@@ -1,13 +1,15 @@
 /*
  * Code based on node-big-xml
  * https://github.com/jahewson/node-big-xml
+ *
+ * Modification to pick target nodes based on depth instead of name
  */
 const expat = require('node-expat');
 const fs = require('fs');
 const events = require('events');
 const zlib = require('zlib');
 
-class XMLReader extends events.EventEmitter {
+class XMLParser extends events.EventEmitter {
   constructor(filename, targetDepth, options) {
     super();
     options.gzip = options.gzip || false;
@@ -117,4 +119,4 @@ class XMLReader extends events.EventEmitter {
   }
 }
 
-module.exports = XMLReader;
+module.exports = XMLParser;

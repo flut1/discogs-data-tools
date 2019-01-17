@@ -1,11 +1,11 @@
-const processor = require("../processor");
-const fs = require("fs-extra");
 const Ajv = require("ajv");
 const MongoClient = require("mongodb").MongoClient;
 const labelSchema = require("../schema/label-xml.json");
+
+const processor = require("../processor");
 const artistSchema = require("../schema/artist-xml.json");
 const indexSpec = require("../config/mongoIndexSpec.json");
-const { parseIntSafe, parseDiscogsName } = require("../util/parseUtils");
+const { formatLabel, formatArtist } = require('../processing/dumpFormatter');
 
 async function main(argv) {
   // Create a new MongoClient
@@ -28,173 +28,6 @@ async function main(argv) {
   }
   console.log("Connected successfully to server");
   const db = client.db(argv["database-name"]);
-
-  function labelXMLToDocument(label) {
-    const res = {
-      imageCount: 0,
-      urls: [],
-      subLabels: []
-    };
-    label.children.forEach(child => {
-      switch (child.tag) {
-        case "images":
-          if (argv["include-image-objects"]) {
-            res.images = child.children.map(
-              ({ attrs: { width, height, type, uri, uri150 } }) => ({
-                width: width ? parseIntSafe(width) : 0,
-                height: height ? parseIntSafe(height) : 0,
-                type,
-                uri,
-                uri150
-              })
-            );
-          }
-
-          res.imageCount = child.children.length;
-          break;
-        case "id":
-          res.id = parseIntSafe(child.text);
-          break;
-        case "urls":
-          res.urls = child.children.map(({ text }) => text).filter(_ => _);
-          break;
-        case "sublabels":
-          res.subLabels = child.children.map(({ text, attrs }) => {
-            const sublabel = { id: parseIntSafe(attrs.id) };
-            parseDiscogsName(text, sublabel);
-            return sublabel;
-          });
-          break;
-        case "parentLabel":
-          res.parent = {
-            id: parseIntSafe(child.attrs.id)
-          };
-
-          parseDiscogsName(child.text, res.parent);
-          break;
-        case "name":
-          parseDiscogsName(child.text, res);
-          break;
-        case "profile":
-        case "contactinfo":
-          res[child.tag] = child.text || "";
-          break;
-        case "data_quality":
-          res.dataQuality = child.text || "";
-          break;
-        default:
-          throw new Error(`Unexpected child tag "${child.tag}"`);
-      }
-    });
-
-    return res;
-  }
-
-  function artistXMLToDocument(artist) {
-    const res = {
-      urls: [],
-      aliases: [],
-      members: [],
-      nameVariations: []
-    };
-
-    artist.children.forEach(child => {
-      switch (child.tag) {
-        case "images":
-          if (argv["include-image-objects"]) {
-            res.images = child.children.map(
-              ({ attrs: { width, height, type, uri, uri150 } }) => ({
-                width: width ? parseIntSafe(width) : 0,
-                height: height ? parseIntSafe(height) : 0,
-                type,
-                uri,
-                uri150
-              })
-            );
-          }
-
-          res.imageCount = child.children.length;
-          break;
-        case "aliases":
-        case "groups":
-          res[child.tag] = child.children.map(({ text, attrs }) => {
-            const childRes = {
-              id: parseIntSafe(attrs.id)
-            };
-
-            if (text) {
-              parseDiscogsName(text, childRes);
-            }
-            return childRes;
-          });
-          break;
-        case "id":
-          res.id = parseIntSafe(child.text);
-          break;
-        case "urls":
-          res.urls = child.children.map(({ text }) => text).filter(_ => _);
-          break;
-        case "namevariations":
-          res.nameVariations = child.children
-            .filter(({ text }) => !!text)
-            .map(({ text }) => parseDiscogsName(text, {}));
-
-          break;
-        case "realname":
-          if (child.text) {
-            res.realName = parseDiscogsName(child.text, {});
-          }
-          break;
-        case "name":
-          if (!child.text) {
-            console.log("Skipping artist with empty name");
-            return null;
-          }
-          parseDiscogsName(child.text, res);
-          break;
-        case "profile":
-          res[child.tag] = child.text || "";
-          break;
-        case "members":
-          child.children.forEach(({ tag, text, attrs }) => {
-            switch (tag) {
-              case "name": {
-                const idParsed = parseIntSafe(attrs.id);
-                const currentIndex = res.members.findIndex(
-                  ({ id }) => idParsed === id
-                );
-                if (currentIndex >= 0) {
-                  parseDiscogsName(text, res.members[currentIndex]);
-                } else {
-                  const newMember = { id: idParsed };
-                  parseDiscogsName(text, newMember);
-                  res.members.push(newMember);
-                }
-
-                break;
-              }
-              case "id": {
-                const idParsed = parseIntSafe(text);
-                if (!res.members.some(({ id }) => idParsed === id)) {
-                  res.members.push({ id: idParsed });
-                }
-                break;
-              }
-              default:
-                throw new Error(`Unexpected tag name members.${tag}`);
-            }
-          });
-          break;
-        case "data_quality":
-          res.dataQuality = child.text || "";
-          break;
-        default:
-          throw new Error(`Unexpected child tag "${child.tag}"`);
-      }
-    });
-
-    return res;
-  }
 
   const processors = {
     labels: async function processLabels(chunk) {
@@ -221,7 +54,7 @@ async function main(argv) {
 
       const documents = entries.filter(doc => doc.valid).map(entry => ({
         ...entry,
-        doc: labelXMLToDocument(entry.entry)
+        doc: formatLabel(entry.entry)
       }));
 
       try {
@@ -268,7 +101,7 @@ async function main(argv) {
         }
       }
 
-      const documents = chunk.map(artistXMLToDocument).filter(_ => _);
+      const documents = chunk.map(formatArtist).filter(_ => _);
 
       await db.collection("artists").bulkWrite(
         documents.map(doc => ({

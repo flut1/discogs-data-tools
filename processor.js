@@ -1,4 +1,4 @@
-const XMLReader = require("./XMLReader");
+const XMLParser = require("./processing/XMLParser");
 const localDumps = require("./localDumps");
 const fs = require("fs-extra");
 
@@ -44,7 +44,7 @@ function processFile(
       console.log(`some rows were already processed: skipping first ${toSkip}`);
     }
 
-    const reader = new XMLReader(path, 1, { gzip: gz });
+    const reader = new XMLParser(path, 1, { gzip: gz });
 
     let oldChunk = new Array(chunkSize);
     let newChunk = new Array(chunkSize);
