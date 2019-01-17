@@ -2,16 +2,35 @@ const XMLReader = require("./XMLReader");
 const localDumps = require("./localDumps");
 const fs = require("fs-extra");
 
-const recordRegex = {
-  masters: /^master$/,
-  artists: /^artist$/,
-  labels: /^label$/,
-  releases: /^release$/
-};
+class ProcessingError extends Error {
+  constructor(message, rows) {
+    super(message);
 
-function processFile({ path, gz }, type, fn, chunkSize = 100, restart = false) {
+    this.message = message;
+    this.rows = rows;
+  }
+}
+
+function logInvalidRow(logPath, type, invalidRow) {
+  fs.appendFileSync(
+    logPath,
+    `[${new Date().toISOString()}] Could not process ${type} with id ${
+      invalidRow.id
+    }: node ${invalidRow.reason}\n           ${invalidRow.json}\n\n`
+  );
+}
+
+function processFile(
+  { path, gz },
+  type,
+  fn,
+  chunkSize = 100,
+  restart = false,
+  maxErrors = 100
+) {
   return new Promise(resolve => {
     const progressFilePath = `${path}.processing`;
+    const logPath = `${path}.log`;
 
     console.log(`Processing ${path}...`);
 
@@ -31,6 +50,8 @@ function processFile({ path, gz }, type, fn, chunkSize = 100, restart = false) {
     let newChunk = new Array(chunkSize);
     let chunkIndex = 0;
 
+    let numInvalid = 0;
+
     reader.on("record", function(record) {
       if (processed >= toSkip) {
         newChunk[chunkIndex] = record;
@@ -45,7 +66,19 @@ function processFile({ path, gz }, type, fn, chunkSize = 100, restart = false) {
 
           Promise.resolve()
             .then(() => fn(oldChunk, type))
-            .then(() => {
+            .then(invalidRows => {
+              numInvalid += invalidRows.length;
+
+              for (const invalidRow of invalidRows) {
+                logInvalidRow(logPath, type, invalidRow);
+              }
+
+              if (numInvalid > maxErrors) {
+                throw new Error(
+                  `More than ${maxErrors} ${type} failed to insert. Aborting processing.`
+                );
+              }
+
               fs.writeFileSync(progressFilePath, processed.toString(), {
                 encoding: "utf8"
               });
@@ -53,7 +86,7 @@ function processFile({ path, gz }, type, fn, chunkSize = 100, restart = false) {
               reader.resume();
             })
             .catch(e => {
-              console.log(`Error while processing: ${e}`);
+              console.log(`Error while processing: ${e.stack}`);
               console.log("aborting...");
               resolve();
             });
@@ -85,7 +118,8 @@ async function processDumps(
   fn,
   chunkSize = 100,
   restart = false,
-  dataDir
+  dataDir,
+  maxErrors = 100
 ) {
   const targetFiles = localDumps.findData(version, types, dataDir);
 
@@ -94,7 +128,14 @@ async function processDumps(
       throw new Error(`No ${types[i]} found for version "${version}"`);
     }
 
-    await processFile(targetFiles[i], types[i], fn, chunkSize, restart);
+    await processFile(
+      targetFiles[i],
+      types[i],
+      fn,
+      chunkSize,
+      restart,
+      maxErrors
+    );
   }
 }
 

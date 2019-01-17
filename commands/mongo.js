@@ -4,20 +4,18 @@ const Ajv = require("ajv");
 const MongoClient = require("mongodb").MongoClient;
 const labelSchema = require("../schema/label-xml.json");
 const artistSchema = require("../schema/artist-xml.json");
-const { parseIntSafe, parseDiscogsName } = require('../util/parseUtils');
+const indexSpec = require("../config/mongoIndexSpec.json");
+const { parseIntSafe, parseDiscogsName } = require("../util/parseUtils");
 
 // Connection URL
 const MONGO_URL = "mongodb://root:development@localhost:27017";
-
-// Database Name
-const DB_NAME = "discogs";
 
 async function main(argv) {
   // Create a new MongoClient
   const client = new MongoClient(MONGO_URL);
 
   const ajv = new Ajv({ verbose: true });
-  if (!argv['include-image-objects']) {
+  if (!argv["include-image-objects"]) {
     // no need to verify the item content
     delete labelSchema.properties.children.items.oneOf[0].properties.children
       .items;
@@ -32,7 +30,7 @@ async function main(argv) {
     throw new Error(`Could not connect to MongoDB: ${e}`);
   }
   console.log("Connected successfully to server");
-  const db = client.db(DB_NAME);
+  const db = client.db(argv["database-name"]);
 
   function labelXMLToDocument(label) {
     const res = {
@@ -43,7 +41,7 @@ async function main(argv) {
     label.children.forEach(child => {
       switch (child.tag) {
         case "images":
-          if (argv['include-image-objects']) {
+          if (argv["include-image-objects"]) {
             res.images = child.children.map(
               ({ attrs: { width, height, type, uri, uri150 } }) => ({
                 width: width ? parseIntSafe(width) : 0,
@@ -106,7 +104,7 @@ async function main(argv) {
     artist.children.forEach(child => {
       switch (child.tag) {
         case "images":
-          if (argv['include-image-objects']) {
+          if (argv["include-image-objects"]) {
             res.images = child.children.map(
               ({ attrs: { width, height, type, uri, uri150 } }) => ({
                 width: width ? parseIntSafe(width) : 0,
@@ -152,7 +150,7 @@ async function main(argv) {
           break;
         case "name":
           if (!child.text) {
-            console.log('Skipping artist with empty name');
+            console.log("Skipping artist with empty name");
             return null;
           }
           parseDiscogsName(child.text, res);
@@ -203,37 +201,63 @@ async function main(argv) {
 
   const processors = {
     labels: async function processLabels(chunk) {
-      for (const entry of chunk) {
-        if (!argv['no-validate']) {
-          const valid = validateLabel(entry);
+      const invalidRows = [];
 
-          if (!valid) {
-            const lastError =
-              validateLabel.errors[validateLabel.errors.length - 1];
-            console.log(validateLabel.errors);
-            console.log(JSON.stringify(lastError.data, null, "  "));
-            console.log(JSON.stringify(entry, null, "  "));
-            throw new Error();
+      const entries = chunk
+        .map((entry, index) => {
+          let valid = true;
+          if (!argv["no-validate"]) {
+            valid = validateLabel(entry);
+
+            if (!valid) {
+              invalidRows.push({
+                json: JSON.stringify(entry),
+                index,
+                id: entry.id,
+                reason: 'did not match JSON schema'
+              });
+            }
           }
+
+          return { entry, originalIndex: index, valid };
+        });
+
+      const documents = entries.filter(doc => doc.valid).map(entry => ({
+        ...entry,
+        doc: labelXMLToDocument(entry.entry)
+      }));
+
+      try {
+        await db.collection("labels").bulkWrite(
+          documents.map(({ doc }) => ({
+            updateOne: {
+              filter: { id: doc.id },
+              upsert: true,
+              update: doc
+            }
+          }))
+        );
+      } catch (e) {
+        const { entry, originalIndex, doc } = documents[e.index];
+        let reason = 'could not be written to MongoDB';
+
+        if (e.code === 11000){
+          reason = 'had a key that already existed in the database'
         }
+
+        invalidRows.push({
+          json: JSON.stringify(entry),
+          index: originalIndex,
+          id: doc.id,
+          reason
+        });
       }
 
-      const documents = chunk.map(labelXMLToDocument);
-
-      await db.collection("labels").bulkWrite(
-        documents.map(doc => ({
-          updateOne: {
-            filter: { id: doc.id },
-            upsert: true,
-            update: doc
-          }
-        }))
-      );
-      // await db.collection('labels').insertMany(documents);
+      return invalidRows;
     },
     artists: async function processArtists(chunk) {
       for (const entry of chunk) {
-        if (!argv['no-validate']) {
+        if (!argv["no-validate"]) {
           const valid = validateArtist(entry);
 
           if (!valid) {
@@ -271,70 +295,22 @@ async function main(argv) {
     return processors[type](chunk);
   }
 
-  if (!argv['no-index']) {
-    console.log("Ensuring indexes on labels collection...");
+  if (!argv["no-index"]) {
+    for (const type of argv.types) {
+      console.log(`Ensuring indexes on ${type} collection...`);
 
-    if (argv.types.includes("labels")) {
-      await db
-        .collection("labels")
-        .createIndexes([
-          { key: { id: 1 }, unique: true },
-          { key: { "subLabels.id": 1 } },
-          {
-            key: { parent: 1 },
-            partialFilterExpression: { parent: { $exists: true } }
-          },
-          { key: { name: "text" } },
-          { key: { originalName: 1 }, unique: true },
-          { key: { name: 1, nameIndex: 1 } }
-        ]);
-    }
-
-    if (argv.types.includes("artists")) {
-      await db.collection("artists").createIndexes([
-        { key: { id: 1 }, unique: true },
-        {
-          key: {
-            name: "text",
-            "realName.name": "text",
-            "nameVariations.name": "text",
-            "aliases.name": "text",
-            "groups.name": "text"
-          },
-          weights: {
-            name: 10,
-            realName: 5,
-            "nameVariations.name": 8,
-            "aliases.name": 6,
-            "groups.name": 2
-          }
-        },
-        { key: { originalName: 1 }, unique: true },
-        { key: { name: 1, nameIndex: 1 } },
-        {
-          key: { "realName.originalName": 1 },
-          partialFilterExpression: {
-            "realName.originalName": { $exists: true }
-          }
-        },
-        { key: { "members.originalName": 1 } },
-        { key: { "members.id": 1 } },
-        { key: { "aliases.originalName": 1 } },
-        { key: { "aliases.id": 1 } },
-        { key: { "groups.originalName": 1 } },
-        { key: { "groups.id": 1 } },
-        { key: { "nameVariations.originalName": 1 } }
-      ]);
+      await db.collection(type).createIndexes(indexSpec[type]);
     }
   }
 
   await processor.processDumps(
-    argv['dump-version'],
+    argv["dump-version"],
     argv.types,
     processEntries,
-    argv['chunk-size'],
+    argv["chunk-size"],
     argv.restart,
-    argv['data-dir']
+    argv["data-dir"],
+    argv['max-errors']
   );
   client.close();
 }

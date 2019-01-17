@@ -81,10 +81,22 @@ module.exports = yargs
             describe: "Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid rows",
             type: "boolean"
           },
+          "max-errors": {
+            alias: "me",
+            describe: "Number of rows that could not be inserted before the command is aborted. Set to 0 to not allow any errors",
+            default: 100,
+            type: "number"
+          },
           restart: {
             alias: "r",
             describe: "Don't continue processing from where it last stopped but restart at the first row",
             type: "boolean"
+          },
+          'database-name': {
+            alias: "dn",
+            describe: "Name of the database to write to",
+            default: "discogs",
+            type: "string"
           },
           "include-image-objects": {
             alias: "i",

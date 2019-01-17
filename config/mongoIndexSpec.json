@@ -1,0 +1,47 @@
+{
+  "artists": [
+    { "key": { "id": 1 }, "unique": true },
+    {
+      "key": {
+        "name": "text",
+        "realName.name": "text",
+        "nameVariations.name": "text",
+        "aliases.name": "text",
+        "groups.name": "text"
+      },
+      "weights": {
+        "name": 10,
+        "realName": 5,
+        "nameVariations.name": 8,
+        "aliases.name": 6,
+        "groups.name": 2
+      }
+    },
+    { "key": { "originalName": 1 }, "unique": true },
+    { "key": { "name": 1, "nameIndex": 1 } },
+    {
+      "key": { "realName.originalName": 1 },
+      "partialFilterExpression": {
+        "realName.originalName": { "$exists": true }
+      }
+    },
+    { "key": { "members.originalName": 1 } },
+    { "key": { "members.id": 1 } },
+    { "key": { "aliases.originalName": 1 } },
+    { "key": { "aliases.id": 1 } },
+    { "key": { "groups.originalName": 1 } },
+    { "key": { "groups.id": 1 } },
+    { "key": { "nameVariations.originalName": 1 } }
+  ],
+  "labels": [
+    { "key": { "id": 1 }, "unique": true },
+    { "key": { "subLabels.id": 1 } },
+    {
+      "key": { "parent": 1 },
+      "partialFilterExpression": { "parent": { "$exists": true } }
+    },
+    { "key": { "name": "text" } },
+    { "key": { "originalName": 1 }, "unique": true },
+    { "key": { "name": 1, "nameIndex": 1 } }
+  ]
+}
