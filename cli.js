@@ -116,9 +116,14 @@ module.exports = yargs
           },
           "max-errors": {
             alias: "me",
-            describe: "Number of rows that could not be inserted before the command is aborted. Set to 0 to not allow any errors",
+            describe: "Number of rows that could not be inserted before the command is aborted",
             default: 100,
             type: "number"
+          },
+          bail: {
+            alias: "b",
+            describe: "Immediately abort when a validation error occurs",
+            type: "boolean"
           },
           restart: {
             alias: "r",

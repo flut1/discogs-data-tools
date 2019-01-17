@@ -106,6 +106,14 @@ class XMLParser extends events.EventEmitter {
     }
   }
 
+  close() {
+    if (!this.suspended) {
+      this.pause();
+    }
+    this.parser.stop();
+    this.stream.destroy();
+  }
+
   resume() {
     this.suspended = false;
 

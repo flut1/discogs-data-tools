@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Release",
+  "description": "A release object as parsed from a Discogs XML <release>",
+  "properties": {
+    "tag": {
+      "type": "string",
+      "pattern": "^release$"
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^id$"
+              },
+              "text": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              }
+            },
+            "required": ["tag", "text"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^name$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["tag"]
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^id$"
+              }
+            },
+            "required": ["tag"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^name$"
+              }
+            },
+            "required": ["tag"]
+          }
+        }
+      ]
+    }
+  },
+  "required": ["tag", "children"],
+  "type": "object"
+}

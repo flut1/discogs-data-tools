@@ -43,5 +43,17 @@
     { "key": { "name": "text" } },
     { "key": { "originalName": 1 }, "unique": true },
     { "key": { "name": 1, "nameIndex": 1 } }
+  ],
+  "masters": [
+    { "key": { "id": 1 }, "unique": true },
+    { "key": { "name": "text" } },
+    { "key": { "originalName": 1 }, "unique": true },
+    { "key": { "name": 1, "nameIndex": 1 } }
+  ],
+  "releases": [
+    { "key": { "id": 1 }, "unique": true },
+    { "key": { "name": "text" } },
+    { "key": { "originalName": 1 }, "unique": true },
+    { "key": { "name": 1, "nameIndex": 1 } }
   ]
 }

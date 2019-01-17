@@ -28,7 +28,7 @@ function processFile(
   restart = false,
   maxErrors = 100
 ) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     const progressFilePath = `${path}.processing`;
     const logPath = `${path}.log`;
 
@@ -86,9 +86,8 @@ function processFile(
               reader.resume();
             })
             .catch(e => {
-              console.log(`Error while processing: ${e.stack}`);
-              console.log("aborting...");
-              resolve();
+              reader.close();
+              reject(e);
             });
         }
       }

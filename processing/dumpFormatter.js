@@ -80,7 +80,7 @@ function formatLabel(label, includeImageObjects = false) {
 /**
  * Format an artist tag. See readme.md for information of how the data is
  * transformed
- * @param label {Object} An artist tag parsed by XMLParser which conforms
+ * @param artist {Object} An artist tag parsed by XMLParser which conforms
  * to the schema/artist-xml.json schema
  * @param [includeImageObjects=false] {boolean} If true, include the images
  * object (even though they do not contain URI)
@@ -192,4 +192,50 @@ function formatArtist(artist, includeImageObjects = false) {
   return res;
 }
 
-module.exports = { formatLabel, formatArtist };
+/**
+ * Format a master tag. See readme.md for information of how the data is
+ * transformed
+ * @param master {Object} A master tag parsed by XMLParser which conforms
+ * to the schema/master-xml.json schema
+ * @param [includeImageObjects=false] {boolean} If true, include the images
+ * object (even though they do not contain URI)
+ * @returns {object}
+ */
+function formatMaster(master, includeImageObjects = false) {
+  const res = {
+  };
+
+  master.children.forEach(child => {
+    switch (child.tag) {
+      default:
+        throw new Error(`Unexpected child tag "${child.tag}"`);
+    }
+  });
+
+  return res;
+}
+
+/**
+ * Format a release tag. See readme.md for information of how the data is
+ * transformed
+ * @param release {Object} A release tag parsed by XMLParser which conforms
+ * to the schema/master-xml.json schema
+ * @param [includeImageObjects=false] {boolean} If true, include the images
+ * object (even though they do not contain URI)
+ * @returns {object}
+ */
+function formatRelease(release, includeImageObjects = false) {
+  const res = {
+  };
+
+  release.children.forEach(child => {
+    switch (child.tag) {
+      default:
+        throw new Error(`Unexpected child tag "${child.tag}"`);
+    }
+  });
+
+  return res;
+}
+
+module.exports = { formatLabel, formatArtist, formatMaster, formatRelease };

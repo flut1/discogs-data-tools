@@ -1,4 +1,5 @@
 const Ajv = require("ajv");
+const objectGet = require("object-get");
 const MongoClient = require("mongodb").MongoClient;
 
 const processor = require("../processor");
@@ -7,18 +8,19 @@ const dumpFormatter = require("../processing/dumpFormatter");
 
 const formatters = {
   artists: dumpFormatter.formatArtist,
-  labels: dumpFormatter.formatLabel
+  labels: dumpFormatter.formatLabel,
+  masters: dumpFormatter.formatMaster,
+  releases: dumpFormatter.formatRelease
 };
 
 const validationSchema = {
   artists: require("../schema/artist-xml.json"),
-  labels: require("../schema/label-xml.json")
+  labels: require("../schema/label-xml.json"),
+  releases: require("../schema/release-xml.json"),
+  masters: require("../schema/master-xml.json")
 };
 
-async function main(argv) {
-  // Create a new MongoClient
-  const client = new MongoClient(argv.connection);
-
+async function main(argv, client) {
   // Use connect method to connect to the Server
   try {
     await client.connect();
@@ -26,6 +28,7 @@ async function main(argv) {
     throw new Error(`Could not connect to MongoDB: ${e}`);
   }
   console.log("Connected successfully to server");
+
   const db = client.db(argv["database-name"]);
 
   if (!argv["no-index"]) {
@@ -59,12 +62,39 @@ async function main(argv) {
         valid = validators[type](entry);
 
         if (!valid) {
+          const id = (() => {
+            if (type === "masters" || type === "releases") {
+              return entry.attrs.id;
+            }
+
+            const idTag =
+              entry.children && entry.children.find(({ tag }) => tag === "id");
+
+            return idTag && idTag.text;
+          })();
+
           invalidRows.push({
             json: JSON.stringify(entry),
             index,
-            id: entry.id,
+            id,
             reason: "did not match JSON schema"
           });
+
+          if (argv.bail) {
+            throw new Error(
+              `Invalid row with id ${id}: \n\n${JSON.stringify(entry).substring(
+                0,
+                40
+              )}\n\n${validators[type].errors
+                .map(
+                  ({ dataPath, message }) =>
+                    ` >>> ${message}:\n${JSON.stringify(
+                      objectGet(entry, dataPath.replace(/^\./, ''))
+                    )}`
+                )
+                .join("\n")}\n`
+            );
+          }
         }
       }
 
@@ -75,7 +105,7 @@ async function main(argv) {
       .filter(doc => doc.valid)
       .map(entry => ({
         ...entry,
-        doc: formatters[type](entry.entry, argv['include-image-objects'])
+        doc: formatters[type](entry.entry, argv["include-image-objects"])
       }));
 
     try {
@@ -121,5 +151,12 @@ async function main(argv) {
 }
 
 module.exports = function(argv) {
-  main(argv).catch(e => console.error(e));
+  // Create a new MongoClient
+  const client = new MongoClient(argv.connection);
+
+  main(argv, client).catch(e => {
+    console.error(`\n${e}\n`);
+
+    return client.close();
+  });
 };

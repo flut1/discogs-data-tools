@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Master",
+  "description": "A master object as parsed from a Discogs XML <master>",
+  "properties": {
+    "tag": {
+      "type": "string",
+      "pattern": "^master$"
+    },
+    "attrs": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
+      },
+      "required": ["id"],
+      "additionalProperties": false
+    },
+    "children": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^images$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "pattern": "^image$"
+                    },
+                    "attrs": {
+                      "type": "object",
+                      "properties": {
+                        "height": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "uri": {
+                          "type": "string"
+                        },
+                        "uri150": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["height", "type", "uri", "uri150", "width"]
+                    }
+                  },
+                  "required": ["tag", "attrs"]
+                }
+              }
+            },
+            "required": ["tag", "children"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^name$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "required": ["tag"]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^main_release$"
+              },
+              "text": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              }
+            },
+            "required": ["tag"]
+          }
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^name$"
+              }
+            },
+            "required": ["tag"]
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "pattern": "^main_release$"
+            }
+          },
+          "required": ["tag"]
+        }
+      ]
+    }
+  },
+  "required": ["tag", "children"],
+  "type": "object"
+}
