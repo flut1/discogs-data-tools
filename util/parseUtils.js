@@ -37,10 +37,10 @@ function parseDiscogsName(name, target) {
   target.originalName = name;
 
   if (name.endsWith(")")) {
-    const nameIndexMatch = name.match(/^(.+?)(?:\s?\((\d+)\))?$/);
+    const nameIndexMatch = name.match(/^([\s\S]+?)(?:\s?\((\d+)\))?$/);
 
     if (!nameIndexMatch) {
-      throw new Error("Expected name to match regex pattern");
+      throw new Error(`Expected name to match regex pattern: ${name}`);
     }
 
     target.nameIndex = nameIndexMatch[2] ? parseInt(nameIndexMatch[2]) : 1;
