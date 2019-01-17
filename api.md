@@ -10,6 +10,10 @@
 <dt><a href="#module_remoteDumps">remoteDumps</a></dt>
 <dd><p>Lookup available data dumps on the S3 bucket</p>
 </dd>
+<dt><a href="#module_processing/dumpFormatter">processing/dumpFormatter</a></dt>
+<dd><p>Helpers to transform on the dumps parsed by XMLParser into plain objects
+that are easier to work with.</p>
+</dd>
 <dt><a href="#module_util/parseUtils">util/parseUtils</a></dt>
 <dd><p>Small helpers for parsing discogs data</p>
 </dd>
@@ -162,6 +166,40 @@ Parse a list of file paths (as returned by fetchFileListing). Groups themby yea
 | Param | Type |
 | --- | --- |
 | filenames | <code>Array.&lt;string&gt;</code> | 
+
+<a name="module_processing/dumpFormatter"></a>
+
+## processing/dumpFormatter
+Helpers to transform on the dumps parsed by XMLParser into plain objectsthat are easier to work with.
+
+
+* [processing/dumpFormatter](#module_processing/dumpFormatter)
+    * [~formatLabel(label, [includeImageObjects])](#module_processing/dumpFormatter..formatLabel) ⇒ <code>object</code>
+    * [~formatArtist(label, [includeImageObjects])](#module_processing/dumpFormatter..formatArtist) ⇒ <code>object</code>
+
+<a name="module_processing/dumpFormatter..formatLabel"></a>
+
+### processing/dumpFormatter~formatLabel(label, [includeImageObjects]) ⇒ <code>object</code>
+Format a label tag. See readme.md for information of how the data istransformed
+
+**Kind**: inner method of [<code>processing/dumpFormatter</code>](#module_processing/dumpFormatter)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| label | <code>Object</code> |  | A label as tag parsed by XMLParser which conforms to the schema/label-xml.json schema |
+| [includeImageObjects] | <code>boolean</code> | <code>false</code> | If true, include the images object (even though they do not contain URI) |
+
+<a name="module_processing/dumpFormatter..formatArtist"></a>
+
+### processing/dumpFormatter~formatArtist(label, [includeImageObjects]) ⇒ <code>object</code>
+Format an artist tag. See readme.md for information of how the data istransformed
+
+**Kind**: inner method of [<code>processing/dumpFormatter</code>](#module_processing/dumpFormatter)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| label | <code>Object</code> |  | An artist tag parsed by XMLParser which conforms to the schema/artist-xml.json schema |
+| [includeImageObjects] | <code>boolean</code> | <code>false</code> | If true, include the images object (even though they do not contain URI) |
 
 <a name="module_util/parseUtils"></a>
 
