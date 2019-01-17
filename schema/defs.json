@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "defs.json",
+  "definitions": {
+    "imagesTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^images$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^image$"
+              },
+              "attrs": {
+                "type": "object",
+                "properties": {
+                  "height": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "uri": {
+                    "type": "string"
+                  },
+                  "uri150": {
+                    "type": "string"
+                  },
+                  "width": {
+                    "type": "string"
+                  }
+                },
+                "required": ["height", "type", "uri", "uri150", "width"]
+              }
+            },
+            "required": ["tag", "attrs"]
+          }
+        }
+      },
+      "required": ["tag", "children"]
+    },
+    "dataQualityTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^data_quality$"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": ["tag", "text"]
+    },
+    "videoTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^video$"
+        },
+        "attrs": {
+          "type": "object",
+          "properties": {
+            "duration": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "embed": {
+              "type": "string",
+              "pattern": "^true$"
+            },
+            "src": {
+              "type": "string"
+            }
+          },
+          "required": ["duration", "embed", "src"]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/titleTag"
+              },
+              {
+                "$ref": "#/definitions/descriptionTag"
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "$ref": "#/definitions/titleTag"
+              }
+            },
+            {
+              "contains": {
+                "$ref": "#/definitions/descriptionTag"
+              }
+            }
+          ]
+        }
+      },
+      "required": ["tag", "attrs", "children"]
+    },
+    "genresTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^genres$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^genre$"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": ["tag", "text"]
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag", "children"]
+    },
+    "titleTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^title$"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag", "text"]
+    },
+    "descriptionTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^description$"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag", "text"]
+    },
+    "nameTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^name$"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag", "text"]
+    },
+    "notesTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^notes$"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag"]
+    },
+    "yearTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^year$"
+        },
+        "text": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag", "text"]
+    },
+    "stylesTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^styles$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^style"
+              },
+              "text": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": ["tag", "text"]
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag", "children"]
+    },
+    "artistRefTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^artist$"
+        },
+        "children": {
+          "type": "array",
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^id$"
+                  },
+                  "text": {
+                    "type": "string",
+                    "pattern": "^\\d+$"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["tag", "text"]
+              }
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^name$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["tag", "text"]
+              }
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^anv$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["tag"]
+              }
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^join$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["tag"]
+              }
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^role$"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["tag"]
+              }
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^tracks$"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["tag"]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

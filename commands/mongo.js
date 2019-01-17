@@ -17,7 +17,8 @@ const validationSchema = {
   artists: require("../schema/artist-xml.json"),
   labels: require("../schema/label-xml.json"),
   releases: require("../schema/release-xml.json"),
-  masters: require("../schema/master-xml.json")
+  masters: require("../schema/master-xml.json"),
+  defs: require("../schema/defs.json")
 };
 
 async function main(argv, client) {
@@ -42,15 +43,14 @@ async function main(argv, client) {
   const ajv = new Ajv({ verbose: true });
   if (!argv["include-image-objects"]) {
     // no need to verify the item content
-    delete validationSchema.artists.properties.children.items.oneOf[0]
-      .properties.children.items;
-    delete validationSchema.labels.properties.children.items.oneOf[0].properties
-      .children.items;
+    // delete validationSchema.defs.definitions.imagesTag.properties.children.items;
   }
   const validators = {};
 
   for (const type of argv.types) {
-    validators[type] = ajv.compile(validationSchema[type]);
+    validators[type] = ajv
+      .addSchema(validationSchema.defs)
+      .compile(validationSchema[type]);
   }
 
   async function processEntries(chunk, type) {
@@ -59,7 +59,7 @@ async function main(argv, client) {
     const entries = chunk.map((entry, index) => {
       let valid = true;
       if (!argv["no-validate"]) {
-        valid = validators[type](entry);
+        valid = validators[type](entry, { verbose: true });
 
         if (!valid) {
           const id = (() => {
@@ -86,12 +86,20 @@ async function main(argv, client) {
                 0,
                 40
               )}\n\n${validators[type].errors
-                .map(
-                  ({ dataPath, message }) =>
-                    ` >>> ${message}:\n${JSON.stringify(
-                      objectGet(entry, dataPath.replace(/^\./, ''))
-                    )}`
-                )
+                .map(({ dataPath, message, schemaPath }) => {
+                  let targetData = "(unable to find target data)";
+                  try {
+                    targetData = objectGet(
+                      entry,
+                      dataPath.replace(/^[^.]+\./, "")
+                    );
+                  } catch (e) {
+                    // nothing
+                  }
+                  return ` >>> ${message}:\n${JSON.stringify(
+                    targetData, null, '  '
+                  )}\n${schemaPath}\n`;
+                })
                 .join("\n")}\n`
             );
           }
@@ -155,7 +163,7 @@ module.exports = function(argv) {
   const client = new MongoClient(argv.connection);
 
   main(argv, client).catch(e => {
-    console.error(`\n${e}\n`);
+    console.error(`\n${e.stack}\n`);
 
     return client.close();
   });

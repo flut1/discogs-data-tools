@@ -22,7 +22,14 @@ function formatLabel(label, includeImageObjects = false) {
     urls: [],
     subLabels: []
   };
+
+  const encountered = new Set();
   label.children.forEach(child => {
+    if (encountered.has(child)) {
+      throw new Error(`Unexpected duplicate ${child}`)
+    }
+    encountered.add(child);
+
     switch (child.tag) {
       case "images":
         if (includeImageObjects) {
@@ -94,7 +101,13 @@ function formatArtist(artist, includeImageObjects = false) {
     nameVariations: []
   };
 
+  const encountered = new Set();
   artist.children.forEach(child => {
+    if (encountered.has(child)) {
+      throw new Error(`Unexpected duplicate ${child}`)
+    }
+    encountered.add(child);
+
     switch (child.tag) {
       case "images":
         if (includeImageObjects) {
@@ -205,7 +218,13 @@ function formatMaster(master, includeImageObjects = false) {
   const res = {
   };
 
+  const encountered = new Set();
   master.children.forEach(child => {
+    if (encountered.has(child)) {
+      throw new Error(`Unexpected duplicate ${child}`)
+    }
+    encountered.add(child);
+
     switch (child.tag) {
       default:
         throw new Error(`Unexpected child tag "${child.tag}"`);

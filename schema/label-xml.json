@@ -12,48 +12,7 @@
       "items": {
         "oneOf": [
           {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^images$"
-              },
-              "children": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "tag": {
-                      "type": "string",
-                      "pattern": "^image$"
-                    },
-                    "attrs": {
-                      "type": "object",
-                      "properties": {
-                        "height": {
-                          "type": "string"
-                        },
-                        "type": {
-                          "type": "string"
-                        },
-                        "uri": {
-                          "type": "string"
-                        },
-                        "uri150": {
-                          "type": "string"
-                        },
-                        "width": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["height", "type", "uri", "uri150", "width"]
-                    }
-                  },
-                  "required": ["tag", "attrs"]
-                }
-              }
-            },
-            "required": ["tag", "children"]
+            "$ref": "defs.json#/definitions/imagesTag"
           },
           {
             "type": "object",
@@ -70,17 +29,7 @@
             "required": ["tag", "text"]
           },
           {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^name$"
-              },
-              "text": {
-                "type": "string"
-              }
-            },
-            "required": ["tag", "text"]
+            "$ref": "defs.json#/definitions/nameTag"
           },
           {
             "type": "object",
@@ -225,14 +174,7 @@
         },
         {
           "contains": {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^name$"
-              }
-            },
-            "required": ["tag"]
+            "$ref": "defs.json#/definitions/nameTag"
           }
         }
       ]

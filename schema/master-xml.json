@@ -23,61 +23,31 @@
       "items": {
         "oneOf": [
           {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^images$"
-              },
-              "children": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "tag": {
-                      "type": "string",
-                      "pattern": "^image$"
-                    },
-                    "attrs": {
-                      "type": "object",
-                      "properties": {
-                        "height": {
-                          "type": "string"
-                        },
-                        "type": {
-                          "type": "string"
-                        },
-                        "uri": {
-                          "type": "string"
-                        },
-                        "uri150": {
-                          "type": "string"
-                        },
-                        "width": {
-                          "type": "string"
-                        }
-                      },
-                      "required": ["height", "type", "uri", "uri150", "width"]
-                    }
-                  },
-                  "required": ["tag", "attrs"]
-                }
-              }
-            },
-            "required": ["tag", "children"]
+            "$ref": "defs.json#/definitions/imagesTag"
           },
           {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^name$"
-              },
-              "text": {
-                "type": "string"
-              }
-            },
-            "required": ["tag"]
+            "$ref": "#/definitions/artistsTag"
+          },
+          {
+            "$ref": "#/definitions/videosTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/genresTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/stylesTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/yearTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/titleTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/notesTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/dataQualityTag"
           },
           {
             "type": "object",
@@ -91,34 +61,81 @@
                 "pattern": "^\\d+$"
               }
             },
-            "required": ["tag"]
+            "additionalProperties": false,
+            "required": ["tag", "text"]
           }
         ]
       },
       "allOf": [
         {
           "contains": {
+            "$ref": "defs.json#/definitions/titleTag"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "defs.json#/definitions/dataQualityTag"
+          }
+        },
+        {
+          "contains": {
             "type": "object",
             "properties": {
               "tag": {
                 "type": "string",
-                "pattern": "^name$"
+                "pattern": "^artists$"
               }
             },
             "required": ["tag"]
           }
         },
         {
-          "type": "object",
-          "properties": {
-            "tag": {
-              "type": "string",
-              "pattern": "^main_release$"
-            }
-          },
-          "required": ["tag"]
+          "contains": {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^main_release$"
+              }
+            },
+            "required": ["tag"]
+          }
         }
       ]
+    }
+  },
+  "definitions": {
+    "artistsTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^artists$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "defs.json#/definitions/artistRefTag"
+          }
+        }
+      },
+      "required": ["tag"]
+    },
+    "videosTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^videos$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "defs.json#/definitions/videoTag"
+          }
+        }
+      },
+      "required": ["tag"]
     }
   },
   "required": ["tag", "children"],

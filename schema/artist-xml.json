@@ -109,17 +109,7 @@
             "required": ["tag"]
           },
           {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^data_quality$"
-              },
-              "text": {
-                "type": "string"
-              }
-            },
-            "required": ["tag", "text"]
+            "$ref": "defs.json#/definitions/dataQualityTag"
           },
           {
             "type": "object",
