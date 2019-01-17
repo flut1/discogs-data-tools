@@ -97,7 +97,7 @@ function formatArtist(artist, includeImageObjects = false) {
   artist.children.forEach(child => {
     switch (child.tag) {
       case "images":
-        if (argv["include-image-objects"]) {
+        if (includeImageObjects) {
           res.images = child.children.map(
             ({ attrs: { width, height, type, uri, uri150 } }) => ({
               width: width ? parseIntSafe(width) : 0,

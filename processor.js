@@ -106,6 +106,7 @@ function processFile(
           return Promise.resolve();
         })
         .then(() => {
+          fs.removeSync(progressFilePath);
           resolve();
         });
     });

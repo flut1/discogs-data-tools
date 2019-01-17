@@ -107,4 +107,37 @@ async function ensureDumps(
   }
 }
 
-module.exports = { ensureDump, ensureDumps };
+/**
+ * Ensures that the CHECKSUM file for a given version is downloaded
+ * @param version {string} The exact version name, eg '20180101'
+ * @param [dataDir] {string} Set to overwrite the default data directory
+ * where dumps are stored (./data)
+ * @returns {Promise<void>}
+ */
+async function ensureChecksum(version, dataDir) {
+  const checksumPath = localDumps.getChecksumPath(version, dataDir);
+
+  if (fs.existsSync(checksumPath)) {
+    console.log(`Checksum file exists at ${checksumPath}`);
+  } else {
+    const url = remoteDumps.getChecksumURL(version);
+    fs.ensureDirSync(path.dirname(checksumPath));
+    console.log(`Fetching ${url}`);
+
+    await new Promise((resolve, reject) => {
+      request(url)
+        .on("error", function(err) {
+          reject(new Error(`Error getting checksum file: ${err}`));
+        })
+        .on("end", function() {
+          console.log("Checksum file fetched");
+          resolve();
+        })
+        .pipe(fs.createWriteStream(checksumPath));
+    });
+  }
+
+  return checksumPath;
+}
+
+module.exports = { ensureDump, ensureDumps, ensureChecksum };

@@ -37,6 +37,7 @@
     "request": "^2.88.0",
     "request-progress": "^3.0.0",
     "request-promise-native": "^1.0.5",
+    "sumchecker": "^2.0.2",
     "xml2js": "^0.4.19",
     "yargs": "^12.0.5"
   },

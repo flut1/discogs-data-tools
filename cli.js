@@ -14,7 +14,7 @@ module.exports = yargs
   .demandCommand(1, 1)
   .command(
     "fetch",
-    "fetch data dump from discogs",
+    "Fetch data dump from discogs",
     y => {
       return y
         .options({
@@ -26,6 +26,11 @@ module.exports = yargs
           "no-progress": {
             alias: "np",
             describe: "Hides the progress bar",
+            type: "boolean"
+          },
+          "no-verify": {
+            alias: "nv",
+            describe: "Skip verifying the dumps with the checksum provided by Discogs",
             type: "boolean"
           },
           "dump-version": {
@@ -56,6 +61,32 @@ module.exports = yargs
     }
   )
   .command(
+    "verify",
+    "Verify dump files that have previously been downloaded. Note: by default, the fetch command already verifies",
+    y => {
+      return y
+        .options({
+          "dump-version": {
+            alias: "dv",
+            describe: "Full name of the version to verify. ie: 20180101",
+            demand: true,
+            type: "string"
+          },
+          types: {
+            alias: "t",
+            describe: "List of types to verify",
+            default: DATA_TYPES,
+            choices: DATA_TYPES,
+            type: "array"
+          }
+        })
+        .example("$0 verify --dumpVersion 20180101 --types labels masters");
+    },
+    argv => {
+      require("./commands/verify")(argv);
+    }
+  )
+  .command(
     "mongo",
     "import data dump into mongo database",
     y => {
@@ -64,7 +95,7 @@ module.exports = yargs
           "dump-version": {
             alias: "dv",
             demand: true,
-            describe: "Full name of the version to fetch. ie: 20180101",
+            describe: "Full name of the version to process. ie: 20180101",
             type: "string"
           },
           "chunk-size": {

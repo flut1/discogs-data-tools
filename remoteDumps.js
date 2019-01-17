@@ -28,6 +28,18 @@ function getDumpURL(version, type) {
   )}/discogs_${version}_${type}.xml.gz`;
 }
 
+/**
+ * Get the URL for a checksum file of the specified version
+ * @param version {string} The exact version name, eg '20180101'
+ * @returns {string}
+ */
+function getChecksumURL(version) {
+  return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
+    0,
+    4
+  )}/discogs_${version}_CHECKSUM.txt`;
+}
+
 function createS3QueryUrl(prefix = S3B_ROOT_DIR, marker) {
   let s3_rest_url = BUCKET_URL;
   s3_rest_url += "?delimiter=/";
@@ -139,6 +151,7 @@ function parseFileNames(filenames) {
 module.exports = {
   fetchYearListings,
   getDumpURL,
+  getChecksumURL,
   fetchFileListing,
   parseFileNames
 };

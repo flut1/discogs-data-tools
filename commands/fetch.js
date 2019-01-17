@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const remoteDumps = require("../remoteDumps");
 const localDumps = require("../localDumps");
 const fetcher = require("../fetcher");
+const { verify } = require("../verify");
 
 async function main(argv) {
   async function getYear() {
@@ -66,16 +67,26 @@ async function main(argv) {
   }
 
   const existingData = localDumps.findData(version, argv.types, argv['data-dir']);
+  const typesToDownload = argv.types.filter(
+    (_, index) => !existingData[index]
+  );
   if (existingData.some(d => !d)) {
     console.log(
-      `Some data is not yet downloaded: ${argv.types.filter(
-        (_, index) => !existingData[index]
-      ).join(', ')}`
+      `Some data is not yet downloaded: ${typesToDownload.join(', ')}`
     );
 
     await fetcher.ensureDumps(version, argv.types, !argv['no-progress'], argv['data-dir']);
   } else {
     console.log('All data downloaded');
+  }
+
+  if (!argv['no-verify']) {
+    try {
+      await verify(version, typesToDownload, argv['data-dir']);
+    } catch(e) {
+      console.error('WARNING: verification failed! File might be invalid:');
+      console.error(e);
+    }
   }
 }
 

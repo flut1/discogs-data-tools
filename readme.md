@@ -23,7 +23,7 @@ discogs-data-tools <command>
 ```
 discogs-data-tools fetch
 
-fetch data dump from discogs
+Fetch data dump from discogs
 
 Options:
   --version             Show version number                                                          [boolean]
@@ -31,6 +31,7 @@ Options:
   --help                Show help                                                                    [boolean]
   --year, -y            The year to find monthly dumps for.                                           [number]
   --no-progress, --np   Hides the progress bar                                                       [boolean]
+  --no-verify, --nv     Skip verifying the dumps with the checksum provided by Discogs               [boolean]
   --dump-version, --dv  Full name of the version to fetch. ie: 20180101. If not specified, will let you select
                         interactively                                                                 [string]
   --latest, -l          Automatically get the latest version                                         [boolean]
@@ -40,6 +41,25 @@ Options:
 
 Examples:
   discogs-data-tools fetch --dumpVersion 20180101 --types labels masters
+```
+
+### verify command
+```
+discogs-data-tools verify
+
+Verify dump files that have previously been downloaded. Note: by default, the fetch command already verifies
+
+Options:
+  --version             Show version number                                                          [boolean]
+  --data-dir, --dd      Root directory where dumps and related files are stored.  [string] [default: "./data"]
+  --help                Show help                                                                    [boolean]
+  --dump-version, --dv  Full name of the version to verify. ie: 20180101                   [string] [required]
+  --types, -t           List of types to verify
+                                       [array] [choices: "artists", "labels", "masters", "releases"] [default:
+                                                                    ["artists","labels","masters","releases"]]
+
+Examples:
+  discogs-data-tools verify --dumpVersion 20180101 --types labels masters
 ```
 
 ### mongo command
@@ -53,14 +73,19 @@ Options:
   --data-dir, --dd             Root directory where dumps and related files are stored.
                                                                                   [string] [default: "./data"]
   --help                       Show help                                                             [boolean]
-  --dump-version, --dv         Full name of the version to fetch. ie: 20180101                        [string]
+  --dump-version, --dv         Full name of the version to process. ie: 20180101           [string] [required]
   --chunk-size, --cs           Size of processing chunks. Larger size takes more memory
                                                                                       [number] [default: 1000]
   --no-index, --ni             Don't create indexes on collections                                   [boolean]
   --no-validate, --nv          Skip validation of XML nodes. Can considerably speed up processing, but you may
                                get invalid rows                                                      [boolean]
+  --max-errors, --me           Number of rows that could not be inserted before the command is aborted. Set to
+                               0 to not allow any errors                               [number] [default: 100]
   --restart, -r                Don't continue processing from where it last stopped but restart at the first
                                row                                                                   [boolean]
+  --database-name, --dn        Name of the database to write to                  [string] [default: "discogs"]
+  --connection, -c             The MongoDB connection string
+                                              [string] [default: "mongodb://root:development@localhost:27017"]
   --include-image-objects, -i  Include image objects. By default, will only include the image count because
                                image objects in data dumps are missing the URI                       [boolean]
   --types, -t                  List of types to get

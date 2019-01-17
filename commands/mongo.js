@@ -75,7 +75,7 @@ async function main(argv) {
       .filter(doc => doc.valid)
       .map(entry => ({
         ...entry,
-        doc: formatters[type](entry.entry)
+        doc: formatters[type](entry.entry, argv['include-image-objects'])
       }));
 
     try {

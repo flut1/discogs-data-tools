@@ -29,6 +29,21 @@ function getXMLPath(version, type, gz = false, dataDir = DEFAULT_DATA_DIR) {
 }
 
 /**
+ * Get the path to where the checksum file for a specified version is stored
+ * @param version {string} The exact version name, eg '20180101'
+ * @param [dataDir="./data"] {string} Root directory where `discogs-data-tools`
+ * stores data files. Defaults to ./data relative to working directory
+ * @returns {string}
+ */
+function getChecksumPath(version, dataDir = DEFAULT_DATA_DIR) {
+  return path.resolve(
+    dataDir,
+    version,
+    `discogs_${version}_CHECKSUM.txt`
+  );
+}
+
+/**
  * Looks up an existing data xml on disk
  * @param version {string} The exact version name, eg '20180101'
  * @param type {string} The type of data. Can be either "artists", "labels",
@@ -70,6 +85,7 @@ function findData(version, types = DATA_TYPES, dataDir = DEFAULT_DATA_DIR) {
 module.exports = {
   findXML,
   getXMLPath,
+  getChecksumPath,
   findData,
   DATA_TYPES
 };
