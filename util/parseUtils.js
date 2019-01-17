@@ -30,6 +30,10 @@ function parseIntSafe(str) {
  * @returns {object} A reference to target
  */
 function parseDiscogsName(name, target) {
+  if (!name) {
+    return;
+  }
+
   target.originalName = name;
 
   if (name.endsWith(")")) {

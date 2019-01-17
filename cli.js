@@ -11,6 +11,7 @@ module.exports = yargs
       type: "string"
     },
   })
+  .demandCommand(1, 1)
   .command(
     "fetch",
     "fetch data dump from discogs",
@@ -62,6 +63,7 @@ module.exports = yargs
         .options({
           "dump-version": {
             alias: "dv",
+            demand: true,
             describe: "Full name of the version to fetch. ie: 20180101",
             type: "string"
           },
@@ -96,6 +98,12 @@ module.exports = yargs
             alias: "dn",
             describe: "Name of the database to write to",
             default: "discogs",
+            type: "string"
+          },
+          'connection': {
+            alias: "c",
+            describe: "The MongoDB connection string",
+            default: "mongodb://root:development@localhost:27017",
             type: "string"
           },
           "include-image-objects": {

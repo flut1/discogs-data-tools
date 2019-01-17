@@ -7,12 +7,9 @@ const artistSchema = require("../schema/artist-xml.json");
 const indexSpec = require("../config/mongoIndexSpec.json");
 const { parseIntSafe, parseDiscogsName } = require("../util/parseUtils");
 
-// Connection URL
-const MONGO_URL = "mongodb://root:development@localhost:27017";
-
 async function main(argv) {
   // Create a new MongoClient
-  const client = new MongoClient(MONGO_URL);
+  const client = new MongoClient(argv.connection);
 
   const ajv = new Ajv({ verbose: true });
   if (!argv["include-image-objects"]) {
