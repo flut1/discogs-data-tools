@@ -88,7 +88,7 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/titleTag"
+                "$ref": "#/definitions/titleTagOptText"
               },
               {
                 "$ref": "#/definitions/descriptionTag"
@@ -98,7 +98,7 @@
           "allOf": [
             {
               "contains": {
-                "$ref": "#/definitions/titleTag"
+                "$ref": "#/definitions/titleTagOptText"
               }
             },
             {
@@ -153,6 +153,20 @@
       "additionalProperties": false,
       "required": ["tag", "text"]
     },
+    "titleTagOptText": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^title$"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["tag"]
+    },
     "descriptionTag": {
       "type": "object",
       "properties": {
@@ -165,7 +179,7 @@
         }
       },
       "additionalProperties": false,
-      "required": ["tag", "text"]
+      "required": ["tag"]
     },
     "nameTag": {
       "type": "object",

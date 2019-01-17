@@ -130,6 +130,8 @@ async function main(argv, client) {
       const { entry, originalIndex, doc } = documents[e.index];
       let reason = "could not be written to MongoDB";
 
+      console.log(e);
+
       if (e.code === 11000) {
         reason = "had a key that already existed in the database";
       }

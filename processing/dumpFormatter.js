@@ -24,11 +24,11 @@ function formatLabel(label, includeImageObjects = false) {
   };
 
   const encountered = new Set();
-  label.children.forEach(child => {
-    if (encountered.has(child)) {
-      throw new Error(`Unexpected duplicate ${child}`)
+  for (const child of label.children) {
+    if (encountered.has(child.tag)) {
+      throw new Error(`Unexpected duplicate ${child.tag}`)
     }
-    encountered.add(child);
+    encountered.add(child.tag);
 
     switch (child.tag) {
       case "images":
@@ -79,7 +79,7 @@ function formatLabel(label, includeImageObjects = false) {
       default:
         throw new Error(`Unexpected child tag "${child.tag}"`);
     }
-  });
+  }
 
   return res;
 }
@@ -95,6 +95,7 @@ function formatLabel(label, includeImageObjects = false) {
  */
 function formatArtist(artist, includeImageObjects = false) {
   const res = {
+    imageCount: 0,
     urls: [],
     aliases: [],
     members: [],
@@ -102,11 +103,11 @@ function formatArtist(artist, includeImageObjects = false) {
   };
 
   const encountered = new Set();
-  artist.children.forEach(child => {
-    if (encountered.has(child)) {
-      throw new Error(`Unexpected duplicate ${child}`)
+  for (const child of artist.children) {
+    if (encountered.has(child.tag)) {
+      throw new Error(`Unexpected duplicate ${child.tag}`)
     }
-    encountered.add(child);
+    encountered.add(child.tag);
 
     switch (child.tag) {
       case "images":
@@ -165,7 +166,7 @@ function formatArtist(artist, includeImageObjects = false) {
         res[child.tag] = child.text || "";
         break;
       case "members":
-        child.children.forEach(({ tag, text, attrs }) => {
+        for (const { tag, text, attrs } of child.children) {
           switch (tag) {
             case "name": {
               const idParsed = parseIntSafe(attrs.id);
@@ -192,7 +193,7 @@ function formatArtist(artist, includeImageObjects = false) {
             default:
               throw new Error(`Unexpected tag name members.${tag}`);
           }
-        });
+        }
         break;
       case "data_quality":
         res.dataQuality = child.text || "";
@@ -200,7 +201,7 @@ function formatArtist(artist, includeImageObjects = false) {
       default:
         throw new Error(`Unexpected child tag "${child.tag}"`);
     }
-  });
+  }
 
   return res;
 }
@@ -216,20 +217,136 @@ function formatArtist(artist, includeImageObjects = false) {
  */
 function formatMaster(master, includeImageObjects = false) {
   const res = {
+    id: parseIntSafe(master.attrs.id),
+    imageCount: 0,
+    artists: [],
+    styles: [],
+    genres: [],
+    videos: [],
   };
 
   const encountered = new Set();
-  master.children.forEach(child => {
-    if (encountered.has(child)) {
-      throw new Error(`Unexpected duplicate ${child}`)
+  for (const child of master.children) {
+    if (encountered.has(child.tag)) {
+      throw new Error(`Unexpected duplicate ${child.tag}`)
     }
-    encountered.add(child);
+    encountered.add(child.tag);
 
     switch (child.tag) {
+      case "images":
+        if (includeImageObjects) {
+          res.images = child.children.map(
+            ({ attrs: { width, height, type, uri, uri150 } }) => ({
+              width: width ? parseIntSafe(width) : 0,
+              height: height ? parseIntSafe(height) : 0,
+              type,
+              uri,
+              uri150
+            })
+          );
+        }
+
+        res.imageCount = child.children.length;
+        break;
+      case "artists":
+        res.artists = child.children.map(({ children }) => {
+          const resArtist = {};
+
+          const enc2 = new Set();
+          for (const artistChildTag of children) {
+            if (enc2.has(artistChildTag.tag)) {
+              throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`)
+            }
+            enc2.add(artistChildTag.tag);
+            switch(artistChildTag.tag) {
+              case 'id':
+                resArtist.id = parseIntSafe(artistChildTag.text);
+                break;
+              case 'name':
+                parseDiscogsName(artistChildTag.text, resArtist);
+                break;
+              case 'anv':
+                resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+                // resArtist.anv = child.children
+                //   .filter(({ text }) => !!text)
+                //   .map(({ text }) => parseDiscogsName(text, {}));
+                break;
+              case 'join':
+                if (artistChildTag.text) {
+                  resArtist.join = artistChildTag.text;
+                }
+                break;
+              case 'role':
+
+                break;
+              case 'tracks':
+
+                break;
+              default:
+                throw new Error(`Unexpected artist child tag "${artistChildTag.tag}"`);
+            }
+          }
+
+          return resArtist;
+        });
+        break;
+      case "videos":
+        res.videos = child.children.map(({ children, attrs }) => {
+          const resVideo = {
+            duration: parseIntSafe(attrs.duration),
+            embed: attrs.embed === 'true',
+            src: attrs.src
+          };
+
+          const enc2 = new Set();
+          for (const videoChildTag of children) {
+            if (enc2.has(videoChildTag.tag)) {
+              throw new Error(`Unexpected duplicate ${videoChildTag.tag} in video`)
+            }
+            enc2.add(videoChildTag.tag);
+            switch(videoChildTag.tag) {
+              case 'title':
+              case 'description':
+                if (videoChildTag.text) {
+                  resVideo[videoChildTag.tag] = videoChildTag.text;
+                }
+                break;
+              default:
+                throw new Error(`Unexpected artist child tag "${videoChildTag.tag}"`);
+            }
+          }
+
+          return resVideo;
+        });
+        break;
+      case "main_release":
+        res.mainRelease = parseIntSafe(child.text);
+        break;
+      case "year":
+        res.year = parseIntSafe(child.text);
+        break;
+      case "data_quality":
+      case "notes":
+        if (child.text) {
+          res[child.tag] = child.text;
+        }
+        break;
+      case "title":
+        if (child.text.match(/\(\d+\)$/)) {
+          throw new Error(`Unexpected title: ${child.text}`);
+        }
+        res[child.tag] = child.text;
+        break;
+      case "genres":
+      case "styles":
+        for (const { text } of child.children) {
+          res[child.tag].push(text);
+        }
+        break;
       default:
         throw new Error(`Unexpected child tag "${child.tag}"`);
     }
-  });
+  }
 
   return res;
 }
