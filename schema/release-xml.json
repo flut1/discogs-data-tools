@@ -7,65 +7,632 @@
       "type": "string",
       "pattern": "^release$"
     },
+    "attrs": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^\\d+$"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "status"],
+      "additionalProperties": false
+    },
     "children": {
       "type": "array",
       "items": {
         "oneOf": [
           {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^id$"
-              },
-              "text": {
-                "type": "string",
-                "pattern": "^\\d+$"
-              }
-            },
-            "required": ["tag", "text"]
+            "$ref": "defs.json#/definitions/titleTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/imagesTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/artistsTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/extraArtistsTag"
+          },
+          {
+            "$ref": "#/definitions/labelsTag"
+          },
+          {
+            "$ref": "#/definitions/formatsTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/genresTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/stylesTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/notesTag"
+          },
+          {
+            "$ref": "defs.json#/definitions/dataQualityTag"
           },
           {
             "type": "object",
             "properties": {
               "tag": {
                 "type": "string",
-                "pattern": "^name$"
+                "pattern": "^country$"
               },
               "text": {
                 "type": "string"
               }
             },
-            "required": ["tag"]
+            "required": ["text", "tag"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^master_id$"
+              },
+              "text": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              },
+              "attrs": {
+                "type": "object",
+                "properties": {
+                  "is_main_release": {
+                    "type": "string",
+                    "pattern": "^(true|false)$"
+                  }
+                },
+                "required": ["is_main_release"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["text", "tag", "attrs"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^released$"
+              },
+              "text": {
+                "type": "string",
+                "pattern": "^[\\d]{4}(-[\\d]{2}){0,2}$"
+              }
+            },
+            "required": ["text", "tag"],
+            "additionalProperties": false
+          },
+          {
+            "$ref": "defs.json#/definitions/videosTag"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^tracklist$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/trackTag"
+                }
+              }
+            },
+            "required": ["tag", "children"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^identifiers$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/identifierTag"
+                }
+              }
+            },
+            "required": ["tag"],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string",
+                "pattern": "^companies$"
+              },
+              "children": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/companyTag"
+                }
+              }
+            },
+            "required": ["tag"],
+            "additionalProperties": false
           }
         ]
       },
       "allOf": [
         {
           "contains": {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^id$"
-              }
-            },
-            "required": ["tag"]
+            "$ref": "defs.json#/definitions/titleTag"
           }
         },
         {
           "contains": {
-            "type": "object",
-            "properties": {
-              "tag": {
-                "type": "string",
-                "pattern": "^name$"
-              }
-            },
-            "required": ["tag"]
+            "$ref": "#/definitions/formatsTag"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/definitions/labelsTag"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "defs.json#/definitions/artistsTag"
           }
         }
       ]
+    }
+  },
+  "definitions": {
+    "formatsTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^formats$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/formatTag"
+          }
+        }
+      },
+      "required": ["tag", "children"],
+      "additionalProperties": false
+    },
+    "trackTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^track$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^position$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["tag"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^title$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["text", "tag"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^duration"
+                  },
+                  "text": {
+                    "type": "string",
+                    "pattern": "^\\d+[:.](\\d{2}[:.])?\\d{2}$"
+                  }
+                },
+                "required": ["tag"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^sub_tracks$"
+                  },
+                  "children": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/trackTag"
+                    }
+                  }
+                },
+                "required": ["tag", "children"],
+                "additionalProperties": false
+              },
+              {
+                "$ref": "defs.json#/definitions/artistsTag"
+              },
+              {
+                "$ref": "defs.json#/definitions/extraArtistsTag"
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^position$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^duration$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^title$"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": ["tag", "children"],
+      "additionalProperties": false
+    },
+    "companyTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^company$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^id$"
+                  },
+                  "text": {
+                    "type": "string",
+                    "pattern": "^\\d+$"
+                  }
+                },
+                "required": ["text", "tag"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^name$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["text", "tag"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^catno$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["tag"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^entity_type$"
+                  },
+                  "text": {
+                    "type": "string",
+                    "pattern": "^\\d+$"
+                  }
+                },
+                "required": ["tag", "text"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^entity_type_name$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["tag", "text"],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^resource_url$"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": ["tag", "text"],
+                "additionalProperties": false
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^id$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^name$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^catno$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^entity_type$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^entity_type_name$"
+                  }
+                }
+              }
+            },
+            {
+              "contains":  {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^resource_url$"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "required": ["tag", "children"],
+      "additionalProperties": false
+    },
+    "identifierTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^identifier$"
+        },
+        "attrs": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": ["type", "value"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["tag", "attrs"],
+      "additionalProperties": false
+    },
+    "formatTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^format$"
+        },
+        "attrs": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            },
+            "qty": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            }
+          },
+          "required": ["name", "text", "qty"],
+          "additionalProperties": false
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string",
+                    "pattern": "^descriptions$"
+                  },
+                  "children": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "tag": {
+                          "type": "string",
+                          "pattern": "^description$"
+                        },
+                        "text": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["text", "tag"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["children", "tag"],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": ["tag", "attrs"],
+      "additionalProperties": false
+    },
+    "labelsTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^labels$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/labelTag"
+          }
+        }
+      },
+      "required": ["tag", "children"],
+      "additionalProperties": false
+    },
+    "labelTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^label$"
+        },
+        "attrs": {
+          "type": "object",
+          "properties": {
+            "catno": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^\\d+$"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": ["catno", "id", "name"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["tag", "attrs"],
+      "additionalProperties": false
     }
   },
   "required": ["tag", "children"],

@@ -26,10 +26,10 @@
             "$ref": "defs.json#/definitions/imagesTag"
           },
           {
-            "$ref": "#/definitions/artistsTag"
+            "$ref": "defs.json#/definitions/artistsTag"
           },
           {
-            "$ref": "#/definitions/videosTag"
+            "$ref": "defs.json#/definitions/videosTag"
           },
           {
             "$ref": "defs.json#/definitions/genresTag"
@@ -102,40 +102,6 @@
           }
         }
       ]
-    }
-  },
-  "definitions": {
-    "artistsTag": {
-      "type": "object",
-      "properties": {
-        "tag": {
-          "type": "string",
-          "pattern": "^artists$"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "defs.json#/definitions/artistRefTag"
-          }
-        }
-      },
-      "required": ["tag"]
-    },
-    "videosTag": {
-      "type": "object",
-      "properties": {
-        "tag": {
-          "type": "string",
-          "pattern": "^videos$"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "defs.json#/definitions/videoTag"
-          }
-        }
-      },
-      "required": ["tag"]
     }
   },
   "required": ["tag", "children"],

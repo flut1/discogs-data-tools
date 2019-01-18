@@ -146,6 +146,7 @@ async function main(argv, client) {
       let reason = "could not be written to MongoDB";
 
       if (argv.bail) {
+
         throw new Error(`Unable to write document id=${originalIndex} to db:\n${e.code} ${e.message}`);
       }
 

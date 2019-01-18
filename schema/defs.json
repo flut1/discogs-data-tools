@@ -46,6 +46,49 @@
       },
       "required": ["tag", "children"]
     },
+    "artistsLikeTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "defs.json#/definitions/artistRefTag"
+          }
+        }
+      },
+      "required": ["tag"]
+    },
+    "artistsTag": {
+      "allOf": [
+        {
+          "$ref": "defs.json#/definitions/artistsLikeTag"
+        },
+        {
+          "properties": {
+            "tag": {
+              "pattern": "^artists$"
+            }
+          }
+        }
+      ]
+    },
+    "extraArtistsTag": {
+      "allOf": [
+        {
+          "$ref": "defs.json#/definitions/artistsLikeTag"
+        },
+        {
+          "properties": {
+            "tag": {
+              "pattern": "^extraartists$"
+            }
+          }
+        }
+      ]
+    },
     "dataQualityTag": {
       "type": "object",
       "properties": {
@@ -195,6 +238,22 @@
       "additionalProperties": false,
       "required": ["tag", "text"]
     },
+    "videosTag": {
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "pattern": "^videos$"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "defs.json#/definitions/videoTag"
+          }
+        }
+      },
+      "required": ["tag"]
+    },
     "notesTag": {
       "type": "object",
       "properties": {
@@ -334,6 +393,9 @@
                   "tag": {
                     "type": "string",
                     "pattern": "^role$"
+                  },
+                  "text": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false,
@@ -347,6 +409,9 @@
                   "tag": {
                     "type": "string",
                     "pattern": "^tracks$"
+                  },
+                  "text": {
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false,
