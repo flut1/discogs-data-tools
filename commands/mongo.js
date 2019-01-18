@@ -74,7 +74,7 @@ async function main(argv, client) {
     const entries = chunk.map((entry, index) => {
       let valid = true;
       if (!argv["no-validate"]) {
-        valid = validators[type](entry, { verbose: true });
+        valid = validators[type](entry, { verbose: true, extendRefs: 'fail' });
 
         if (!valid) {
           const id = (() => {

@@ -1,4 +1,4 @@
-const { parseIntSafe, parseDiscogsName } = require("../util/parseUtils");
+const { parseIntSafe, parseDiscogsName, parseDuration } = require("../util/parseUtils");
 
 /**
  * Helpers to transform on the dumps parsed by XMLParser into plain objects
@@ -269,16 +269,10 @@ function formatMaster(master, includeImageObjects = false) {
                 resArtist.anv = parseDiscogsName(artistChildTag.text, {});
                 break;
               case 'join':
-                if (artistChildTag.text) {
-                  resArtist.join = artistChildTag.text;
-                }
-                break;
               case 'role':
-
-                break;
               case 'tracks':
-                if (Object.keys(artistChildTag).length > 1) {
-                  console.log(artistChildTag);
+                if (artistChildTag.text) {
+                  resArtist[artistChildTag.tag] = artistChildTag.text;
                 }
                 break;
               default:
@@ -345,6 +339,88 @@ function formatMaster(master, includeImageObjects = false) {
   return res;
 }
 
+function parseTracklist(trackNodes, target, type = 'track') {
+  for (const { children } of trackNodes) {
+    const resTrack = {};
+
+    const enc2 = new Set();
+    for (const trackChildTrack of children) {
+      if (enc2.has(trackChildTrack.tag)) {
+        throw new Error(`Unexpected duplicate ${trackChildTrack.tag} in artist`)
+      }
+      enc2.add(trackChildTrack.tag);
+      switch(trackChildTrack.tag) {
+        case 'position':
+        case 'title':
+          if (trackChildTrack.text) {
+            resTrack[trackChildTrack.tag] = trackChildTrack.text;
+          }
+          break;
+        case 'duration':
+          if (trackChildTrack.text) {
+            resTrack.duration = parseDuration(trackChildTrack.text);
+          }
+          break;
+        case 'sub_tracks':
+          if (trackChildTrack.children) {
+            resTrack.subTracks = [];
+            parseTracklist(trackChildTrack.children, resTrack.subTracks, 'subTracks');
+          }
+          break;
+        case "artists":
+        case "extraartists":
+          if (trackChildTrack.children) {
+            const prop = trackChildTrack.tag === 'artists' ? 'artists' : 'extraArtists';
+            resTrack[prop] = [];
+            parseArtists(trackChildTrack.children, resTrack[prop]);
+          }
+          break;
+        default:
+          debugger;
+          throw new Error(`Unexpected ${type} child tag "${trackChildTrack.tag}"`);
+      }
+    }
+
+    target.push(resTrack);
+  }
+}
+
+function parseArtists(artistNodes, target) {
+  for (const { children } of artistNodes) {
+    const resArtist = {};
+
+    const enc2 = new Set();
+    for (const artistChildTag of children) {
+      if (enc2.has(artistChildTag.tag)) {
+        throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`)
+      }
+      enc2.add(artistChildTag.tag);
+      switch(artistChildTag.tag) {
+        case 'id':
+          resArtist.id = parseIntSafe(artistChildTag.text);
+          break;
+        case 'name':
+          parseDiscogsName(artistChildTag.text, resArtist);
+          break;
+        case 'anv':
+          resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+          break;
+        case 'join':
+        case 'tracks':
+        case 'role':
+          if (artistChildTag.text) {
+            resArtist[artistChildTag.tag] = artistChildTag.text;
+          }
+          break;
+        default:
+          throw new Error(`Unexpected artist child tag "${artistChildTag.tag}"`);
+      }
+    }
+
+    target.push(resArtist);
+  }
+}
+
 /**
  * Format a release tag. See readme.md for information of how the data is
  * transformed
@@ -356,14 +432,192 @@ function formatMaster(master, includeImageObjects = false) {
  */
 function formatRelease(release, includeImageObjects = false) {
   const res = {
+    id: parseIntSafe(release.attrs.id),
+    imageCount: 0,
+    artists: [],
+    extraArtists: [],
+    styles: [],
+    tracks: [],
+    companies: [],
+    genres: [],
+    labels: [],
+    formats: [],
+    videos: [],
   };
 
-  release.children.forEach(child => {
+  const encountered = new Set();
+  for (const child of release.children) {
+    if (encountered.has(child.tag)) {
+      throw new Error(`Unexpected duplicate ${child.tag}`)
+    }
+    encountered.add(child.tag);
+
     switch (child.tag) {
+      case "images":
+        if (includeImageObjects) {
+          res.images = child.children.map(
+            ({ attrs: { width, height, type, uri, uri150 } }) => ({
+              width: width ? parseIntSafe(width) : 0,
+              height: height ? parseIntSafe(height) : 0,
+              type,
+              uri,
+              uri150
+            })
+          );
+        }
+
+        res.imageCount = child.children.length;
+        break;
+      case "artists":
+      case "extraartists":
+        if (child.children) {
+          parseArtists(child.children, res[child.tag === 'artists' ? 'artists' : 'extraArtists']);
+        }
+        break;
+      case "tracklist":
+        if (child.children) {
+          parseTracklist(child.children, res.tracks);
+        }
+        break;
+      case "videos":
+        res.videos = child.children.map(({ children, attrs }) => {
+          const resVideo = {
+            duration: parseIntSafe(attrs.duration),
+            embed: attrs.embed === 'true',
+            src: attrs.src
+          };
+
+          const enc2 = new Set();
+          for (const videoChildTag of children) {
+            if (enc2.has(videoChildTag.tag)) {
+              throw new Error(`Unexpected duplicate ${videoChildTag.tag} in video`)
+            }
+            enc2.add(videoChildTag.tag);
+            switch(videoChildTag.tag) {
+              case 'title':
+              case 'description':
+                if (videoChildTag.text) {
+                  resVideo[videoChildTag.tag] = videoChildTag.text;
+                }
+                break;
+              default:
+                throw new Error(`Unexpected artist child tag "${videoChildTag.tag}"`);
+            }
+          }
+
+          return resVideo;
+        });
+        break;
+      case "labels":
+        if (child.children) {
+          for (const { attrs } of child.children) {
+            res.labels.push({
+              catno: attrs.catno,
+              id: parseIntSafe(attrs.id),
+              name: attrs.name
+            });
+          }
+        }
+        break;
+      case "formats":
+        if (child.children) {
+          for (const { attrs, children } of child.children) {
+            const resFormat = {
+              text: attrs.text,
+              qty: parseIntSafe(attrs.qty),
+              descriptions: [],
+              name: attrs.name
+            };
+
+            if (children) {
+              for (const formatChild of children) {
+                switch (formatChild.tag) {
+                  case "descriptions":
+                    if (formatChild.children) {
+                      for (const { text } of formatChild.children) {
+                        resFormat.descriptions.push(text);
+                      }
+                    }
+                    break;
+                  default:
+                    throw new Error(`Unexpected format child tag "${formatChild.tag}"`);
+                }
+              }
+            }
+
+            res.formats.push(resFormat);
+          }
+        }
+        break;
+      case "companies":
+        if (child.children) {
+          for (const { children } of child.children) {
+            const resCompany = {};
+
+            for (const companyChild of children) {
+              switch (companyChild.tag) {
+                case "id":
+                  resCompany.id = parseIntSafe(companyChild.text);
+                  break;
+                case "entity_type":
+                  resCompany.entityType = parseIntSafe(companyChild.text);
+                  break;
+                case "name":
+                case "entity_type_name":
+                case "resource_url":
+                case "catno":
+                  if (companyChild.text) {
+                    resCompany[companyChild.tag] = companyChild.text;
+                  }
+                  break;
+                default:
+                  throw new Error(`Unexpected company child tag "${companyChild.tag}"`);
+              }
+            }
+
+            res.companies.push(resCompany);
+          }
+        }
+        break;
+      case "identifiers":
+        if (child.children) {
+          for (const { attrs } of child.children) {
+            const resIdentifier = {
+              type: attrs.type,
+              valie: attrs.valie,
+            };
+
+            if (attrs.description) {
+              resIdentifier.description = attrs.description;
+            }
+
+            res.formats.push(resIdentifier);
+          }
+        }
+        break;
+      case "released":
+      case "data_quality":
+      case "title":
+      case "notes":
+      case "country":
+        if (child.text) {
+          res[child.tag] = child.text;
+        }
+        break;
+      case "master_id":
+        res.masterId = parseIntSafe(child.text);
+        res.isMainRelease = child.attrs.is_main_release === 'true';
+        break;
+      case "genres":
+      case "styles":
+        for (const { text } of child.children) {
+          res[child.tag].push(text);
+        }
+        break;
       default:
         throw new Error(`Unexpected child tag "${child.tag}"`);
     }
-  });
+  }
 
   return res;
 }

@@ -53,4 +53,8 @@ function parseDiscogsName(name, target) {
   return target;
 }
 
-module.exports = { parseIntSafe, parseDiscogsName };
+function parseDuration(duration) {
+  return duration.replace(/\./g, ':');
+}
+
+module.exports = { parseIntSafe, parseDiscogsName, parseDuration };
