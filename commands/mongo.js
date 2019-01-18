@@ -21,6 +21,8 @@ const validationSchema = {
   defs: require("../schema/defs.json")
 };
 
+const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout));
+
 async function main(argv, client) {
   // Use connect method to connect to the Server
   try {
@@ -31,6 +33,19 @@ async function main(argv, client) {
   console.log("Connected successfully to server");
 
   const db = client.db(argv["database-name"]);
+
+  if (argv['drop-existing-collection']) {
+    const existingCollections = await db.listCollections().toArray();
+
+    for (const type of argv.types) {
+      if (existingCollections.some(({ name }) => name === type)) {
+        console.log(`>>>>>>\nWARNING! Dropping existing ${type} collection in 5 sec!\n>>>>>>`);
+
+        await wait(5000);
+        await db.collection(type).drop();
+      }
+    }
+  }
 
   if (!argv["no-index"]) {
     for (const type of argv.types) {
@@ -43,7 +58,7 @@ async function main(argv, client) {
   const ajv = new Ajv({ verbose: true });
   if (!argv["include-image-objects"]) {
     // no need to verify the item content
-    // delete validationSchema.defs.definitions.imagesTag.properties.children.items;
+    delete validationSchema.defs.definitions.imagesTag.properties.children.items;
   }
   const validators = {};
 
@@ -130,7 +145,9 @@ async function main(argv, client) {
       const { entry, originalIndex, doc } = documents[e.index];
       let reason = "could not be written to MongoDB";
 
-      console.log(e);
+      if (argv.bail) {
+        throw new Error(`Unable to write document id=${originalIndex} to db:\n${e.code} ${e.message}`);
+      }
 
       if (e.code === 11000) {
         reason = "had a key that already existed in the database";

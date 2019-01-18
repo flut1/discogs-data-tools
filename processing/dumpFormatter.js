@@ -267,9 +267,6 @@ function formatMaster(master, includeImageObjects = false) {
                 break;
               case 'anv':
                 resArtist.anv = parseDiscogsName(artistChildTag.text, {});
-                // resArtist.anv = child.children
-                //   .filter(({ text }) => !!text)
-                //   .map(({ text }) => parseDiscogsName(text, {}));
                 break;
               case 'join':
                 if (artistChildTag.text) {
@@ -280,7 +277,9 @@ function formatMaster(master, includeImageObjects = false) {
 
                 break;
               case 'tracks':
-
+                if (Object.keys(artistChildTag).length > 1) {
+                  console.log(artistChildTag);
+                }
                 break;
               default:
                 throw new Error(`Unexpected artist child tag "${artistChildTag.tag}"`);
@@ -326,16 +325,11 @@ function formatMaster(master, includeImageObjects = false) {
         res.year = parseIntSafe(child.text);
         break;
       case "data_quality":
+      case "title":
       case "notes":
         if (child.text) {
           res[child.tag] = child.text;
         }
-        break;
-      case "title":
-        if (child.text.match(/\(\d+\)$/)) {
-          throw new Error(`Unexpected title: ${child.text}`);
-        }
-        res[child.tag] = child.text;
         break;
       case "genres":
       case "styles":

@@ -45,9 +45,21 @@
     { "key": { "name": 1, "nameIndex": 1 } }
   ],
   "masters": [
-    { "key": { "id": 1 }, "unique": true }
+    { "key": { "id": 1 }, "unique": true },
+    {
+      "key": { "main_release": 1 },
+      "unique": true,
+      "partialFilterExpression": { "year": { "main_release": true } }
+    },
+    { "key": { "title": "text" } },
+    { "key": { "genres": 1 } },
+    { "key": { "styles": 1 } },
+    { "key": { "artists.id": 1 } },
+    { "key": { "artists.name": 1 } },
+    {
+      "key": { "year": 1 },
+      "partialFilterExpression": { "year": { "$exists": true } }
+    }
   ],
-  "releases": [
-    { "key": { "id": 1 }, "unique": true }
-  ]
+  "releases": [{ "key": { "id": 1 }, "unique": true }]
 }

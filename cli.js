@@ -109,6 +109,10 @@ module.exports = yargs
             describe: "Don't create indexes on collections",
             type: "boolean"
           },
+          "drop-existing-collection": {
+            describe: "Drop a collection if it already exists. Use with caution!",
+            type: "boolean"
+          },
           "no-validate": {
             alias: "nv",
             describe: "Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid rows",

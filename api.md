@@ -28,6 +28,7 @@ Download data dumps and show download progress
 * [fetcher](#module_fetcher)
     * [~ensureDump(version, type, [showProgress], [dataDir])](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
     * [~ensureDumps(version, [types], [showProgress], [dataDir])](#module_fetcher..ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~ensureChecksum(version, [dataDir])](#module_fetcher..ensureChecksum) ⇒ <code>Promise.&lt;void&gt;</code>
 
 <a name="module_fetcher..ensureDump"></a>
 
@@ -59,6 +60,18 @@ Ensures all the specified types for a specific data dump version aredownloaded 
 | [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 | [dataDir] | <code>string</code> |  | Set to overwrite the default data directory where dumps are stored (./data) |
 
+<a name="module_fetcher..ensureChecksum"></a>
+
+### fetcher~ensureChecksum(version, [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
+Ensures that the CHECKSUM file for a given version is downloaded
+
+**Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| version | <code>string</code> | The exact version name, eg '20180101' |
+| [dataDir] | <code>string</code> | Set to overwrite the default data directory where dumps are stored (./data) |
+
 <a name="module_localDumps"></a>
 
 ## localDumps
@@ -67,6 +80,7 @@ Lookup data dump files that have already been downloaded
 
 * [localDumps](#module_localDumps)
     * [~getXMLPath(version, type, [gz], [dataDir])](#module_localDumps..getXMLPath) ⇒ <code>string</code>
+    * [~getChecksumPath(version, [dataDir])](#module_localDumps..getChecksumPath) ⇒ <code>string</code>
     * [~findXML(version, type, [gz], [dataDir])](#module_localDumps..findXML) ⇒ <code>Object</code> \| <code>null</code>
     * [~findData(version, types, [dataDir])](#module_localDumps..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
 
@@ -82,6 +96,18 @@ Get the path where a data XML is saved
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
 | type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
+| [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
+
+<a name="module_localDumps..getChecksumPath"></a>
+
+### localDumps~getChecksumPath(version, [dataDir]) ⇒ <code>string</code>
+Get the path to where the checksum file for a specified version is stored
+
+**Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| version | <code>string</code> |  | The exact version name, eg '20180101' |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
 <a name="module_localDumps..findXML"></a>
@@ -121,6 +147,7 @@ Lookup available data dumps on the S3 bucket
 
 * [remoteDumps](#module_remoteDumps)
     * [~getDumpURL(version, type)](#module_remoteDumps..getDumpURL) ⇒ <code>string</code>
+    * [~getChecksumURL(version)](#module_remoteDumps..getChecksumURL) ⇒ <code>string</code>
     * [~fetchYearListings()](#module_remoteDumps..fetchYearListings) ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
     * [~fetchFileListing(yearPrefix)](#module_remoteDumps..fetchFileListing) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
     * [~parseFileNames(filenames)](#module_remoteDumps..parseFileNames) ⇒ <code>Object</code>
@@ -136,6 +163,17 @@ Get the URL for a specific data dump
 | --- | --- | --- |
 | version | <code>string</code> | The exact version name, eg '20180101' |
 | type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+
+<a name="module_remoteDumps..getChecksumURL"></a>
+
+### remoteDumps~getChecksumURL(version) ⇒ <code>string</code>
+Get the URL for a checksum file of the specified version
+
+**Kind**: inner method of [<code>remoteDumps</code>](#module_remoteDumps)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| version | <code>string</code> | The exact version name, eg '20180101' |
 
 <a name="module_remoteDumps..fetchYearListings"></a>
 
@@ -175,7 +213,9 @@ Helpers to transform on the dumps parsed by XMLParser into plain objectsthat ar
 
 * [processing/dumpFormatter](#module_processing/dumpFormatter)
     * [~formatLabel(label, [includeImageObjects])](#module_processing/dumpFormatter..formatLabel) ⇒ <code>object</code>
-    * [~formatArtist(label, [includeImageObjects])](#module_processing/dumpFormatter..formatArtist) ⇒ <code>object</code>
+    * [~formatArtist(artist, [includeImageObjects])](#module_processing/dumpFormatter..formatArtist) ⇒ <code>object</code>
+    * [~formatMaster(master, [includeImageObjects])](#module_processing/dumpFormatter..formatMaster) ⇒ <code>object</code>
+    * [~formatRelease(release, [includeImageObjects])](#module_processing/dumpFormatter..formatRelease) ⇒ <code>object</code>
 
 <a name="module_processing/dumpFormatter..formatLabel"></a>
 
@@ -191,14 +231,38 @@ Format a label tag. See readme.md for information of how the data istransformed
 
 <a name="module_processing/dumpFormatter..formatArtist"></a>
 
-### processing/dumpFormatter~formatArtist(label, [includeImageObjects]) ⇒ <code>object</code>
+### processing/dumpFormatter~formatArtist(artist, [includeImageObjects]) ⇒ <code>object</code>
 Format an artist tag. See readme.md for information of how the data istransformed
 
 **Kind**: inner method of [<code>processing/dumpFormatter</code>](#module_processing/dumpFormatter)  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| label | <code>Object</code> |  | An artist tag parsed by XMLParser which conforms to the schema/artist-xml.json schema |
+| artist | <code>Object</code> |  | An artist tag parsed by XMLParser which conforms to the schema/artist-xml.json schema |
+| [includeImageObjects] | <code>boolean</code> | <code>false</code> | If true, include the images object (even though they do not contain URI) |
+
+<a name="module_processing/dumpFormatter..formatMaster"></a>
+
+### processing/dumpFormatter~formatMaster(master, [includeImageObjects]) ⇒ <code>object</code>
+Format a master tag. See readme.md for information of how the data istransformed
+
+**Kind**: inner method of [<code>processing/dumpFormatter</code>](#module_processing/dumpFormatter)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| master | <code>Object</code> |  | A master tag parsed by XMLParser which conforms to the schema/master-xml.json schema |
+| [includeImageObjects] | <code>boolean</code> | <code>false</code> | If true, include the images object (even though they do not contain URI) |
+
+<a name="module_processing/dumpFormatter..formatRelease"></a>
+
+### processing/dumpFormatter~formatRelease(release, [includeImageObjects]) ⇒ <code>object</code>
+Format a release tag. See readme.md for information of how the data istransformed
+
+**Kind**: inner method of [<code>processing/dumpFormatter</code>](#module_processing/dumpFormatter)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| release | <code>Object</code> |  | A release tag parsed by XMLParser which conforms to the schema/master-xml.json schema |
 | [includeImageObjects] | <code>boolean</code> | <code>false</code> | If true, include the images object (even though they do not contain URI) |
 
 <a name="module_util/parseUtils"></a>

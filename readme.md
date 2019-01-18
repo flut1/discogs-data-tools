@@ -79,8 +79,9 @@ Options:
   --no-index, --ni             Don't create indexes on collections                                   [boolean]
   --no-validate, --nv          Skip validation of XML nodes. Can considerably speed up processing, but you may
                                get invalid rows                                                      [boolean]
-  --max-errors, --me           Number of rows that could not be inserted before the command is aborted. Set to
-                               0 to not allow any errors                               [number] [default: 100]
+  --max-errors, --me           Number of rows that could not be inserted before the command is aborted
+                                                                                       [number] [default: 100]
+  --bail, -b                   Immediately abort when a validation error occurs                      [boolean]
   --restart, -r                Don't continue processing from where it last stopped but restart at the first
                                row                                                                   [boolean]
   --database-name, --dn        Name of the database to write to                  [string] [default: "discogs"]
