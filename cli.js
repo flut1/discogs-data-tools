@@ -143,7 +143,7 @@ module.exports = yargs
           'connection': {
             alias: "c",
             describe: "The MongoDB connection string",
-            default: "mongodb://root:development@localhost:27017",
+            demand: true,
             type: "string"
           },
           "include-image-objects": {
