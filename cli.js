@@ -134,7 +134,7 @@ module.exports = yargs
           }
         })
         .example("$0 mongo --latest --connection mongodb://root:pw@127.0.0.1:27017")
-        .example("$0 mongo --target-version 100 --connection mongodb://root:pw@127.0.0.1:27017");
+        .example("$0 mongo --target-version 20180401 --chunk-size 100 --connection mongodb://root:pw@127.0.0.1:27017");
     },
     argv => {
       require("./commands/mongo")(argv);

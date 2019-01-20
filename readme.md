@@ -97,7 +97,7 @@ Options:
 
 Examples:
   discogs-data-tools mongo --latest --connection mongodb://root:pw@127.0.0.1:27017
-  discogs-data-tools mongo --target-version 100 --connection mongodb://root:pw@127.0.0.1:27017
+  discogs-data-tools mongo --target-version 20180401 --chunk-size 100 --connection mongodb://root:pw@127.0.0.1:27017
 ```
 
 ### ls command
