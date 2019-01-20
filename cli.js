@@ -123,7 +123,7 @@ module.exports = yargs
             type: "string"
           },
           'connection': {
-            alias: "c",
+            alias: "o",
             describe: "The MongoDB connection string",
             demand: true,
             type: "string"

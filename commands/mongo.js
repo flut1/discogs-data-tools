@@ -5,6 +5,7 @@ const MongoClient = require("mongodb").MongoClient;
 const processor = require("../processor");
 const indexSpec = require("../config/mongoIndexSpec.json");
 const dumpFormatter = require("../processing/dumpFormatter");
+const getVersionFromArgv = require('../util/getVersionFromArgv');
 
 const { COLLECTIONS } = require('../constants');
 
@@ -26,6 +27,8 @@ const validationSchema = {
 const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
 async function main(argv, client) {
+  const version = await getVersionFromArgv(argv);
+
   // Use connect method to connect to the Server
   try {
     await client.connect();
@@ -169,8 +172,8 @@ async function main(argv, client) {
   }
 
   await processor.processDumps(
-    argv["dump-version"],
-    argv.types,
+    version,
+    collections,
     processEntries,
     argv["chunk-size"],
     argv.restart,
