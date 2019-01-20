@@ -1,16 +1,39 @@
 const yargs = require("yargs");
-const DATA_TYPES = require("./localDumps").DATA_TYPES;
+const { COLLECTIONS } = require("./constants");
 
 module.exports = yargs
   .options({
     'data-dir': {
-      alias: "dd",
+      alias: "d",
       describe: "Root directory where dumps and related files are stored.",
-      default: "./data",
       default: "./data",
       type: "string"
     },
+    "target-version": {
+      alias: "t",
+      describe: "Full name of the target dump version. ie: 20180101",
+      type: "string"
+    },
+    "interactive": {
+      alias: "i",
+      describe: "Interactively select the target dump version",
+      type: "boolean"
+    },
+    latest: {
+      alias: "l",
+      describe: "Automatically select the latest version",
+      type: "boolean"
+    },
+    collections: {
+      alias: "c",
+      describe: "Select which collections to target. If not given, will target all",
+      choices: COLLECTIONS,
+      type: "array"
+    }
   })
+  .conflicts('l', 'i')
+  .conflicts('l', 't')
+  .conflicts('i', 't')
   .demandCommand(1, 1)
   .command(
     "fetch",
@@ -18,43 +41,17 @@ module.exports = yargs
     y => {
       return y
         .options({
-          year: {
-            alias: "y",
-            describe: "The year to find monthly dumps for.",
-            type: "number"
-          },
           "no-progress": {
-            alias: "np",
-            describe: "Hides the progress bar",
+            alias: "n",
+            describe: "Don't show a progress bar",
             type: "boolean"
           },
           "no-verify": {
-            alias: "nv",
             describe: "Skip verifying the dumps with the checksum provided by Discogs",
             type: "boolean"
           },
-          "dump-version": {
-            alias: "dv",
-            describe: "Full name of the version to fetch. ie: 20180101. If not specified, will let you select interactively",
-            type: "string"
-          },
-          latest: {
-            alias: "l",
-            describe: "Automatically get the latest version",
-            type: "boolean"
-          },
-          types: {
-            alias: "t",
-            describe: "List of types to get",
-            default: DATA_TYPES,
-            choices: DATA_TYPES,
-            type: "array"
-          }
         })
-        .example("$0 fetch --dumpVersion 20180101 --types labels masters")
-        .conflicts("year", "version")
-        .conflicts("year", "latest")
-        .conflicts("latest", "version");
+        .example("$0 fetch --target-version 20180101 --collections labels masters");
     },
     argv => {
       require("./commands/fetch")(argv);
@@ -65,22 +62,8 @@ module.exports = yargs
     "Verify dump files that have previously been downloaded. Note: by default, the fetch command already verifies",
     y => {
       return y
-        .options({
-          "dump-version": {
-            alias: "dv",
-            describe: "Full name of the version to verify. ie: 20180101",
-            demand: true,
-            type: "string"
-          },
-          types: {
-            alias: "t",
-            describe: "List of types to verify",
-            default: DATA_TYPES,
-            choices: DATA_TYPES,
-            type: "array"
-          }
-        })
-        .example("$0 verify --dumpVersion 20180101 --types labels masters");
+        .example("$0 verify --latest")
+        .example("$0 verify --target-version 20180101 --collections releases");
     },
     argv => {
       require("./commands/verify")(argv);
@@ -92,41 +75,33 @@ module.exports = yargs
     y => {
       return y
         .options({
-          "dump-version": {
-            alias: "dv",
-            demand: true,
-            describe: "Full name of the version to process. ie: 20180101",
-            type: "string"
-          },
           "chunk-size": {
-            alias: "cs",
-            describe: "Size of processing chunks. Larger size takes more memory",
+            alias: "s",
+            describe: "Number of rows in processing chunks. Larger size takes more memory.",
             default: 1000,
             type: "number"
-          },
-          "no-index": {
-            alias: "ni",
-            describe: "Don't create indexes on collections",
-            type: "boolean"
           },
           "drop-existing-collection": {
             describe: "Drop a collection if it already exists. Use with caution!",
             type: "boolean"
           },
+          "no-index": {
+            describe: "Don't create indexes on collections",
+            type: "boolean"
+          },
           "no-validate": {
-            alias: "nv",
             describe: "Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid rows",
             type: "boolean"
           },
           "max-errors": {
-            alias: "me",
+            alias: "e",
             describe: "Number of rows that could not be inserted before the command is aborted",
             default: 100,
             type: "number"
           },
           bail: {
             alias: "b",
-            describe: "Immediately abort when a validation error occurs",
+            describe: "Immediately abort when a validation error occurs or a row failed to persist to the database",
             type: "boolean"
           },
           restart: {
@@ -135,7 +110,7 @@ module.exports = yargs
             type: "boolean"
           },
           'database-name': {
-            alias: "dn",
+            alias: "n",
             describe: "Name of the database to write to",
             default: "discogs",
             type: "string"
@@ -147,18 +122,12 @@ module.exports = yargs
             type: "string"
           },
           "include-image-objects": {
-            alias: "i",
             describe: "Include image objects. By default, will only include the image count because image objects in data dumps are missing the URI",
             type: "boolean"
-          },
-          types: {
-            alias: "t",
-            describe: "List of types to get",
-            default: DATA_TYPES,
-            choices: DATA_TYPES,
-            type: "array"
           }
-        });
+        })
+        .example("$0 mongo --latest --connection mongodb://root:pw@127.0.0.1:27017")
+        .example("$0 mongo --target-version 100 --connection mongodb://root:pw@127.0.0.1:27017");
     },
     argv => {
       require("./commands/mongo")(argv);

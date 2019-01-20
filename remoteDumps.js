@@ -17,15 +17,15 @@ const S3B_ROOT_DIR = "data/";
 /**
  * Get the URL for a specific data dump
  * @param version {string} The exact version name, eg '20180101'
- * @param type {string} The type of data. Can be either "artists", "labels",
+ * @param collection {string} The type of data. Can be either "artists", "labels",
  * "masters" or "releases"
  * @returns {string}
  */
-function getDumpURL(version, type) {
+function getDumpURL(version, collection) {
   return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
     0,
     4
-  )}/discogs_${version}_${type}.xml.gz`;
+  )}/discogs_${version}_${collection}.xml.gz`;
 }
 
 /**

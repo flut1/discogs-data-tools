@@ -1,6 +1,7 @@
+const fs = require("fs-extra");
 const XMLParser = require("./processing/XMLParser");
 const localDumps = require("./localDumps");
-const fs = require("fs-extra");
+const { COLLECTIONS } = require('./constants');
 
 class ProcessingError extends Error {
   constructor(message, rows) {
@@ -22,7 +23,7 @@ function logInvalidRow(logPath, type, invalidRow) {
 
 function processFile(
   { path, gz },
-  type,
+  collection,
   fn,
   chunkSize = 100,
   restart = false,
@@ -65,17 +66,17 @@ function processFile(
           newChunk = tmp;
 
           Promise.resolve()
-            .then(() => fn(oldChunk, type))
+            .then(() => fn(oldChunk, collection))
             .then(invalidRows => {
               numInvalid += invalidRows.length;
 
               for (const invalidRow of invalidRows) {
-                logInvalidRow(logPath, type, invalidRow);
+                logInvalidRow(logPath, collection, invalidRow);
               }
 
               if (numInvalid > maxErrors) {
                 throw new Error(
-                  `More than ${maxErrors} ${type} failed to insert. Aborting processing.`
+                  `More than ${maxErrors} ${collection} failed to insert. Aborting processing.`
                 );
               }
 
@@ -100,7 +101,7 @@ function processFile(
         .then(() => {
           if (chunkIndex > 0) {
             // flush remaining
-            return fn(newChunk.slice(0, chunkIndex), type);
+            return fn(newChunk.slice(0, chunkIndex), collection);
           }
           return Promise.resolve();
         })
@@ -114,23 +115,23 @@ function processFile(
 
 async function processDumps(
   version,
-  types = localDumps.DATA_TYPES,
+  collections = COLLECTIONS,
   fn,
   chunkSize = 100,
   restart = false,
   dataDir,
   maxErrors = 100
 ) {
-  const targetFiles = localDumps.findData(version, types, dataDir);
+  const targetFiles = localDumps.findData(version, collections, dataDir);
 
   for (let i = 0; i < targetFiles.length; i++) {
     if (!targetFiles[i]) {
-      throw new Error(`No ${types[i]} found for version "${version}"`);
+      throw new Error(`No ${collections[i]} found for version "${version}"`);
     }
 
     await processFile(
       targetFiles[i],
-      types[i],
+      collections[i],
       fn,
       chunkSize,
       restart,

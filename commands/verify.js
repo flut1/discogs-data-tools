@@ -1,17 +1,21 @@
 const { verify } = require("../verify");
 const localDumps = require("../localDumps");
+const getVersionFromArgv = require("../util/getVersionFromArgv");
+const { COLLECTIONS } = require('../constants');
 
-module.exports = function(argv) {
-  const dumpFiles = localDumps.findData(argv["dump-version"], argv.types, argv['data-dir']);
+module.exports = async function(argv) {
+  const collections = argv.collections || COLLECTIONS;
+  const version = await getVersionFromArgv(argv);
+  const dumpFiles = localDumps.findData(version, collections, argv['data-dir']);
 
   for (let i = 0; i < dumpFiles.length; i++) {
     if (!dumpFiles[i]) {
-      console.error(`No dump file found for ${argv["dump-version"]} ${argv.types[i]}`);
+      console.error(`No dump file found for ${version} ${collections[i]}`);
       return;
     }
   }
 
-  verify(argv["dump-version"], argv["types"], argv["data-dir"]).catch(e =>
+  verify(version, collections, argv["data-dir"]).catch(e =>
     console.error(e)
   );
 };

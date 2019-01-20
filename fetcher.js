@@ -6,16 +6,27 @@ const path = require("path");
 const localDumps = require("./localDumps");
 const remoteDumps = require("./remoteDumps");
 const createExitHandler = require("./util/createExitHandler");
+const { COLLECTIONS, DEFAULT_DATA_DIR } = require("./constants");
 
 /**
  * Download data dumps and show download progress
  * @module fetcher
  */
 
-function fetchDump(version, type, showProgress = false, dataDir) {
+function fetchDump(
+  version,
+  collection,
+  showProgress = false,
+  dataDir = DEFAULT_DATA_DIR
+) {
   return new Promise((resolve, reject) => {
-    const url = remoteDumps.getDumpURL(version, type);
-    const targetPath = localDumps.getXMLPath(version, type, true, dataDir);
+    const url = remoteDumps.getDumpURL(version, collection);
+    const targetPath = localDumps.getXMLPath(
+      version,
+      collection,
+      true,
+      dataDir
+    );
     const bar = showProgress
       ? new cliProgress.Bar({}, cliProgress.Presets.shades_classic)
       : null;
@@ -24,7 +35,7 @@ function fetchDump(version, type, showProgress = false, dataDir) {
     console.log(`Fetching ${url}`);
 
     const removeExitHandler = createExitHandler(() => {
-      console.log('Download cancelled. Removing file');
+      console.log("Download cancelled. Removing file");
       fs.removeSync(targetPath);
     });
 
@@ -62,7 +73,7 @@ function fetchDump(version, type, showProgress = false, dataDir) {
  * Ensures a data dump file is downloaded to ./data/<version>/. Does
  * nothing if a file already exists. Does not verify the file.
  * @param version {string} The exact version name, eg '20180101'
- * @param type {string} The type of data. Can be either "artists", "labels",
+ * @param collection {string} The type of data. Can be either "artists", "labels",
  * "masters" or "releases"
  * @param [showProgress=false] {boolean} Show a progress indicator. For
  * usage in an interactive CLI. On a server you probably want this set to
@@ -72,21 +83,26 @@ function fetchDump(version, type, showProgress = false, dataDir) {
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
-function ensureDump(version, type, showProgress = false, dataDir) {
-  const [existingData] = localDumps.findData(version, [type], dataDir);
+function ensureDump(
+  version,
+  collection,
+  showProgress = false,
+  dataDir = DEFAULT_DATA_DIR
+) {
+  const [existingData] = localDumps.findData(version, [collection], dataDir);
 
   if (!existingData) {
-    return fetchDump(version, type, showProgress, dataDir);
+    return fetchDump(version, collection, showProgress, dataDir);
   }
-  console.log(`${type} already downloaded. skipping...`);
+  console.log(`${collection} already downloaded. skipping...`);
   return Promise.resolve();
 }
 
 /**
- * Ensures all the specified types for a specific data dump version are
- * downloaded to ./data/<version>/
+ * Ensures all the specified collections of a specific data dump version are
+ * downloaded to the given data directory
  * @param version {string} The exact version name, eg '20180101'
- * @param [types] {string[]} An array of types to get. Possible options:
+ * @param [collections] {string[]} An array of types to get. Possible options:
  * "artists", "labels", "masters" or "releases".  Defaults to all types
  * @param [showProgress=false] {boolean} Show a progress indicator. For
  * usage in an interactive CLI. On a server you probably want this set to
@@ -98,12 +114,12 @@ function ensureDump(version, type, showProgress = false, dataDir) {
  */
 async function ensureDumps(
   version,
-  types = localDumps.DATA_TYPES,
+  collections = COLLECTIONS,
   showProgress = false,
-  dataDir
+  dataDir = DEFAULT_DATA_DIR
 ) {
-  for (const type of types) {
-    await ensureDump(version, type, showProgress, dataDir);
+  for (const collection of collections) {
+    await ensureDump(version, collection, showProgress, dataDir);
   }
 }
 
@@ -114,7 +130,7 @@ async function ensureDumps(
  * where dumps are stored (./data)
  * @returns {Promise<void>}
  */
-async function ensureChecksum(version, dataDir) {
+async function ensureChecksum(version, dataDir = DEFAULT_DATA_DIR) {
   const checksumPath = localDumps.getChecksumPath(version, dataDir);
 
   if (fs.existsSync(checksumPath)) {

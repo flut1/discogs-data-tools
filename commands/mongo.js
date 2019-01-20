@@ -6,6 +6,8 @@ const processor = require("../processor");
 const indexSpec = require("../config/mongoIndexSpec.json");
 const dumpFormatter = require("../processing/dumpFormatter");
 
+const { COLLECTIONS } = require('../constants');
+
 const formatters = {
   artists: dumpFormatter.formatArtist,
   labels: dumpFormatter.formatLabel,
@@ -33,25 +35,26 @@ async function main(argv, client) {
   console.log("Connected successfully to server");
 
   const db = client.db(argv["database-name"]);
+  const collections = argv.collections || COLLECTIONS;
 
   if (argv['drop-existing-collection']) {
     const existingCollections = await db.listCollections().toArray();
 
-    for (const type of argv.types) {
-      if (existingCollections.some(({ name }) => name === type)) {
-        console.log(`>>>>>>\nWARNING! Dropping existing ${type} collection in 5 sec!\n>>>>>>`);
+    for (const collection of collections) {
+      if (existingCollections.some(({ name }) => name === collection)) {
+        console.log(`>>>>>>\nWARNING! Dropping existing ${collection} collection in 5 sec!\n>>>>>>`);
 
         await wait(5000);
-        await db.collection(type).drop();
+        await db.collection(collection).drop();
       }
     }
   }
 
   if (!argv["no-index"]) {
-    for (const type of argv.types) {
-      console.log(`Ensuring indexes on ${type} collection...`);
+    for (const collection of collections) {
+      console.log(`Ensuring indexes on ${collection} collection...`);
 
-      await db.collection(type).createIndexes(indexSpec[type]);
+      await db.collection(collection).createIndexes(indexSpec[collection]);
     }
   }
 
@@ -62,23 +65,23 @@ async function main(argv, client) {
   }
   const validators = {};
 
-  for (const type of argv.types) {
-    validators[type] = ajv
+  for (const collection of collections) {
+    validators[collection] = ajv
       .addSchema(validationSchema.defs)
-      .compile(validationSchema[type]);
+      .compile(validationSchema[collection]);
   }
 
-  async function processEntries(chunk, type) {
+  async function processEntries(chunk, collection) {
     const invalidRows = [];
 
     const entries = chunk.map((entry, index) => {
       let valid = true;
       if (!argv["no-validate"]) {
-        valid = validators[type](entry, { verbose: true, extendRefs: 'fail' });
+        valid = validators[collection](entry, { verbose: true, extendRefs: 'fail' });
 
         if (!valid) {
           const id = (() => {
-            if (type === "masters" || type === "releases") {
+            if (collection === "masters" || collection === "releases") {
               return entry.attrs.id;
             }
 
@@ -100,7 +103,7 @@ async function main(argv, client) {
               `Invalid row with id ${id}: \n\n${JSON.stringify(entry).substring(
                 0,
                 40
-              )}\n\n${validators[type].errors
+              )}\n\n${validators[collection].errors
                 .map(({ dataPath, message, schemaPath }) => {
                   let targetData = "(unable to find target data)";
                   try {
@@ -128,11 +131,11 @@ async function main(argv, client) {
       .filter(doc => doc.valid)
       .map(entry => ({
         ...entry,
-        doc: formatters[type](entry.entry, argv["include-image-objects"])
+        doc: formatters[collection](entry.entry, argv["include-image-objects"])
       }));
 
     try {
-      await db.collection(type).bulkWrite(
+      await db.collection(collection).bulkWrite(
         documents.map(({ doc }) => ({
           updateOne: {
             filter: { id: doc.id },
