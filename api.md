@@ -26,13 +26,13 @@ Download data dumps and show download progress
 
 
 * [fetcher](#module_fetcher)
-    * [~ensureDump(version, type, [showProgress], [dataDir])](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
-    * [~ensureDumps(version, [types], [showProgress], [dataDir])](#module_fetcher..ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~ensureDump(version, collection, [showProgress], [dataDir])](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~ensureDumps(version, [collections], [showProgress], [dataDir])](#module_fetcher..ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
     * [~ensureChecksum(version, [dataDir])](#module_fetcher..ensureChecksum) ⇒ <code>Promise.&lt;void&gt;</code>
 
 <a name="module_fetcher..ensureDump"></a>
 
-### fetcher~ensureDump(version, type, [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
+### fetcher~ensureDump(version, collection, [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
 Ensures a data dump file is downloaded to ./data/<version>/. Doesnothing if a file already exists. Does not verify the file.
 
 **Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
@@ -41,14 +41,14 @@ Ensures a data dump file is downloaded to ./data/<version>/. Doesnothing if a f
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
-| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| collection | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 | [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 | [dataDir] | <code>string</code> |  | Set to overwrite the default data directory where dumps are stored (./data) |
 
 <a name="module_fetcher..ensureDumps"></a>
 
-### fetcher~ensureDumps(version, [types], [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
-Ensures all the specified types for a specific data dump version aredownloaded to ./data/<version>/
+### fetcher~ensureDumps(version, [collections], [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
+Ensures all the specified collections of a specific data dump version aredownloaded to the given data directory
 
 **Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - A Promise that completes when all data isdownloaded  
@@ -56,7 +56,7 @@ Ensures all the specified types for a specific data dump version aredownloaded 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
-| [types] | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
+| [collections] | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
 | [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 | [dataDir] | <code>string</code> |  | Set to overwrite the default data directory where dumps are stored (./data) |
 
@@ -79,14 +79,15 @@ Lookup data dump files that have already been downloaded
 
 
 * [localDumps](#module_localDumps)
-    * [~getXMLPath(version, type, [gz], [dataDir])](#module_localDumps..getXMLPath) ⇒ <code>string</code>
+    * [~getXMLPath(version, collection, [gz], [dataDir])](#module_localDumps..getXMLPath) ⇒ <code>string</code>
     * [~getChecksumPath(version, [dataDir])](#module_localDumps..getChecksumPath) ⇒ <code>string</code>
-    * [~findXML(version, type, [gz], [dataDir])](#module_localDumps..findXML) ⇒ <code>Object</code> \| <code>null</code>
-    * [~findData(version, types, [dataDir])](#module_localDumps..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+    * [~findXML(version, collection, [gz], [dataDir])](#module_localDumps..findXML) ⇒ <code>Object</code> \| <code>null</code>
+    * [~findData(version, collections, [dataDir])](#module_localDumps..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+    * [~globDumps([dataDir])](#module_localDumps..globDumps) ⇒ <code>Object</code>
 
 <a name="module_localDumps..getXMLPath"></a>
 
-### localDumps~getXMLPath(version, type, [gz], [dataDir]) ⇒ <code>string</code>
+### localDumps~getXMLPath(version, collection, [gz], [dataDir]) ⇒ <code>string</code>
 Get the path where a data XML is saved
 
 **Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
@@ -94,7 +95,7 @@ Get the path where a data XML is saved
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
-| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| collection | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
@@ -112,7 +113,7 @@ Get the path to where the checksum file for a specified version is stored
 
 <a name="module_localDumps..findXML"></a>
 
-### localDumps~findXML(version, type, [gz], [dataDir]) ⇒ <code>Object</code> \| <code>null</code>
+### localDumps~findXML(version, collection, [gz], [dataDir]) ⇒ <code>Object</code> \| <code>null</code>
 Looks up an existing data xml on disk
 
 **Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
@@ -121,13 +122,13 @@ Looks up an existing data xml on disk
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
-| type | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| collection | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
 <a name="module_localDumps..findData"></a>
 
-### localDumps~findData(version, types, [dataDir]) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+### localDumps~findData(version, collections, [dataDir]) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
 Looks up the xml files on disk for a given version
 
 **Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
@@ -136,7 +137,19 @@ Looks up the xml files on disk for a given version
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
-| types | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
+| collections | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
+| [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
+
+<a name="module_localDumps..globDumps"></a>
+
+### localDumps~globDumps([dataDir]) ⇒ <code>Object</code>
+List all data downloaded to the data directory
+
+**Kind**: inner method of [<code>localDumps</code>](#module_localDumps)  
+**Returns**: <code>Object</code> - A map containing all downloaded files  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
 <a name="module_remoteDumps"></a>
@@ -146,7 +159,7 @@ Lookup available data dumps on the S3 bucket
 
 
 * [remoteDumps](#module_remoteDumps)
-    * [~getDumpURL(version, type)](#module_remoteDumps..getDumpURL) ⇒ <code>string</code>
+    * [~getDumpURL(version, collection)](#module_remoteDumps..getDumpURL) ⇒ <code>string</code>
     * [~getChecksumURL(version)](#module_remoteDumps..getChecksumURL) ⇒ <code>string</code>
     * [~fetchYearListings()](#module_remoteDumps..fetchYearListings) ⇒ <code>Promise.&lt;Array.&lt;{path:string, year:number}&gt;&gt;</code>
     * [~fetchFileListing(yearPrefix)](#module_remoteDumps..fetchFileListing) ⇒ <code>Promise.&lt;Array.&lt;string&gt;&gt;</code>
@@ -154,7 +167,7 @@ Lookup available data dumps on the S3 bucket
 
 <a name="module_remoteDumps..getDumpURL"></a>
 
-### remoteDumps~getDumpURL(version, type) ⇒ <code>string</code>
+### remoteDumps~getDumpURL(version, collection) ⇒ <code>string</code>
 Get the URL for a specific data dump
 
 **Kind**: inner method of [<code>remoteDumps</code>](#module_remoteDumps)  
@@ -162,7 +175,7 @@ Get the URL for a specific data dump
 | Param | Type | Description |
 | --- | --- | --- |
 | version | <code>string</code> | The exact version name, eg '20180101' |
-| type | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| collection | <code>string</code> | The type of data. Can be either "artists", "labels", "masters" or "releases" |
 
 <a name="module_remoteDumps..getChecksumURL"></a>
 

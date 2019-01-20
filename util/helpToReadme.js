@@ -2,7 +2,7 @@ const { fork } = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");
 
-const commands = ["fetch", "verify", "mongo"];
+const commands = ["fetch", "verify", "mongo", "ls"];
 
 Promise.all(
   commands.map(command => {

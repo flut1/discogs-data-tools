@@ -34,7 +34,6 @@ module.exports = yargs
   .conflicts('l', 'i')
   .conflicts('l', 't')
   .conflicts('i', 't')
-  .demandCommand(1, 1)
   .command(
     "fetch",
     "Fetch data dump from discogs",
@@ -67,6 +66,14 @@ module.exports = yargs
     },
     argv => {
       require("./commands/verify")(argv);
+    }
+  )
+  .command(
+    "ls",
+    "List all downloaded data",
+    y => y,
+    argv => {
+      require("./commands/ls")(argv);
     }
   )
   .command(
@@ -133,7 +140,7 @@ module.exports = yargs
       require("./commands/mongo")(argv);
     }
   )
-  .demandCommand()
+  .demandCommand(1, 1)
   .usage(
     '$0 <command> [...args]\nFor help on a command run "$0 <command> help"'
   )

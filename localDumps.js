@@ -1,6 +1,10 @@
 const fs = require("fs-extra");
 const path = require("path");
+const globCallback = require('glob');
+const { promisify } = require("es6-promisify");
 const { COLLECTIONS, DEFAULT_DATA_DIR } = require('./constants');
+
+const glob = promisify(globCallback);
 
 /**
  * Lookup data dump files that have already been downloaded
@@ -80,8 +84,30 @@ function findData(version, collections = COLLECTIONS, dataDir = DEFAULT_DATA_DIR
   );
 }
 
+/**
+ * List all data downloaded to the data directory
+ * @param [dataDir="./data"] {string} Root directory where `discogs-data-tools`
+ * stores data files. Defaults to ./data relative to working directory
+ * @returns {Object} A map containing all downloaded files
+ */
+function globDumps(dataDir = DEFAULT_DATA_DIR) {
+  return glob('*/discogs_*.@(xml|txt)?(.gz)', { cwd: path.resolve( dataDir) })
+    .then(files => files.reduce((result, file) => {
+      const match = file.match(/discogs_([^_]+)_([^.]+)\.(xml|txt)/);
+      if (match) {
+        if (!result[match[1]]) {
+          result[match[1]] = {};
+        }
+        result[match[1]][match[2]] = file;
+      }
+
+      return result;
+    }, {}));
+}
+
 module.exports = {
   findXML,
+  globDumps,
   getXMLPath,
   getChecksumPath,
   findData,
