@@ -1,3 +1,5 @@
+const logger = require('./logger');
+
 /**
  * Small helpers for parsing discogs data
  * @module util/parseUtils
@@ -59,8 +61,8 @@ function parseDuration(duration, target) {
 
     const parts = duration.split(/[:.]/g);
     if (parts.some(part => !part.match(/^\d+$/))) {
-      console.log(`Could not parse duration "${duration}"`);
-      console.log(JSON.stringify(target));
+      logger.warn(`Could not parse duration "${duration}"`);
+      logger.log(JSON.stringify(target));
       return target;
     }
 
@@ -85,7 +87,7 @@ function parseReleaseDate(date, target) {
       date.substring(4, 6) -
       date.substring(6)}`;
   } else {
-    console.log(`Warning: dropping invalid release date "${date}"`);
+    logger.warn(`dropping invalid release date "${date}"`);
   }
 }
 

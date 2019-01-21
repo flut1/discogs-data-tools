@@ -1,7 +1,8 @@
 const fs = require("fs-extra");
 const XMLParser = require("./processing/XMLParser");
+const logger = require('./util/logger');
 const localDumps = require("./localDumps");
-const { COLLECTIONS } = require('./constants');
+const { COLLECTIONS } = require("./constants");
 
 class ProcessingError extends Error {
   constructor(message, rows) {
@@ -33,8 +34,6 @@ function processFile(
     const progressFilePath = `${path}.processing`;
     const logPath = `${path}.log`;
 
-    console.log(`Processing ${path}...`);
-
     let toSkip = 0;
     let processed = 0;
     if (fs.existsSync(progressFilePath) && !restart) {
@@ -42,7 +41,7 @@ function processFile(
         fs.readFileSync(progressFilePath, { encoding: "utf8" }),
         10
       );
-      console.log(`some rows were already processed: skipping first ${toSkip}`);
+      logger.log(`some rows were already processed: skipping first ${toSkip}`);
     }
 
     const reader = new XMLParser(path, 1, { gzip: gz });
@@ -83,7 +82,8 @@ function processFile(
               fs.writeFileSync(progressFilePath, processed.toString(), {
                 encoding: "utf8"
               });
-              console.log(`${processed} rows processed`);
+
+              logger.status(`${processed} rows processed`);
               reader.resume();
             })
             .catch(e => {
@@ -101,6 +101,7 @@ function processFile(
         .then(() => {
           if (chunkIndex > 0) {
             // flush remaining
+            logger.status('processing last chunk...');
             return fn(newChunk.slice(0, chunkIndex), collection);
           }
           return Promise.resolve();
@@ -129,6 +130,7 @@ async function processDumps(
       throw new Error(`No ${collections[i]} found for version "${version}"`);
     }
 
+    logger.log(`Processing ${targetFiles[i].path}...`);
     await processFile(
       targetFiles[i],
       collections[i],
@@ -137,6 +139,7 @@ async function processDumps(
       restart,
       maxErrors
     );
+    logger.succeed(`Finished processing ${targetFiles[i].path}...`);
   }
 }
 

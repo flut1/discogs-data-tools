@@ -4,6 +4,7 @@ const {
   parseDuration,
   parseReleaseDate
 } = require("../util/parseUtils");
+const logger = require('../util/logger');
 
 /**
  * Helpers to transform on the dumps parsed by XMLParser into plain objects
@@ -162,7 +163,7 @@ function formatArtist(artist, includeImageObjects = false) {
         break;
       case "name":
         if (!child.text) {
-          console.log("Skipping artist with empty name");
+          logger.warn("Skipping artist with empty name");
           return null;
         }
         parseDiscogsName(child.text, res);

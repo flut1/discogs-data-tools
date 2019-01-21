@@ -1,13 +1,14 @@
 const Ajv = require("ajv");
 const objectGet = require("object-get");
 const MongoClient = require("mongodb").MongoClient;
+const logger = require("../util/logger");
 
 const processor = require("../processor");
 const indexSpec = require("../config/mongoIndexSpec.json");
 const dumpFormatter = require("../processing/dumpFormatter");
-const getVersionFromArgv = require('../util/getVersionFromArgv');
+const getVersionFromArgv = require("../util/getVersionFromArgv");
 
-const { COLLECTIONS } = require('../constants');
+const { COLLECTIONS } = require("../constants");
 
 const formatters = {
   artists: dumpFormatter.formatArtist,
@@ -27,25 +28,38 @@ const validationSchema = {
 const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
 async function main(argv, client) {
+  if (argv.silent) {
+    logger.mute();
+  }
+  if (!argv.interactive) {
+    logger.startSpinner();
+  }
   const version = await getVersionFromArgv(argv);
+  if (argv.interactive) {
+    logger.startSpinner();
+  }
 
+  logger.status("Connecting to MongoBD...");
   // Use connect method to connect to the Server
   try {
     await client.connect();
   } catch (e) {
-    throw new Error(`Could not connect to MongoDB: ${e}`);
+    logger.error("Could not connect to MongoDB");
+    throw new Error(e);
   }
-  console.log("Connected successfully to server");
+  logger.succeed("Connected to MongoDB server");
 
   const db = client.db(argv["database-name"]);
   const collections = argv.collections || COLLECTIONS;
 
-  if (argv['drop-existing-collection']) {
+  if (argv["drop-existing-collection"]) {
     const existingCollections = await db.listCollections().toArray();
 
     for (const collection of collections) {
       if (existingCollections.some(({ name }) => name === collection)) {
-        console.log(`>>>>>>\nWARNING! Dropping existing ${collection} collection in 5 sec!\n>>>>>>`);
+        logger.warn(
+          `>>>>>>\nWARNING! Dropping existing ${collection} collection in 5 sec!\n>>>>>>`
+        );
 
         await wait(5000);
         await db.collection(collection).drop();
@@ -55,16 +69,18 @@ async function main(argv, client) {
 
   if (!argv["no-index"]) {
     for (const collection of collections) {
-      console.log(`Ensuring indexes on ${collection} collection...`);
+      logger.status(`Ensuring indexes on ${collection} collection...`);
 
       await db.collection(collection).createIndexes(indexSpec[collection]);
+      logger.succeed(`Indexes created on ${collection}`);
     }
   }
 
   const ajv = new Ajv({ verbose: true });
   if (!argv["include-image-objects"]) {
     // no need to verify the item content
-    delete validationSchema.defs.definitions.imagesTag.properties.children.items;
+    delete validationSchema.defs.definitions.imagesTag.properties.children
+      .items;
   }
   const validators = {};
 
@@ -80,7 +96,10 @@ async function main(argv, client) {
     const entries = chunk.map((entry, index) => {
       let valid = true;
       if (!argv["no-validate"]) {
-        valid = validators[collection](entry, { verbose: true, extendRefs: 'fail' });
+        valid = validators[collection](entry, {
+          verbose: true,
+          extendRefs: "fail"
+        });
 
         if (!valid) {
           const id = (() => {
@@ -118,7 +137,9 @@ async function main(argv, client) {
                     // nothing
                   }
                   return ` >>> ${message}:\n${JSON.stringify(
-                    targetData, null, '  '
+                    targetData,
+                    null,
+                    "  "
                   )}\n${schemaPath}\n`;
                 })
                 .join("\n")}\n`
@@ -152,8 +173,11 @@ async function main(argv, client) {
       let reason = "could not be written to MongoDB";
 
       if (argv.bail) {
-
-        throw new Error(`Unable to write document id=${originalIndex} to db:\n${e.code} ${e.message}`);
+        throw new Error(
+          `Unable to write document id=${originalIndex} to db:\n${e.code} ${
+            e.message
+          }`
+        );
       }
 
       if (e.code === 11000) {
@@ -181,6 +205,8 @@ async function main(argv, client) {
     argv["max-errors"]
   );
 
+  logger.stopSpinner();
+
   await client.close();
 }
 
@@ -189,6 +215,8 @@ module.exports = function(argv) {
   const client = new MongoClient(argv.connection);
 
   main(argv, client).catch(e => {
+    logger.error('error during processing');
+    logger.stopSpinner();
     console.error(`\n${e.stack}\n`);
 
     return client.close();

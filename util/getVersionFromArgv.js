@@ -1,5 +1,6 @@
 const inquirer = require("inquirer");
 const remoteDumps = require("../remoteDumps");
+const logger = require("../util/logger");
 
 async function getYear() {
   const years = await remoteDumps.fetchYearListings();
@@ -44,7 +45,7 @@ module.exports = async function getVersionFromArgv(argv) {
     versionNames.sort((a, b) => b - a);
 
     version = versionNames[0].toString();
-    console.log(`Latest version is "${version}"`);
+    logger.succeed(`Latest version is "${version}"`);
   }
 
   if (!version) {

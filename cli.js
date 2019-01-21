@@ -92,6 +92,11 @@ module.exports = yargs
             describe: "Drop a collection if it already exists. Use with caution!",
             type: "boolean"
           },
+          silent: {
+            alias: "m",
+            describe: "Mute all console output",
+            type: "boolean"
+          },
           "no-index": {
             describe: "Don't create indexes on collections",
             type: "boolean"

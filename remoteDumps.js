@@ -3,6 +3,7 @@ const xml2js = require("xml2js");
 const idx = require("idx");
 const _ = require("lodash");
 const { promisify } = require("es6-promisify");
+const logger = require("./util/logger");
 
 /**
  * Lookup available data dumps on the S3 bucket
@@ -83,7 +84,7 @@ async function requestListing(yearPrefix) {
  * @returns {Promise<Array<{path:string, year:number}>>}
  */
 async function fetchYearListings() {
-  console.log("Fetching year listings...");
+  logger.status("Fetching year listings...", true);
 
   const parsed = await await requestListing();
 
@@ -111,7 +112,7 @@ async function fetchYearListings() {
  * @returns {Promise<Array<string>>} An array of paths
  */
 async function fetchFileListing(yearPrefix) {
-  console.log("Fetching file listings...");
+  logger.status("Fetching file listings...", true);
 
   const parsed = await requestListing(yearPrefix);
   const files = idx(parsed, _ => _.ListBucketResult.Contents);
