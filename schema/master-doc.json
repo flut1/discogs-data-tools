@@ -4,8 +4,133 @@
   "description": "An master document formatted by dumpFormatter.js~formatMaster",
   "type": "object",
   "properties": {
-
+    "title": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "images": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "genres": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "styles": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "mainRelease": {
+      "type": "number"
+    },
+    "videos": {
+      "items": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "number"
+          },
+          "src": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "title": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "description": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": ["duration","src"],
+        "additionalProperties": false
+      },
+      "type": "array"
+    },
+    "year": {
+      "type": "number"
+    },
+    "artists": {
+      "type": "array",
+      "items": {
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "nameIndex": {
+            "type": "number"
+          },
+          "originalName": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "join": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "anv": {
+            "properties": {
+              "name": {
+                "pattern": "^[\\s\\S]+$",
+                "type": "string"
+              },
+              "nameIndex": {
+                "type": "number"
+              },
+              "originalName": {
+                "pattern": "^[\\s\\S]+$",
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "required": ["name", "nameIndex", "originalName"],
+            "additionalProperties": false
+          }
+        },
+        "type": "object",
+        "required": ["id", "name", "nameIndex", "originalName"],
+        "additionalProperties": false
+      }
+    },
+    "id": {
+      "type": "number"
+    },
+    "imageCount": {
+      "type": "number"
+    },
+    "dataQuality": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "notes": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    }
   },
   "additionalProperties": false,
-  "required": []
+  "required": [
+    "imageCount",
+    "id",
+    "dataQuality",
+    "mainRelease",
+    "genres",
+    "artists",
+    "videos",
+    "styles",
+    "title"
+  ]
 }

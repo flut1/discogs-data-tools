@@ -1,19 +1,26 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Artist Document",
+  "additionalProperties": false,
+  "definitions": {
+    "nameRef": {
+      "properties": {
+        "name": {
+          "pattern": "^[\\s\\S]+$",
+          "type": "string"
+        },
+        "nameIndex": {
+          "type": "number"
+        },
+        "originalName": {
+          "pattern": "^[\\s\\S]+$",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
   "description": "An artist document formatted by dumpFormatter.js~formatArtist",
-  "type": "object",
   "properties": {
-    "id": {
-      "type": "number"
-    },
-    "name": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
-    },
-    "nameIndex": {
-      "type": "number"
-    },
     "aliases": {
       "items": {
         "allOf": [
@@ -37,44 +44,36 @@
       },
       "type": "array"
     },
-    "nameVariations": {
+    "dataQuality": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "groups": {
       "items": {
         "allOf": [
           {
             "$ref": "#/definitions/nameRef"
           },
           {
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
             "required": [
               "name",
               "originalName",
+              "id",
               "nameIndex"
-            ]
+            ],
+            "type": "object"
           }
         ]
       },
       "type": "array"
     },
-    "originalName": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
-    },
-    "realName": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/nameRef"
-        },
-        {
-          "required": [
-            "name",
-            "originalName",
-            "nameIndex"
-          ]
-        }
-      ]
-    },
-    "profile": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+    "id": {
+      "type": "number"
     },
     "imageCount": {
       "type": "number"
@@ -109,58 +108,58 @@
       },
       "type": "array"
     },
-    "groups": {
+    "name": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "nameIndex": {
+      "type": "number"
+    },
+    "nameVariations": {
       "items": {
         "allOf": [
           {
             "$ref": "#/definitions/nameRef"
           },
           {
-            "properties": {
-              "id": {
-                "type": "number"
-              }
-            },
             "required": [
               "name",
               "originalName",
-              "id",
               "nameIndex"
-            ],
-            "type": "object"
+            ]
           }
         ]
       },
       "type": "array"
     },
-    "dataQuality": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+    "originalName": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "profile": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "realName": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/nameRef"
+        },
+        {
+          "required": [
+            "name",
+            "originalName",
+            "nameIndex"
+          ]
+        }
+      ]
     },
     "urls": {
       "items": {
-        "type": "string",
-        "pattern": "^[\\s\\S]+$"
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
       },
       "type": "array"
-    }
-  },
-  "definitions": {
-    "nameRef": {
-      "properties": {
-        "name": {
-          "type": "string",
-          "pattern": "^[\\s\\S]+$"
-        },
-        "nameIndex": {
-          "type": "number"
-        },
-        "originalName": {
-          "type": "string",
-          "pattern": "^[\\s\\S]+$"
-        }
-      },
-      "type": "object"
     }
   },
   "required": [
@@ -176,5 +175,6 @@
     "aliases",
     "name"
   ],
-  "additionalProperties": false
+  "title": "Artist Document",
+  "type": "object"
 }

@@ -8,15 +8,15 @@
           "type": "number"
         },
         "name": {
-          "type": "string",
-          "pattern": "^[\\s\\S]+$"
+          "pattern": "^[\\s\\S]+$",
+          "type": "string"
         },
         "nameIndex": {
           "type": "number"
         },
         "originalName": {
-          "type": "string",
-          "pattern": "^[\\s\\S]+$"
+          "pattern": "^[\\s\\S]+$",
+          "type": "string"
         }
       },
       "type": "object"
@@ -25,12 +25,12 @@
   "description": "An label document formatted by dumpFormatter.js~formatLabel",
   "properties": {
     "contactInfo": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
     },
     "dataQuality": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
     },
     "id": {
       "type": "number"
@@ -45,22 +45,22 @@
       "type": "array"
     },
     "name": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
     },
     "nameIndex": {
       "type": "number"
     },
     "originalName": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
     },
     "parent": {
       "$ref": "#/definitions/nameIdRef"
     },
     "profile": {
-      "type": "string",
-      "pattern": "^[\\s\\S]+$"
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
     },
     "sublabels": {
       "items": {
@@ -82,8 +82,8 @@
     },
     "urls": {
       "items": {
-        "type": "string",
-        "pattern": "^[\\s\\S]+$"
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
       },
       "type": "array"
     }

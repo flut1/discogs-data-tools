@@ -290,7 +290,9 @@ function formatMaster(master, includeImageObjects = false) {
                 parseDiscogsName(artistChildTag.text, resArtist);
                 break;
               case "anv":
-                resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+                if (artistChildTag.text) {
+                  resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+                }
                 break;
               case "join":
               case "role":
@@ -313,7 +315,6 @@ function formatMaster(master, includeImageObjects = false) {
         res.videos = child.children.map(({ children, attrs }) => {
           const resVideo = {
             duration: parseIntSafe(attrs.duration),
-            embed: attrs.embed === "true",
             src: attrs.src
           };
 
@@ -349,6 +350,10 @@ function formatMaster(master, includeImageObjects = false) {
         res.year = parseIntSafe(child.text);
         break;
       case "data_quality":
+        if (child.text) {
+          res.dataQuality = child.text;
+        }
+        break;
       case "title":
       case "notes":
         if (child.text) {
@@ -387,7 +392,9 @@ function parseArtists(artistNodes, target) {
           parseDiscogsName(artistChildTag.text, resArtist);
           break;
         case "anv":
-          resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+          if (artistChildTag.text) {
+            resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+          }
           break;
         case "join":
         case "tracks":
@@ -526,7 +533,6 @@ function formatRelease(release, includeImageObjects = false) {
         res.videos = child.children.map(({ children, attrs }) => {
           const resVideo = {
             duration: parseIntSafe(attrs.duration),
-            embed: attrs.embed === "true",
             src: attrs.src
           };
 
@@ -652,6 +658,10 @@ function formatRelease(release, includeImageObjects = false) {
         }
         break;
       case "data_quality":
+        if (child.text) {
+          res.dataQuality = child.text;
+        }
+        break;
       case "title":
       case "notes":
       case "country":
