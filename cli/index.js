@@ -93,6 +93,10 @@ module.exports = yargs
       "By default, will also create some indexes on the new collections.",
     y =>
       y
+        .epilogue(
+          "IMPORTANT: please note that existing documents in MongoDB collections " +
+            "with the same name will be replaced"
+        )
         .options({
           "chunk-size": {
             alias: "s",

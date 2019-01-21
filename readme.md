@@ -59,8 +59,9 @@ folder.
 
 ## Database import
 Currently, this library only contains utilities to import the data dumps into MongoDB. However, the
-NodeJS API allows you to use the same code to import into other databases. See examples below.
-If you'd like to contribute a script to import into a different database, please send a PR :)
+NodeJS API allows you to use the same code to import into other databases. See the example in
+ [Node.JS API](#nodejs-api) below. If you'd like to contribute a script to import into a different
+ database, please send a PR :)
 
 ### MongoDB Indexes
 When using the `mongo` CLI command, some useful indexes will be automatically added to the database
@@ -161,6 +162,8 @@ Optional args:
 Examples:
   discogs-data-tools mongo --no-indexes --latest --connection mongodb://root:pw@127.0.0.1:27017
   discogs-data-tools mongo --target-version 20180401 --restart --connection mongodb://root:pw@localhost:27017
+
+IMPORTANT: please note that existing documents in MongoDB collections with the same name will be replaced
 ```
 
 ### ls command
