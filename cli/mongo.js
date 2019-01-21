@@ -200,8 +200,8 @@ async function main(argv, client) {
 
   await processor.processDumps(
     version,
-    collections,
     processEntries,
+    collections,
     argv["chunk-size"],
     argv.restart,
     argv["data-dir"],

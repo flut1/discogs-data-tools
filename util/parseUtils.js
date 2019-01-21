@@ -55,6 +55,15 @@ function parseDiscogsName(name, target) {
   return target;
 }
 
+/**
+ * Parses the duration string from a Discogs XML file and stores the result
+ * on the target object. Will store the string as-is on the 'originalDuration'
+ * property. If the duration is formatted somewhat correctly, will calculate the
+ * duration in number of seconds and store it on the 'duration' property.
+ * @param duration {string} A duration formatted as string
+ * @param target {object} The target object to store results on
+ * @returns {object} `target` for chaining
+ */
 function parseDuration(duration, target) {
   if (duration) {
     target.originalDuration = duration;
@@ -75,6 +84,15 @@ function parseDuration(duration, target) {
   return target;
 }
 
+/**
+ * Will parse the given release date and format it according to Discogs
+ * Database Guidelines. The result is stored on the "released" property of the
+ * target object. The date will be either formatted as YYYY or YYYY-MM-DD.
+ * If only the year and month are given, the date will be set to 00. If dashes
+ * are missing, they will be added. All other formats are discarded.
+ * @param date {string} The date string to parse
+ * @param {object} `target` for chaining
+ */
 function parseReleaseDate(date, target) {
   if (date.length === 4 && date.match(/^[\d]{4}$/)) {
     target.released = date;
@@ -89,6 +107,7 @@ function parseReleaseDate(date, target) {
   } else {
     logger.warn(`dropping invalid release date "${date}"`);
   }
+  return target;
 }
 
 module.exports = {

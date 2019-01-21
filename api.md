@@ -291,22 +291,62 @@ Format a release tag. See readme.md for information of how the data istransform
 <a name="module_processing/processor"></a>
 
 ## processing/processor
-<a name="module_processing/processor..processDumps"></a>
 
-### processing/processor~processDumps(version, collections, fn, chunkSize, restart, dataDir, maxErrors) ⇒ <code>Promise.&lt;void&gt;</code>
-Processes the dump
+* [processing/processor](#module_processing/processor)
+    * [~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart], [maxErrors])](#module_processing/processor..processDumpFile) ⇒ <code>Promise</code>
+    * [~processDumps(version, fn, [collections], [chunkSize], [restart], [dataDir], [maxErrors])](#module_processing/processor..processDumps) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~processChunkFn](#module_processing/processor..processChunkFn) ⇒ <code>Promise</code>
+
+<a name="module_processing/processor..processDumpFile"></a>
+
+### processing/processor~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart], [maxErrors]) ⇒ <code>Promise</code>
+Processes an XML dump file using `node-expat` into plain objects. Every`chunkSize` rows the parser will pause and pass the result to the `fn`function. Once the `fn` function completes, parsing continues until theentire file is parsed.
 
 **Kind**: inner method of [<code>processing/processor</code>](#module_processing/processor)  
+**Returns**: <code>Promise</code> - A Promise that resolves when processing is complete  
 
-| Param | Default |
-| --- | --- |
-| version |  | 
-| collections |  | 
-| fn |  | 
-| chunkSize | <code>100</code> | 
-| restart | <code>false</code> | 
-| dataDir |  | 
-| maxErrors | <code>100</code> | 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| path | <code>string</code> |  | The full path to the file to process |
+| collection | <code>string</code> |  | The type of data. Can be either "artists", "labels", "masters" or "releases" |
+| fn | <code>processChunkFn</code> |  | The function to call on each chunk of data. |
+| [gz] | <code>boolean</code> | <code>true</code> | A boolean indicating if the dump is compressed in gzip format |
+| [chunkSize] | <code>number</code> | <code>1000</code> | The number of XML rows that are parsed by `node-expat` until `fn` is called. A bigger number may be more efficient, but costs more memory |
+| [restart] | <code>boolean</code> | <code>false</code> | By default, the processing progress is stored in a `.processing` file alongside the data dumps. If the processing is stopped, it will continue from that row once you call `processDumpFile` again. Set this to `true` to always start from the beginning. |
+| [maxErrors] | <code>number</code> | <code>100</code> | If a row fails to insert, details will be logged to a .log file. Once `maxErrors` number of rows have failed to insert, processing will abort and the returned Promise will be rejected. |
+
+**Example**  
+```processDumpFile(  './discogs_20190101_artists.xml.gz',  'artists',  chunk => {     // process the results here. For this example, we just console.log them     chunk.forEach(row => console.log(row));     return Promise.resolve();  });```
+<a name="module_processing/processor..processDumps"></a>
+
+### processing/processor~processDumps(version, fn, [collections], [chunkSize], [restart], [dataDir], [maxErrors]) ⇒ <code>Promise.&lt;void&gt;</code>
+Looks up the downloaded data dumps of a given version. Then calls `processDumpFile`on each of them.
+
+**Kind**: inner method of [<code>processing/processor</code>](#module_processing/processor)  
+**See**: processDumpFile  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| version | <code>string</code> |  | 
+| fn | <code>function</code> |  | 
+| [collections] | <code>Array.&lt;string&gt;</code> |  | 
+| [chunkSize] | <code>number</code> | <code>1000</code> | 
+| [restart] | <code>boolean</code> | <code>false</code> | 
+| [dataDir] | <code>string</code> | <code>&quot;&#x27;/data&#x27;&quot;</code> | 
+| [maxErrors] | <code>number</code> | <code>100</code> | 
+
+<a name="module_processing/processor..processChunkFn"></a>
+
+### processing/processor~processChunkFn ⇒ <code>Promise</code>
+The signature of the `fn` function passed to `processDumpFile`
+
+**Kind**: inner typedef of [<code>processing/processor</code>](#module_processing/processor)  
+**Returns**: <code>Promise</code> - A promise that resolves when processing is complete  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| chunk | <code>Array.&lt;Object&gt;</code> | An array of plain objects as parsed by `node-expat` from XML |
+| collection | <code>string</code> | The type of collection ("artists", "labels", "masters" or "releases") |
 
 <a name="module_util/parseUtils"></a>
 
@@ -317,6 +357,8 @@ Small helpers for parsing discogs data
 * [util/parseUtils](#module_util/parseUtils)
     * [~parseIntSafe(str)](#module_util/parseUtils..parseIntSafe) ⇒ <code>number</code>
     * [~parseDiscogsName(name, target)](#module_util/parseUtils..parseDiscogsName) ⇒ <code>object</code>
+    * [~parseDuration(duration, target)](#module_util/parseUtils..parseDuration) ⇒ <code>object</code>
+    * [~parseReleaseDate(date, &#x60;target&#x60;)](#module_util/parseUtils..parseReleaseDate)
 
 <a name="module_util/parseUtils..parseIntSafe"></a>
 
@@ -341,4 +383,29 @@ Parses a name from Discogs that potentially has a "(n)" numeric postfix.Stores 
 | --- | --- | --- |
 | name | <code>string</code> | The name to parse |
 | target | <code>object</code> | An object to store the results on |
+
+<a name="module_util/parseUtils..parseDuration"></a>
+
+### util/parseUtils~parseDuration(duration, target) ⇒ <code>object</code>
+Parses the duration string from a Discogs XML file and stores the resulton the target object. Will store the string as-is on the 'originalDuration'property. If the duration is formatted somewhat correctly, will calculate theduration in number of seconds and store it on the 'duration' property.
+
+**Kind**: inner method of [<code>util/parseUtils</code>](#module_util/parseUtils)  
+**Returns**: <code>object</code> - `target` for chaining  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| duration | <code>string</code> | A duration formatted as string |
+| target | <code>object</code> | The target object to store results on |
+
+<a name="module_util/parseUtils..parseReleaseDate"></a>
+
+### util/parseUtils~parseReleaseDate(date, &#x60;target&#x60;)
+Will parse the given release date and format it according to DiscogsDatabase Guidelines. The result is stored on the "released" property of thetarget object. The date will be either formatted as YYYY or YYYY-MM-DD.If only the year and month are given, the date will be set to 00. If dashesare missing, they will be added. All other formats are discarded.
+
+**Kind**: inner method of [<code>util/parseUtils</code>](#module_util/parseUtils)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| date | <code>string</code> | The date string to parse |
+| `target` | <code>object</code> | for chaining |
 
