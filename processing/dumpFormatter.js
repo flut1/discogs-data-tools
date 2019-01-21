@@ -1,4 +1,9 @@
-const { parseIntSafe, parseDiscogsName, parseDuration } = require("../util/parseUtils");
+const {
+  parseIntSafe,
+  parseDiscogsName,
+  parseDuration,
+  parseReleaseDate
+} = require("../util/parseUtils");
 
 /**
  * Helpers to transform on the dumps parsed by XMLParser into plain objects
@@ -26,7 +31,7 @@ function formatLabel(label, includeImageObjects = false) {
   const encountered = new Set();
   for (const child of label.children) {
     if (encountered.has(child.tag)) {
-      throw new Error(`Unexpected duplicate ${child.tag}`)
+      throw new Error(`Unexpected duplicate ${child.tag}`);
     }
     encountered.add(child.tag);
 
@@ -105,7 +110,7 @@ function formatArtist(artist, includeImageObjects = false) {
   const encountered = new Set();
   for (const child of artist.children) {
     if (encountered.has(child.tag)) {
-      throw new Error(`Unexpected duplicate ${child.tag}`)
+      throw new Error(`Unexpected duplicate ${child.tag}`);
     }
     encountered.add(child.tag);
 
@@ -222,13 +227,13 @@ function formatMaster(master, includeImageObjects = false) {
     artists: [],
     styles: [],
     genres: [],
-    videos: [],
+    videos: []
   };
 
   const encountered = new Set();
   for (const child of master.children) {
     if (encountered.has(child.tag)) {
-      throw new Error(`Unexpected duplicate ${child.tag}`)
+      throw new Error(`Unexpected duplicate ${child.tag}`);
     }
     encountered.add(child.tag);
 
@@ -255,28 +260,32 @@ function formatMaster(master, includeImageObjects = false) {
           const enc2 = new Set();
           for (const artistChildTag of children) {
             if (enc2.has(artistChildTag.tag)) {
-              throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`)
+              throw new Error(
+                `Unexpected duplicate ${artistChildTag.tag} in artist`
+              );
             }
             enc2.add(artistChildTag.tag);
-            switch(artistChildTag.tag) {
-              case 'id':
+            switch (artistChildTag.tag) {
+              case "id":
                 resArtist.id = parseIntSafe(artistChildTag.text);
                 break;
-              case 'name':
+              case "name":
                 parseDiscogsName(artistChildTag.text, resArtist);
                 break;
-              case 'anv':
+              case "anv":
                 resArtist.anv = parseDiscogsName(artistChildTag.text, {});
                 break;
-              case 'join':
-              case 'role':
-              case 'tracks':
+              case "join":
+              case "role":
+              case "tracks":
                 if (artistChildTag.text) {
                   resArtist[artistChildTag.tag] = artistChildTag.text;
                 }
                 break;
               default:
-                throw new Error(`Unexpected artist child tag "${artistChildTag.tag}"`);
+                throw new Error(
+                  `Unexpected artist child tag "${artistChildTag.tag}"`
+                );
             }
           }
 
@@ -287,25 +296,29 @@ function formatMaster(master, includeImageObjects = false) {
         res.videos = child.children.map(({ children, attrs }) => {
           const resVideo = {
             duration: parseIntSafe(attrs.duration),
-            embed: attrs.embed === 'true',
+            embed: attrs.embed === "true",
             src: attrs.src
           };
 
           const enc2 = new Set();
           for (const videoChildTag of children) {
             if (enc2.has(videoChildTag.tag)) {
-              throw new Error(`Unexpected duplicate ${videoChildTag.tag} in video`)
+              throw new Error(
+                `Unexpected duplicate ${videoChildTag.tag} in video`
+              );
             }
             enc2.add(videoChildTag.tag);
-            switch(videoChildTag.tag) {
-              case 'title':
-              case 'description':
+            switch (videoChildTag.tag) {
+              case "title":
+              case "description":
                 if (videoChildTag.text) {
                   resVideo[videoChildTag.tag] = videoChildTag.text;
                 }
                 break;
               default:
-                throw new Error(`Unexpected artist child tag "${videoChildTag.tag}"`);
+                throw new Error(
+                  `Unexpected artist child tag "${videoChildTag.tag}"`
+                );
             }
           }
 
@@ -339,45 +352,54 @@ function formatMaster(master, includeImageObjects = false) {
   return res;
 }
 
-function parseTracklist(trackNodes, target, type = 'track') {
+function parseTracklist(trackNodes, target, type = "track") {
   for (const { children } of trackNodes) {
     const resTrack = {};
 
     const enc2 = new Set();
     for (const trackChildTrack of children) {
       if (enc2.has(trackChildTrack.tag)) {
-        throw new Error(`Unexpected duplicate ${trackChildTrack.tag} in artist`)
+        throw new Error(
+          `Unexpected duplicate ${trackChildTrack.tag} in artist`
+        );
       }
       enc2.add(trackChildTrack.tag);
-      switch(trackChildTrack.tag) {
-        case 'position':
-        case 'title':
+      switch (trackChildTrack.tag) {
+        case "position":
+        case "title":
           if (trackChildTrack.text) {
             resTrack[trackChildTrack.tag] = trackChildTrack.text;
           }
           break;
-        case 'duration':
+        case "duration":
           if (trackChildTrack.text) {
-            resTrack.duration = parseDuration(trackChildTrack.text);
+            parseDuration(trackChildTrack.text, resTrack);
           }
           break;
-        case 'sub_tracks':
+        case "sub_tracks":
           if (trackChildTrack.children) {
             resTrack.subTracks = [];
-            parseTracklist(trackChildTrack.children, resTrack.subTracks, 'subTracks');
+            parseTracklist(
+              trackChildTrack.children,
+              resTrack.subTracks,
+              "subTracks"
+            );
           }
           break;
         case "artists":
         case "extraartists":
           if (trackChildTrack.children) {
-            const prop = trackChildTrack.tag === 'artists' ? 'artists' : 'extraArtists';
+            const prop =
+              trackChildTrack.tag === "artists" ? "artists" : "extraArtists";
             resTrack[prop] = [];
             parseArtists(trackChildTrack.children, resTrack[prop]);
           }
           break;
         default:
           debugger;
-          throw new Error(`Unexpected ${type} child tag "${trackChildTrack.tag}"`);
+          throw new Error(
+            `Unexpected ${type} child tag "${trackChildTrack.tag}"`
+          );
       }
     }
 
@@ -392,28 +414,30 @@ function parseArtists(artistNodes, target) {
     const enc2 = new Set();
     for (const artistChildTag of children) {
       if (enc2.has(artistChildTag.tag)) {
-        throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`)
+        throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`);
       }
       enc2.add(artistChildTag.tag);
-      switch(artistChildTag.tag) {
-        case 'id':
+      switch (artistChildTag.tag) {
+        case "id":
           resArtist.id = parseIntSafe(artistChildTag.text);
           break;
-        case 'name':
+        case "name":
           parseDiscogsName(artistChildTag.text, resArtist);
           break;
-        case 'anv':
+        case "anv":
           resArtist.anv = parseDiscogsName(artistChildTag.text, {});
           break;
-        case 'join':
-        case 'tracks':
-        case 'role':
+        case "join":
+        case "tracks":
+        case "role":
           if (artistChildTag.text) {
             resArtist[artistChildTag.tag] = artistChildTag.text;
           }
           break;
         default:
-          throw new Error(`Unexpected artist child tag "${artistChildTag.tag}"`);
+          throw new Error(
+            `Unexpected artist child tag "${artistChildTag.tag}"`
+          );
       }
     }
 
@@ -442,13 +466,13 @@ function formatRelease(release, includeImageObjects = false) {
     genres: [],
     labels: [],
     formats: [],
-    videos: [],
+    videos: []
   };
 
   const encountered = new Set();
   for (const child of release.children) {
     if (encountered.has(child.tag)) {
-      throw new Error(`Unexpected duplicate ${child.tag}`)
+      throw new Error(`Unexpected duplicate ${child.tag}`);
     }
     encountered.add(child.tag);
 
@@ -471,7 +495,10 @@ function formatRelease(release, includeImageObjects = false) {
       case "artists":
       case "extraartists":
         if (child.children) {
-          parseArtists(child.children, res[child.tag === 'artists' ? 'artists' : 'extraArtists']);
+          parseArtists(
+            child.children,
+            res[child.tag === "artists" ? "artists" : "extraArtists"]
+          );
         }
         break;
       case "tracklist":
@@ -483,25 +510,29 @@ function formatRelease(release, includeImageObjects = false) {
         res.videos = child.children.map(({ children, attrs }) => {
           const resVideo = {
             duration: parseIntSafe(attrs.duration),
-            embed: attrs.embed === 'true',
+            embed: attrs.embed === "true",
             src: attrs.src
           };
 
           const enc2 = new Set();
           for (const videoChildTag of children) {
             if (enc2.has(videoChildTag.tag)) {
-              throw new Error(`Unexpected duplicate ${videoChildTag.tag} in video`)
+              throw new Error(
+                `Unexpected duplicate ${videoChildTag.tag} in video`
+              );
             }
             enc2.add(videoChildTag.tag);
-            switch(videoChildTag.tag) {
-              case 'title':
-              case 'description':
+            switch (videoChildTag.tag) {
+              case "title":
+              case "description":
                 if (videoChildTag.text) {
                   resVideo[videoChildTag.tag] = videoChildTag.text;
                 }
                 break;
               default:
-                throw new Error(`Unexpected artist child tag "${videoChildTag.tag}"`);
+                throw new Error(
+                  `Unexpected artist child tag "${videoChildTag.tag}"`
+                );
             }
           }
 
@@ -540,7 +571,9 @@ function formatRelease(release, includeImageObjects = false) {
                     }
                     break;
                   default:
-                    throw new Error(`Unexpected format child tag "${formatChild.tag}"`);
+                    throw new Error(
+                      `Unexpected format child tag "${formatChild.tag}"`
+                    );
                 }
               }
             }
@@ -571,7 +604,9 @@ function formatRelease(release, includeImageObjects = false) {
                   }
                   break;
                 default:
-                  throw new Error(`Unexpected company child tag "${companyChild.tag}"`);
+                  throw new Error(
+                    `Unexpected company child tag "${companyChild.tag}"`
+                  );
               }
             }
 
@@ -584,7 +619,7 @@ function formatRelease(release, includeImageObjects = false) {
           for (const { attrs } of child.children) {
             const resIdentifier = {
               type: attrs.type,
-              valie: attrs.valie,
+              valie: attrs.valie
             };
 
             if (attrs.description) {
@@ -596,6 +631,10 @@ function formatRelease(release, includeImageObjects = false) {
         }
         break;
       case "released":
+        if (child.text) {
+          parseReleaseDate(child.text, res);
+        }
+        break;
       case "data_quality":
       case "title":
       case "notes":
@@ -606,7 +645,7 @@ function formatRelease(release, includeImageObjects = false) {
         break;
       case "master_id":
         res.masterId = parseIntSafe(child.text);
-        res.isMainRelease = child.attrs.is_main_release === 'true';
+        res.isMainRelease = child.attrs.is_main_release === "true";
         break;
       case "genres":
       case "styles":

@@ -53,8 +53,45 @@ function parseDiscogsName(name, target) {
   return target;
 }
 
-function parseDuration(duration) {
-  return duration.replace(/\./g, ':');
+function parseDuration(duration, target) {
+  if (duration) {
+    target.originalDuration = duration;
+
+    const parts = duration.split(/[:.]/g);
+    if (parts.some(part => !part.match(/^\d+$/))) {
+      console.log(`Could not parse duration "${duration}"`);
+      console.log(JSON.stringify(target));
+      return target;
+    }
+
+    let hours = parts.length > 2 ? parseIntSafe(parts[parts.length - 2]) : 0;
+    let minutes = parts.length > 1 ? parseIntSafe(parts[parts.length - 2]) : 0;
+    let seconds = parseIntSafe(parts[parts.length - 1]);
+
+    target.duration = seconds + minutes * 60 + hours * 60 * 60;
+  }
+  return target;
 }
 
-module.exports = { parseIntSafe, parseDiscogsName, parseDuration };
+function parseReleaseDate(date, target) {
+  if (date.length === 4 && date.match(/^[\d]{4}$/)) {
+    target.released = date;
+  } else if (date.match(/^[\d]{4}-[\d]{2}-[\d]{2}$/)) {
+    target.released = date;
+  } else if (date.match(/^[\d]{4}-[\d]{2}$/)) {
+    target.released = `${date}-00`;
+  } else if (date.match(/^[\d]{8}$/)) {
+    target.released = `${date.substring(0, 4) -
+      date.substring(4, 6) -
+      date.substring(6)}`;
+  } else {
+    console.log(`Warning: dropping invalid release date "${date}"`);
+  }
+}
+
+module.exports = {
+  parseIntSafe,
+  parseDiscogsName,
+  parseDuration,
+  parseReleaseDate
+};
