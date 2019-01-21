@@ -13,29 +13,32 @@ data dumps see: https://data.discogs.com/
 
 ## CLI Usage
 ```
-discogs-data-tools <command>
+discogs-data-tools <command> args
 ```
+See the command-specific documentation below. Every command requires you to
+specify a target dump version. This can be done with either the `--interactive` (`-i`),
+`--latest` (`-l`) or `--target-version` (`-t`) argument.
 
 <!-- below section is automatically generated. Do not modify -->
 <!-- CLI -->
 
 ### fetch command
 ```
-discogs-data-tools fetch
+discogs-data-tools fetch <target> [...args]
 
-Fetch data dump from discogs
-
-Options:
-  --version             Show version number                                                          [boolean]
-  --data-dir, -d        Root directory where dumps and related files are stored.  [string] [default: "./data"]
-  --target-version, -t  Full name of the target dump version. ie: 20180101                            [string]
+Target (one required):
   --interactive, -i     Interactively select the target dump version                                 [boolean]
   --latest, -l          Automatically select the latest version                                      [boolean]
-  --collections, -c     Select which collections to target. If not given, will target all
+  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
+
+Optional args:
+  --version            Show version number                                                           [boolean]
+  --data-dir, -d       Root directory where dumps and related files are stored.   [string] [default: "./data"]
+  --collections, -c    Select which collections to target. If not given, will target all
                                                  [array] [choices: "artists", "labels", "masters", "releases"]
-  --help                Show help                                                                    [boolean]
-  --hide-progress, -n   Don't show a progress bar                                                    [boolean]
-  --skip-verify         Skip verifying the dumps with the checksum provided by Discogs               [boolean]
+  --help               Show help                                                                     [boolean]
+  --hide-progress, -n  Don't show a progress bar                                                     [boolean]
+  --skip-verify        Skip verifying the dumps with the checksum provided by Discogs                [boolean]
 
 Examples:
   discogs-data-tools fetch --target-version 20180101 --collections labels masters
@@ -43,19 +46,19 @@ Examples:
 
 ### verify command
 ```
-discogs-data-tools verify
+discogs-data-tools verfy <target> [...args]
 
-Verify dump files that have previously been downloaded. Note: by default, the fetch command already verifies
-
-Options:
-  --version             Show version number                                                          [boolean]
-  --data-dir, -d        Root directory where dumps and related files are stored.  [string] [default: "./data"]
-  --target-version, -t  Full name of the target dump version. ie: 20180101                            [string]
+Target (one required):
   --interactive, -i     Interactively select the target dump version                                 [boolean]
   --latest, -l          Automatically select the latest version                                      [boolean]
-  --collections, -c     Select which collections to target. If not given, will target all
+  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
+
+Optional args:
+  --version          Show version number                                                             [boolean]
+  --data-dir, -d     Root directory where dumps and related files are stored.     [string] [default: "./data"]
+  --collections, -c  Select which collections to target. If not given, will target all
                                                  [array] [choices: "artists", "labels", "masters", "releases"]
-  --help                Show help                                                                    [boolean]
+  --help             Show help                                                                       [boolean]
 
 Examples:
   discogs-data-tools verify --latest
@@ -64,17 +67,17 @@ Examples:
 
 ### mongo command
 ```
-discogs-data-tools mongo
+discogs-data-tools mongo <target> [...args]
 
-import data dump into mongo database
+Target (one required):
+  --interactive, -i     Interactively select the target dump version                                 [boolean]
+  --latest, -l          Automatically select the latest version                                      [boolean]
+  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
 
-Options:
+Optional args:
   --version                   Show version number                                                    [boolean]
   --data-dir, -d              Root directory where dumps and related files are stored.
                                                                                   [string] [default: "./data"]
-  --target-version, -t        Full name of the target dump version. ie: 20180101                      [string]
-  --interactive, -i           Interactively select the target dump version                           [boolean]
-  --latest, -l                Automatically select the latest version                                [boolean]
   --collections, -c           Select which collections to target. If not given, will target all
                                                  [array] [choices: "artists", "labels", "masters", "releases"]
   --help                      Show help                                                              [boolean]
@@ -84,7 +87,7 @@ Options:
   --silent, -m                Mute all console output                                                [boolean]
   --indexes                   Create indexes on collections                          [boolean] [default: true]
   --skip-validation           Skip validation of XML nodes. Can considerably speed up processing, but you may
-                              get invalid rows                                       [boolean] [default: true]
+                              get invalid rows                                                       [boolean]
   --max-errors, -e            Number of rows that could not be inserted before the command is aborted
                                                                                        [number] [default: 100]
   --bail, -b                  Immediately abort when a validation error occurs or a row failed to persist to
@@ -98,7 +101,7 @@ Options:
 
 Examples:
   discogs-data-tools mongo --no-indexes --latest --connection mongodb://root:pw@127.0.0.1:27017
-  discogs-data-tools mongo --target-version 20180401 --chunk-size 100 --connection mongodb://root:pw@127.0.0.1:27017
+  discogs-data-tools mongo --target-version 20180401 --restart --connection mongodb://root:pw@localhost:27017
 ```
 
 ### ls command
@@ -107,15 +110,17 @@ discogs-data-tools ls
 
 List all downloaded data
 
-Options:
-  --version             Show version number                                                          [boolean]
-  --data-dir, -d        Root directory where dumps and related files are stored.  [string] [default: "./data"]
-  --target-version, -t  Full name of the target dump version. ie: 20180101                            [string]
+Target (one required):
   --interactive, -i     Interactively select the target dump version                                 [boolean]
   --latest, -l          Automatically select the latest version                                      [boolean]
-  --collections, -c     Select which collections to target. If not given, will target all
+  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
+
+Optional args:
+  --version          Show version number                                                             [boolean]
+  --data-dir, -d     Root directory where dumps and related files are stored.     [string] [default: "./data"]
+  --collections, -c  Select which collections to target. If not given, will target all
                                                  [array] [choices: "artists", "labels", "masters", "releases"]
-  --help                Show help                                                                    [boolean]
+  --help             Show help                                                                       [boolean]
 ```
 <!-- /CLI -->
 

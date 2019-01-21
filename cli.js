@@ -11,7 +11,7 @@ module.exports = yargs
     },
     "target-version": {
       alias: "t",
-      describe: "Full name of the target dump version. ie: 20180101",
+      describe: "Manually pass the name of the target dump version. ie: \"20180101\"",
       type: "string"
     },
     interactive: {
@@ -32,12 +32,13 @@ module.exports = yargs
       type: "array"
     }
   })
+  .group(['interactive', 'latest', 'target-version'], 'Target (one required):')
   .conflicts("l", "i")
   .conflicts("l", "t")
   .conflicts("i", "t")
   .command(
     "fetch",
-    "Fetch data dump from discogs",
+    "Fetch data dump files from Discogs.",
     y => {
       return y
         .options({
@@ -52,6 +53,7 @@ module.exports = yargs
             type: "boolean"
           }
         })
+        .usage('$0 fetch <target> [...args]')
         .example(
           "$0 fetch --target-version 20180101 --collections labels masters"
         );
@@ -62,9 +64,12 @@ module.exports = yargs
   )
   .command(
     "verify",
-    "Verify dump files that have previously been downloaded. Note: by default, the fetch command already verifies",
+    "Verify dump files that have previously been downloaded. " +
+      "This uses the checksum available on the website. " +
+      "Note: by default, the 'fetch' command already verifies",
     y => {
       return y
+        .usage('$0 verfy <target> [...args]')
         .example("$0 verify --latest")
         .example("$0 verify --target-version 20180101 --collections releases");
     },
@@ -82,7 +87,10 @@ module.exports = yargs
   )
   .command(
     "mongo",
-    "import data dump into mongo database",
+    "Import data dumps into a mongo database. " +
+    "Dumps should already have been downloaded using the 'fetch' command. " +
+    "Each '.xml.gz' file of the data dumps are stored in their own MongoDB collection. " +
+    "By default, will also create some indexes on the new collections.",
     y => {
       return y
         .options({
@@ -103,14 +111,15 @@ module.exports = yargs
             describe: "Mute all console output",
             type: "boolean"
           },
-          "indexes": {
+          indexes: {
             default: true,
             describe: "Create indexes on collections",
             type: "boolean"
           },
           "skip-validation": {
             describe:
-              "Skip validation of XML nodes. Can considerably speed up processing, but you may get invalid rows",
+              "Skip validation of XML nodes. " +
+              "Can considerably speed up processing, but you may get invalid rows",
             type: "boolean"
           },
           "max-errors": {
@@ -146,15 +155,17 @@ module.exports = yargs
           },
           "include-image-objects": {
             describe:
-              "Include image objects. By default, will only include the image count because image objects in data dumps are missing the URI",
+              "Include image objects. By default, will only include the image count " +
+              "because image objects in data dumps are missing the URI",
             type: "boolean"
           }
         })
+        .usage('$0 mongo <target> [...args]')
         .example(
           "$0 mongo --no-indexes --latest --connection mongodb://root:pw@127.0.0.1:27017"
         )
         .example(
-          "$0 mongo --target-version 20180401 --chunk-size 100 --connection mongodb://root:pw@127.0.0.1:27017"
+          "$0 mongo --target-version 20180401 --restart --connection mongodb://root:pw@localhost:27017"
         );
     },
     argv => {
@@ -162,8 +173,9 @@ module.exports = yargs
     }
   )
   .demandCommand(1, 1)
+  .updateStrings({ 'Options:': 'Optional args:'})
   .usage(
-    '$0 <command> [...args]\nFor help on a command run "$0 <command> help"'
+    '$0 <command> <target> [...args]\nFor help on a command run "$0 <command> help"'
   )
   .help()
-  .wrap(110).argv;
+  .wrap(yargs.terminalWidth() || 110).argv;
