@@ -54,7 +54,7 @@ which is equal to the number of images.
 - Incorrectly formatted release dates are transformed according to the Discogs Database Guidelines
 (either `YYYY` or `YYYY-MM-DD`). Release dates that cannot be transformed are removed.
 
-To see the exact schema of formatted documents, see the JSON schema in the [/schema/doc](./schema/doc)
+To see the exact schema of formatted documents, see the JSON schema in the [/schema/docs](./schema/docs)
 folder.
 
 ## Database import
