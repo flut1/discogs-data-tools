@@ -77,6 +77,7 @@ async function main(argv, client) {
   }
 
   const ajv = new Ajv({ verbose: true });
+  ajv.addSchema(validationSchema.defs);
   if (!argv["include-image-objects"]) {
     // no need to verify the item content
     delete validationSchema.defs.definitions.imagesTag.properties.children
@@ -86,7 +87,6 @@ async function main(argv, client) {
 
   for (const collection of collections) {
     validators[collection] = ajv
-      .addSchema(validationSchema.defs)
       .compile(validationSchema[collection]);
   }
 
