@@ -1,11 +1,180 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Artist Doc",
+  "title": "Artist Document",
   "description": "An artist document formatted by dumpFormatter.js~formatArtist",
   "type": "object",
   "properties": {
-
+    "id": {
+      "type": "number"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "nameIndex": {
+      "type": "number"
+    },
+    "aliases": {
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/nameRef"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "name",
+              "originalName",
+              "id",
+              "nameIndex"
+            ]
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "nameVariations": {
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/nameRef"
+          },
+          {
+            "required": [
+              "name",
+              "originalName",
+              "nameIndex"
+            ]
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "originalName": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "realName": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/nameRef"
+        },
+        {
+          "required": [
+            "name",
+            "originalName",
+            "nameIndex"
+          ]
+        }
+      ]
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "imageCount": {
+      "type": "number"
+    },
+    "images": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "members": {
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/nameRef"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "name",
+              "originalName",
+              "id",
+              "nameIndex"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "groups": {
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/nameRef"
+          },
+          {
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "name",
+              "originalName",
+              "id",
+              "nameIndex"
+            ],
+            "type": "object"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "dataQuality": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "urls": {
+      "items": {
+        "type": "string",
+        "pattern": "^[\\s\\S]+$"
+      },
+      "type": "array"
+    }
   },
-  "additionalProperties": false,
-  "required": []
+  "definitions": {
+    "nameRef": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[\\s\\S]+$"
+        },
+        "nameIndex": {
+          "type": "number"
+        },
+        "originalName": {
+          "type": "string",
+          "pattern": "^[\\s\\S]+$"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "imageCount",
+    "urls",
+    "id",
+    "members",
+    "groups",
+    "dataQuality",
+    "originalName",
+    "nameIndex",
+    "nameVariations",
+    "aliases",
+    "name"
+  ],
+  "additionalProperties": false
 }

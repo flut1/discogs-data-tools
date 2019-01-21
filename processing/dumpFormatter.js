@@ -4,7 +4,7 @@ const {
   parseDuration,
   parseReleaseDate
 } = require("../util/parseUtils");
-const logger = require('../util/logger');
+const logger = require("../util/logger");
 
 /**
  * Helpers to transform on the dumps parsed by XMLParser into plain objects
@@ -26,7 +26,7 @@ function formatLabel(label, includeImageObjects = false) {
   const res = {
     imageCount: 0,
     urls: [],
-    subLabels: []
+    sublabels: []
   };
 
   const encountered = new Set();
@@ -59,11 +59,12 @@ function formatLabel(label, includeImageObjects = false) {
         res.urls = child.children.map(({ text }) => text).filter(_ => _);
         break;
       case "sublabels":
-        res.subLabels = child.children.map(({ text, attrs }) => {
+        for (const { text, attrs } of child.children) {
           const sublabel = { id: parseIntSafe(attrs.id) };
           parseDiscogsName(text, sublabel);
-          return sublabel;
-        });
+
+          res.sublabels.push(sublabel);
+        }
         break;
       case "parentLabel":
         res.parent = {
@@ -111,6 +112,7 @@ function formatArtist(artist, includeImageObjects = false) {
     urls: [],
     aliases: [],
     members: [],
+    groups: [],
     nameVariations: []
   };
 
@@ -139,16 +141,22 @@ function formatArtist(artist, includeImageObjects = false) {
         break;
       case "aliases":
       case "groups":
-        res[child.tag] = child.children.map(({ text, attrs }) => {
+        for (const { text, attrs } of child.children) {
           const childRes = {
             id: parseIntSafe(attrs.id)
           };
 
           if (text) {
             parseDiscogsName(text, childRes);
+            res[child.tag].push(childRes);
+          } else {
+            logger.warn(
+              `Removing (id: ${childRes.id}) from artist.${
+                child.tag
+              } because it does not have a name.`
+            );
           }
-          return childRes;
-        });
+        }
         break;
       case "id":
         res.id = parseIntSafe(child.text);
@@ -175,7 +183,9 @@ function formatArtist(artist, includeImageObjects = false) {
         parseDiscogsName(child.text, res);
         break;
       case "profile":
-        res[child.tag] = child.text || "";
+        if (child.text) {
+          res[child.tag] = child.text;
+        }
         break;
       case "members":
         for (const { tag, text, attrs } of child.children) {

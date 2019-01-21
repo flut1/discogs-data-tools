@@ -1,90 +1,103 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Label Doc",
+  "additionalProperties": false,
+  "definitions": {
+    "nameIdRef": {
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[\\s\\S]+$"
+        },
+        "nameIndex": {
+          "type": "number"
+        },
+        "originalName": {
+          "type": "string",
+          "pattern": "^[\\s\\S]+$"
+        }
+      },
+      "type": "object"
+    }
+  },
   "description": "An label document formatted by dumpFormatter.js~formatLabel",
-  "type": "object",
   "properties": {
+    "contactInfo": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "dataQuality": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "id": {
+      "type": "number"
+    },
     "imageCount": {
       "type": "number"
     },
     "images": {
-      "type": "array",
       "items": {
         "type": "object"
-      }
+      },
+      "type": "array"
     },
-    "urls": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+    "name": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
     },
-    "subLabels": {
-      "type": "array",
+    "nameIndex": {
+      "type": "number"
+    },
+    "originalName": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "parent": {
+      "$ref": "#/definitions/nameIdRef"
+    },
+    "profile": {
+      "type": "string",
+      "pattern": "^[\\s\\S]+$"
+    },
+    "sublabels": {
       "items": {
         "allOf": [
           {
             "$ref": "#/definitions/nameIdRef"
           },
           {
-            "required": ["name", "originalName", "id", "nameIndex"]
+            "required": [
+              "name",
+              "originalName",
+              "id",
+              "nameIndex"
+            ]
           }
         ]
-      }
+      },
+      "type": "array"
     },
-    "profile": {
-      "type": "string"
-    },
-    "dataQuality": {
-      "type": "string"
-    },
-    "parent": {
-      "$ref": "#/definitions/nameIdRef"
-    },
-    "nameIndex": {
-      "type": "number"
-    },
-    "originalName": {
-      "type": "string"
-    },
-    "name": {
-      "type": "string"
-    },
-    "contactInfo": {
-      "type": "string"
-    },
-    "id": {
-      "type": "number"
+    "urls": {
+      "items": {
+        "type": "string",
+        "pattern": "^[\\s\\S]+$"
+      },
+      "type": "array"
     }
   },
-  "definitions": {
-    "nameIdRef": {
-      "type": "object",
-      "properties": {
-        "nameIndex": {
-          "type": "number"
-        },
-        "originalName": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "id": {
-          "type": "number"
-        }
-      }
-    }
-  },
-  "additionalProperties": false,
   "required": [
     "imageCount",
     "urls",
-    "subLabels",
+    "sublabels",
     "id",
     "dataQuality",
     "originalName",
     "nameIndex",
     "name"
-  ]
+  ],
+  "title": "Label Document",
+  "type": "object"
 }

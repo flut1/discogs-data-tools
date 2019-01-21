@@ -201,7 +201,7 @@ async function main(argv, client) {
           argv["include-image-objects"]
         );
 
-        if (argv["validate-docs"]) {
+        if (argv["validate-docs"] && doc) {
           const valid = docValidators[collection](doc, {
             verbose: true,
             extendRefs: "fail"
@@ -211,7 +211,9 @@ async function main(argv, client) {
             throw new Error(
               `Invalid document with id ${doc.id}: \n\n${JSON.stringify(
                 doc
-              )}\n\n${docValidators[collection].errors
+              )}\n${JSON.stringify(Object.keys(doc))}\n\n${docValidators[
+                collection
+              ].errors
                 .map(({ dataPath, message, schemaPath }) => {
                   let targetData = "(unable to find target data)";
 
@@ -236,7 +238,8 @@ async function main(argv, client) {
           ...entry,
           doc
         };
-      });
+      })
+      .filter(({ doc }) => !!doc);
 
     try {
       await db.collection(collection).bulkWrite(
