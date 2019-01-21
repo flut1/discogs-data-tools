@@ -13,14 +13,23 @@ See [Node.JS API](#nodejs-api) below for an example.
 **This module is not officially affiliated with Discogs.** For license information on Discogs
 data dumps see: https://data.discogs.com/
 
+## Motivation
+Discogs has its own API, but the way the data is structured make it difficult to look up information
+for some use cases. That's why the monthly data dumps are very useful: you can structure and query
+the data according to your application's needs. However, parsing the large and at some points somewhat
+inconsistent XML dumps into a database is not a trivial task. This tool is meant to help out with that.
+
 ## Installation
 
 - Install Node.JS (min 8.2.1)
 - Some dependencies are built using `node-gyp`, which has additional prerequisites. See the [node-gyp documentation](https://github.com/nodejs/node-gyp#Installation) for more info.
-- Run `npm install -g discogs-data-tools`
+- Depending on your use case:
+  - To use the NodeJS API in your own node application run `npm install --save disogs-data-tools`
+  - To install the tool for global usage run `npm install -g discogs-data-tools`
+  - Run the tool directly using npx (see [CLI Usage](#CLI-usage) below)
 
 ## Data transformation
-Data from the database will be transformed when using the `mongo` cli command or when formatting using
+Data from the database will be transformed when using the `mongo` CLI command or when formatting using
 the `dumpFormatter` module. This is to fix some inconsistencies in the data and make it easier to
 work with:
 
@@ -42,14 +51,24 @@ which is equal to the number of images.
 - Incorrectly formatted release dates are transformed according to the Discogs Database Guidelines
 (either `YYYY` or `YYYY-MM-DD`). Release dates that cannot be transformed are removed.
 
-
 To see the exact schema of formatted documents, see the JSON schema in the [/schema/doc](./schema/doc)
 folder.
 
+## Database import
+Currently, this library only contains utilities to import the data dumps into MongoDB. However, the
+NodeJS API allows you to use the same code to import into other databases. See examples below.
+If you'd like to contribute a script to import into a different database, please send a PR :)
+
+### MongoDB Indexes
+When using the `mongo` CLI command, some useful indexes will be automatically added to the database
+collections to make it faster to query the data. You can see the indexes in the
+[mongoIndexSpec.json](./config/mongoIndexSpec.json) file. If you don't want these indexes to be added you
+can opt-out using the `--no-indexes` command line flag.
+
 ## CLI Usage
-```
-discogs-data-tools <command> args
-```
+ - Use globally installed version: `discogs-data-tools <command> ...args`
+ - Using npx: `npx discogs-data-tools <command> ...args`
+
 See the command-specific documentation below. Every command requires you to
 specify a target dump version. This can be done with either the `--interactive` (`-i`),
 `--latest` (`-l`) or `--target-version` (`-t`) argument.
