@@ -96,6 +96,8 @@ Optional args:
   --indexes                   Create indexes on collections                          [boolean] [default: true]
   --skip-validation           Skip validation of XML nodes. Can considerably speed up processing, but you may
                               get invalid rows                                                       [boolean]
+  --validate-docs             perform additional validation on the objects after theyhave been formatted. Used
+                              for development, not necessary on usage                                [boolean]
   --max-errors, -e            Number of rows that could not be inserted before the command is aborted
                                                                                        [number] [default: 100]
   --bail, -b                  Immediately abort when a validation error occurs or a row failed to persist to

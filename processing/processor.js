@@ -10,7 +10,6 @@ const { COLLECTIONS, DEFAULT_DATA_DIR } = require("../constants");
  * @module processing/processor
  */
 
-
 /**
  * The signature of the `fn` function passed to `processDumpFile`
  * @callback processChunkFn
@@ -84,8 +83,7 @@ function processDumpFile(
     let newChunk = new Array(chunkSize);
     let chunkIndex = 0;
 
-
-    reader.on("record", function(record) {
+    reader.on("record", record => {
       if (processed >= toSkip) {
         newChunk[chunkIndex] = record;
         chunkIndex++;
@@ -93,7 +91,7 @@ function processDumpFile(
         if (chunkIndex >= chunkSize) {
           chunkIndex = 0;
           reader.pause();
-          let tmp = oldChunk;
+          const tmp = oldChunk;
           oldChunk = newChunk;
           newChunk = tmp;
 

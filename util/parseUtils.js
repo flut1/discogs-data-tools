@@ -12,6 +12,7 @@ const logger = require('./logger');
  */
 function parseIntSafe(str) {
   const res = parseInt(str, 10);
+  // eslint-disable-next-line no-restricted-globals
   if (isNaN(res)) {
     throw new Error(`Could not convert "${str}" to integer`);
   }
@@ -33,8 +34,9 @@ function parseIntSafe(str) {
  */
 function parseDiscogsName(name, target) {
   if (!name) {
-    return;
+    return target;
   }
+  /* eslint-disable no-param-reassign */
 
   target.originalName = name;
 
@@ -45,12 +47,14 @@ function parseDiscogsName(name, target) {
       throw new Error(`Expected name to match regex pattern: ${name}`);
     }
 
-    target.nameIndex = nameIndexMatch[2] ? parseInt(nameIndexMatch[2]) : 1;
+    target.nameIndex = nameIndexMatch[2] ? parseInt(nameIndexMatch[2], 10) : 1;
+    // eslint-disable-next-line prefer-destructuring
     target.name = nameIndexMatch[1];
   } else {
     target.nameIndex = 1;
     target.name = name;
   }
+  /* eslint:enable no-param-reassign */
 
   return target;
 }
@@ -75,9 +79,9 @@ function parseDuration(duration, target) {
       return target;
     }
 
-    let hours = parts.length > 2 ? parseIntSafe(parts[parts.length - 2]) : 0;
-    let minutes = parts.length > 1 ? parseIntSafe(parts[parts.length - 2]) : 0;
-    let seconds = parseIntSafe(parts[parts.length - 1]);
+    const hours = parts.length > 2 ? parseIntSafe(parts[parts.length - 2]) : 0;
+    const minutes = parts.length > 1 ? parseIntSafe(parts[parts.length - 2]) : 0;
+    const seconds = parseIntSafe(parts[parts.length - 1]);
 
     target.duration = seconds + minutes * 60 + hours * 60 * 60;
   }

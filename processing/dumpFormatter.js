@@ -353,6 +353,44 @@ function formatMaster(master, includeImageObjects = false) {
   return res;
 }
 
+function parseArtists(artistNodes, target) {
+  for (const { children } of artistNodes) {
+    const resArtist = {};
+
+    const enc2 = new Set();
+    for (const artistChildTag of children) {
+      if (enc2.has(artistChildTag.tag)) {
+        throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`);
+      }
+      enc2.add(artistChildTag.tag);
+      switch (artistChildTag.tag) {
+        case "id":
+          resArtist.id = parseIntSafe(artistChildTag.text);
+          break;
+        case "name":
+          parseDiscogsName(artistChildTag.text, resArtist);
+          break;
+        case "anv":
+          resArtist.anv = parseDiscogsName(artistChildTag.text, {});
+          break;
+        case "join":
+        case "tracks":
+        case "role":
+          if (artistChildTag.text) {
+            resArtist[artistChildTag.tag] = artistChildTag.text;
+          }
+          break;
+        default:
+          throw new Error(
+            `Unexpected artist child tag "${artistChildTag.tag}"`
+          );
+      }
+    }
+
+    target.push(resArtist);
+  }
+}
+
 function parseTracklist(trackNodes, target, type = "track") {
   for (const { children } of trackNodes) {
     const resTrack = {};
@@ -397,7 +435,6 @@ function parseTracklist(trackNodes, target, type = "track") {
           }
           break;
         default:
-          debugger;
           throw new Error(
             `Unexpected ${type} child tag "${trackChildTrack.tag}"`
           );
@@ -405,44 +442,6 @@ function parseTracklist(trackNodes, target, type = "track") {
     }
 
     target.push(resTrack);
-  }
-}
-
-function parseArtists(artistNodes, target) {
-  for (const { children } of artistNodes) {
-    const resArtist = {};
-
-    const enc2 = new Set();
-    for (const artistChildTag of children) {
-      if (enc2.has(artistChildTag.tag)) {
-        throw new Error(`Unexpected duplicate ${artistChildTag.tag} in artist`);
-      }
-      enc2.add(artistChildTag.tag);
-      switch (artistChildTag.tag) {
-        case "id":
-          resArtist.id = parseIntSafe(artistChildTag.text);
-          break;
-        case "name":
-          parseDiscogsName(artistChildTag.text, resArtist);
-          break;
-        case "anv":
-          resArtist.anv = parseDiscogsName(artistChildTag.text, {});
-          break;
-        case "join":
-        case "tracks":
-        case "role":
-          if (artistChildTag.text) {
-            resArtist[artistChildTag.tag] = artistChildTag.text;
-          }
-          break;
-        default:
-          throw new Error(
-            `Unexpected artist child tag "${artistChildTag.tag}"`
-          );
-      }
-    }
-
-    target.push(resArtist);
   }
 }
 

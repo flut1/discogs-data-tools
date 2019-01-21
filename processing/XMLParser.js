@@ -12,6 +12,7 @@ const zlib = require('zlib');
 class XMLParser extends events.EventEmitter {
   constructor(filename, targetDepth, options) {
     super();
+    // eslint-disable-next-line no-param-reassign
     options.gzip = options.gzip || false;
     this.targetDepth = targetDepth + 1;
     this.parser = new expat.Parser('UTF-8');
@@ -44,7 +45,8 @@ class XMLParser extends events.EventEmitter {
 
     if (!this.isCapturing && this.level !== this.targetDepth) {
       return;
-    } else if (!this.isCapturing) {
+    }
+    if (!this.isCapturing) {
       this.isCapturing = true;
       this.node = {};
       this.nodes = [];
@@ -55,7 +57,7 @@ class XMLParser extends events.EventEmitter {
       this.node.children = [];
     }
 
-    let child = { tag: name };
+    const child = { tag: name };
     this.node.children.push(child);
 
     if (Object.keys(attrs).length > 0) {
@@ -70,7 +72,7 @@ class XMLParser extends events.EventEmitter {
     }
   }
 
-  handleEndElement(name) {
+  handleEndElement() {
     this.level--;
     this.node = this.nodes.pop();
 
@@ -102,7 +104,7 @@ class XMLParser extends events.EventEmitter {
     this.stream.pause();
     this.suspended = true;
     if( !this.parser.pause() ) {
-      throw(new Error("Cannot pause parser: "+this.parser.getError()));
+      throw(new Error(`Cannot pause parser: ${this.parser.getError()}`));
     }
   }
 
@@ -118,7 +120,7 @@ class XMLParser extends events.EventEmitter {
     this.suspended = false;
 
     if( !this.parser.resume() ) {
-      throw(new Error("Cannot resume parser: "+this.parser.getError()));
+      throw(new Error(`Cannot resume parser: ${this.parser.getError()}`));
     }
 
     if( !this.suspended ) {
