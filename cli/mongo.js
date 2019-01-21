@@ -202,7 +202,7 @@ async function main(argv, client) {
         );
 
         if (argv["validate-docs"]) {
-          const valid = docValidators[collection](entry, {
+          const valid = docValidators[collection](doc, {
             verbose: true,
             extendRefs: "fail"
           });
@@ -211,14 +211,15 @@ async function main(argv, client) {
             throw new Error(
               `Invalid document with id ${doc.id}: \n\n${JSON.stringify(
                 doc
-              ).substring(0, 40)}\n\n${docValidators[collection].errors
+              )}\n\n${docValidators[collection].errors
                 .map(({ dataPath, message, schemaPath }) => {
                   let targetData = "(unable to find target data)";
+
                   try {
-                    targetData = objectGet(
-                      doc,
-                      dataPath.replace(/^[^.]+\./, "")
-                    );
+                    targetData =
+                      dataPath === "[object Object]"
+                        ? doc
+                        : objectGet(doc, dataPath.replace(/^[^.]+\./, ""));
                   } catch (e) {
                     // nothing
                   }
@@ -262,7 +263,7 @@ async function main(argv, client) {
         throw new Error(
           `Unable to write document id=${originalIndex} to db:\n${e.code} ${
             e.message
-            }`
+          }`
         );
       }
 

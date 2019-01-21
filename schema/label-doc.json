@@ -4,8 +4,87 @@
   "description": "An label document formatted by dumpFormatter.js~formatLabel",
   "type": "object",
   "properties": {
-
+    "imageCount": {
+      "type": "number"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subLabels": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/nameIdRef"
+          },
+          {
+            "required": ["name", "originalName", "id", "nameIndex"]
+          }
+        ]
+      }
+    },
+    "profile": {
+      "type": "string"
+    },
+    "dataQuality": {
+      "type": "string"
+    },
+    "parent": {
+      "$ref": "#/definitions/nameIdRef"
+    },
+    "nameIndex": {
+      "type": "number"
+    },
+    "originalName": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "contactInfo": {
+      "type": "string"
+    },
+    "id": {
+      "type": "number"
+    }
+  },
+  "definitions": {
+    "nameIdRef": {
+      "type": "object",
+      "properties": {
+        "nameIndex": {
+          "type": "number"
+        },
+        "originalName": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "number"
+        }
+      }
+    }
   },
   "additionalProperties": false,
-  "required": []
+  "required": [
+    "imageCount",
+    "urls",
+    "subLabels",
+    "id",
+    "dataQuality",
+    "originalName",
+    "nameIndex",
+    "name"
+  ]
 }

@@ -76,8 +76,14 @@ function formatLabel(label, includeImageObjects = false) {
         parseDiscogsName(child.text, res);
         break;
       case "profile":
+        if (child.text) {
+          res.profile = child.text;
+        }
+        break;
       case "contactinfo":
-        res[child.tag] = child.text || "";
+        if (child.text) {
+          res.contactInfo = child.text;
+        }
         break;
       case "data_quality":
         res.dataQuality = child.text || "";
