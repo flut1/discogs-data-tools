@@ -3,8 +3,8 @@ const request = require("request");
 const cliProgress = require("cli-progress");
 const progress = require("request-progress");
 const path = require("path");
-const localDumps = require("./localDumps");
-const remoteDumps = require("./remoteDumps");
+const dataManager = require("./dataManager");
+const bucket = require("./bucket");
 const createExitHandler = require("./util/createExitHandler");
 const { COLLECTIONS, DEFAULT_DATA_DIR } = require("./constants");
 
@@ -20,8 +20,8 @@ function fetchDump(
   dataDir = DEFAULT_DATA_DIR
 ) {
   return new Promise((resolve, reject) => {
-    const url = remoteDumps.getDumpURL(version, collection);
-    const targetPath = localDumps.getXMLPath(
+    const url = bucket.getDumpURL(version, collection);
+    const targetPath = dataManager.getXMLPath(
       version,
       collection,
       true,
@@ -89,7 +89,7 @@ function ensureDump(
   showProgress = false,
   dataDir = DEFAULT_DATA_DIR
 ) {
-  const [existingData] = localDumps.findData(version, [collection], dataDir);
+  const [existingData] = dataManager.findData(version, [collection], dataDir);
 
   if (!existingData) {
     return fetchDump(version, collection, showProgress, dataDir);
@@ -131,12 +131,12 @@ async function ensureDumps(
  * @returns {Promise<void>}
  */
 async function ensureChecksum(version, dataDir = DEFAULT_DATA_DIR) {
-  const checksumPath = localDumps.getChecksumPath(version, dataDir);
+  const checksumPath = dataManager.getChecksumPath(version, dataDir);
 
   if (fs.existsSync(checksumPath)) {
     console.log(`Checksum file exists at ${checksumPath}`);
   } else {
-    const url = remoteDumps.getChecksumURL(version);
+    const url = bucket.getChecksumURL(version);
     fs.ensureDirSync(path.dirname(checksumPath));
     console.log(`Fetching ${url}`);
 

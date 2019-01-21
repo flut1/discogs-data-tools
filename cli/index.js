@@ -1,5 +1,5 @@
 const yargs = require("yargs");
-const { COLLECTIONS } = require("./constants");
+const { COLLECTIONS } = require("../constants");
 
 module.exports = yargs
   .options({
@@ -59,7 +59,7 @@ module.exports = yargs
         );
     },
     argv => {
-      require("./commands/fetch")(argv);
+      require("../cli/fetch")(argv);
     }
   )
   .command(
@@ -74,7 +74,7 @@ module.exports = yargs
         .example("$0 verify --target-version 20180101 --collections releases");
     },
     argv => {
-      require("./commands/verify")(argv);
+      require("../cli/verify")(argv);
     }
   )
   .command(
@@ -82,7 +82,7 @@ module.exports = yargs
     "List all downloaded data",
     y => y,
     argv => {
-      require("./commands/ls")(argv);
+      require("../cli/ls")(argv);
     }
   )
   .command(
@@ -169,7 +169,7 @@ module.exports = yargs
         );
     },
     argv => {
-      require("./commands/mongo")(argv);
+      require("../cli/mongo")(argv);
     }
   )
   .demandCommand(1, 1)

@@ -1,14 +1,14 @@
-const localDumps = require("../localDumps");
+const dataManager = require("../dataManager");
 const fetcher = require("../fetcher");
 const { verify } = require("../verify");
 const { COLLECTIONS } = require('../constants');
-const getVersionFromArgv = require('../util/getVersionFromArgv');
+const getVersionFromArgv = require('./getVersionFromArgv');
 
 async function main(argv) {
   const version = await getVersionFromArgv(argv);
 
   const collections = argv.collections || COLLECTIONS;
-  const existingData = localDumps.findData(version, collections, argv['data-dir']);
+  const existingData = dataManager.findData(version, collections, argv['data-dir']);
   const collectionsToDownload = collections.filter(
     (_, index) => !existingData[index]
   );

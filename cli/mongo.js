@@ -3,10 +3,10 @@ const objectGet = require("object-get");
 const MongoClient = require("mongodb").MongoClient;
 const logger = require("../util/logger");
 
-const processor = require("../processor");
+const processor = require("../processing/processor");
 const indexSpec = require("../config/mongoIndexSpec.json");
 const dumpFormatter = require("../processing/dumpFormatter");
-const getVersionFromArgv = require("../util/getVersionFromArgv");
+const getVersionFromArgv = require("./getVersionFromArgv");
 
 const { COLLECTIONS } = require("../constants");
 

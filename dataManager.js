@@ -7,8 +7,8 @@ const { COLLECTIONS, DEFAULT_DATA_DIR } = require('./constants');
 const glob = promisify(globCallback);
 
 /**
- * Lookup data dump files that have already been downloaded
- * @module localDumps
+ * Manage data dump files that have already been downloaded
+ * @module dataManager
  */
 
 /**

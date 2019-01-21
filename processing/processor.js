@@ -1,17 +1,12 @@
 const fs = require("fs-extra");
-const XMLParser = require("./processing/XMLParser");
-const logger = require("./util/logger");
-const localDumps = require("./localDumps");
-const { COLLECTIONS } = require("./constants");
+const XMLParser = require("./XMLParser");
+const logger = require("../util/logger");
+const dataManager = require("../dataManager");
+const { COLLECTIONS } = require("../constants");
 
-class ProcessingError extends Error {
-  constructor(message, rows) {
-    super(message);
-
-    this.message = message;
-    this.rows = rows;
-  }
-}
+/**
+ * @module processing/processor
+ */
 
 function logInvalidRow(logPath, type, invalidRow) {
   const mssg = `Could not process ${type} with id ${invalidRow.id}: node ${
@@ -117,6 +112,17 @@ function processFile(
   });
 }
 
+/**
+ * Processes the dump
+ * @param version
+ * @param collections
+ * @param fn
+ * @param chunkSize
+ * @param restart
+ * @param dataDir
+ * @param maxErrors
+ * @returns {Promise<void>}
+ */
 async function processDumps(
   version,
   collections = COLLECTIONS,
@@ -126,7 +132,7 @@ async function processDumps(
   dataDir,
   maxErrors = 100
 ) {
-  const targetFiles = localDumps.findData(version, collections, dataDir);
+  const targetFiles = dataManager.findData(version, collections, dataDir);
 
   for (let i = 0; i < targetFiles.length; i++) {
     if (!targetFiles[i]) {

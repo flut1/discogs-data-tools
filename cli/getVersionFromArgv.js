@@ -1,9 +1,9 @@
 const inquirer = require("inquirer");
-const remoteDumps = require("../remoteDumps");
+const bucket = require("../bucket");
 const logger = require("../util/logger");
 
 async function getYear() {
-  const years = await remoteDumps.fetchYearListings();
+  const years = await bucket.fetchYearListings();
 
   const { year } = await inquirer.prompt([
     {
@@ -19,8 +19,8 @@ async function getYear() {
 async function getVersionInteractive() {
   const year = await getYear();
 
-  const files = await remoteDumps.fetchFileListing(`data/${year}/`);
-  const versions = remoteDumps.parseFileNames(files);
+  const files = await bucket.fetchFileListing(`data/${year}/`);
+  const versions = bucket.parseFileNames(files);
 
   const { version } = await inquirer.prompt([
     {
@@ -37,14 +37,7 @@ module.exports = async function getVersionFromArgv(argv) {
   let version = argv["target-version"];
 
   if (argv.latest) {
-    const years = await remoteDumps.fetchYearListings();
-    const files = await remoteDumps.fetchFileListing(years[0].path);
-    const versions = remoteDumps.parseFileNames(files);
-
-    const versionNames = Object.keys(versions).map(v => parseInt(v, 10));
-    versionNames.sort((a, b) => b - a);
-
-    version = versionNames[0].toString();
+    version = await bucket.getLatestVersion();
     logger.succeed(`Latest version is "${version}"`);
   }
 

@@ -7,7 +7,7 @@ const logger = require("./util/logger");
 
 /**
  * Lookup available data dumps on the S3 bucket
- * @module remoteDumps
+ * @module bucket
  */
 
 const parseString = promisify(xml2js.parseString);
@@ -149,10 +149,26 @@ function parseFileNames(filenames) {
   );
 }
 
+/**
+ * Gets the name of the latest version available in the S3 bucket
+ * @returns {Promise<string>} A promise that resolves with the version name
+ */
+async function getLatestVersion() {
+  const years = await fetchYearListings();
+  const files = await fetchFileListing(years[0].path);
+  const versions = parseFileNames(files);
+
+  const versionNames = Object.keys(versions).map(v => parseInt(v, 10));
+  versionNames.sort((a, b) => b - a);
+
+  return versionNames[0].toString();
+}
+
 module.exports = {
   fetchYearListings,
   getDumpURL,
   getChecksumURL,
+  getLatestVersion,
   fetchFileListing,
   parseFileNames
 };

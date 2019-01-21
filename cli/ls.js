@@ -1,5 +1,5 @@
 const path = require('path');
-const { globDumps } = require('../localDumps');
+const { globDumps } = require('../dataManager');
 
 module.exports = async function ls(argv) {
   const results = Object.entries(await globDumps(argv['data-dir']));

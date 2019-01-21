@@ -1,5 +1,5 @@
-const localDumps = require('./localDumps');
-const remoteDumps = require('./remoteDumps');
+const dataManager = require('./dataManager');
+const bucket = require('./bucket');
 const fetcher = require('./fetcher');
 
-module.exports = { localDumps, remoteDumps, fetcher };
+module.exports = { dataManager, bucket, fetcher };
