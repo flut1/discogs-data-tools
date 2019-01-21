@@ -69,7 +69,7 @@ module.exports = yargs
       "Note: by default, the 'fetch' command already verifies",
     y => {
       return y
-        .usage('$0 verfy <target> [...args]')
+        .usage('$0 verify <target> [...args]')
         .example("$0 verify --latest")
         .example("$0 verify --target-version 20180101 --collections releases");
     },
@@ -80,7 +80,7 @@ module.exports = yargs
   .command(
     "ls",
     "List all downloaded data",
-    y => y,
+    y => y.usage('$0 ls <target> [...args]'),
     argv => {
       require("../cli/ls")(argv);
     }

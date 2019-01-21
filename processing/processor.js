@@ -6,21 +6,10 @@ const { COLLECTIONS, DEFAULT_DATA_DIR } = require("../constants");
 
 /**
  * Parse the data dump XML into plain JS objects and process them with
- * a given function
+ * a given function. See readme.md for an example
  * @module processing/processor
  */
 
-function logInvalidRow(logPath, type, invalidRow) {
-  const mssg = `Could not process ${type} with id ${invalidRow.id}: node ${
-    invalidRow.reason
-  }`;
-
-  logger.warn(mssg);
-  fs.appendFileSync(
-    logPath,
-    `[${new Date().toISOString()}] ${mssg}\n           ${invalidRow.json}\n\n`
-  );
-}
 
 /**
  * The signature of the `fn` function passed to `processDumpFile`
@@ -29,6 +18,8 @@ function logInvalidRow(logPath, type, invalidRow) {
  * `node-expat` from XML
  * @param collection {string} The type of collection ("artists", "labels",
  * "masters" or "releases")
+ * @param path {string} The path to the dump file that is being
+ * processed
  * @returns {Promise} A promise that resolves when processing is complete
  */
 
@@ -52,9 +43,6 @@ function logInvalidRow(logPath, type, invalidRow) {
  * stored in a `.processing` file alongside the data dumps. If the processing
  * is stopped, it will continue from that row once you call `processDumpFile`
  * again. Set this to `true` to always start from the beginning.
- * @param [maxErrors=100] {number} If a row fails to insert, details will be
- * logged to a .log file. Once `maxErrors` number of rows have failed to
- * insert, processing will abort and the returned Promise will be rejected.
  * @returns {Promise} A Promise that resolves when processing is complete
  * @example ```
  * processDumpFile(
@@ -75,12 +63,10 @@ function processDumpFile(
   fn,
   gz = true,
   chunkSize = 1000,
-  restart = false,
-  maxErrors = 100
+  restart = false
 ) {
   return new Promise((resolve, reject) => {
     const progressFilePath = `${path}.processing`;
-    const logPath = `${path}.log`;
 
     let toSkip = 0;
     let processed = 0;
@@ -98,7 +84,6 @@ function processDumpFile(
     let newChunk = new Array(chunkSize);
     let chunkIndex = 0;
 
-    let numInvalid = 0;
 
     reader.on("record", function(record) {
       if (processed >= toSkip) {
@@ -113,20 +98,8 @@ function processDumpFile(
           newChunk = tmp;
 
           Promise.resolve()
-            .then(() => fn(oldChunk, collection))
-            .then((invalidRows = []) => {
-              numInvalid += invalidRows.length;
-
-              for (const invalidRow of invalidRows) {
-                logInvalidRow(logPath, collection, invalidRow);
-              }
-
-              if (numInvalid > maxErrors) {
-                throw new Error(
-                  `More than ${maxErrors} ${collection} failed to insert. Aborting processing.`
-                );
-              }
-
+            .then(() => fn(oldChunk, collection, path))
+            .then(() => {
               fs.writeFileSync(progressFilePath, processed.toString(), {
                 encoding: "utf8"
               });
@@ -150,7 +123,7 @@ function processDumpFile(
           if (chunkIndex > 0) {
             // flush remaining
             logger.status("processing last chunk...");
-            return fn(newChunk.slice(0, chunkIndex), collection);
+            return fn(newChunk.slice(0, chunkIndex), collection, path);
           }
           return Promise.resolve();
         })
@@ -172,7 +145,6 @@ function processDumpFile(
  * @param [chunkSize=1000] {number}
  * @param [restart=false] {boolean}
  * @param [dataDir='/data'] {string}
- * @param [maxErrors] {number}
  * @returns {Promise<void>}
  */
 async function processDumps(
@@ -181,8 +153,7 @@ async function processDumps(
   collections = COLLECTIONS,
   chunkSize = 1000,
   restart = false,
-  dataDir = DEFAULT_DATA_DIR,
-  maxErrors = 100
+  dataDir = DEFAULT_DATA_DIR
 ) {
   const targetFiles = dataManager.findData(version, collections, dataDir);
 
@@ -198,8 +169,7 @@ async function processDumps(
       fn,
       targetFiles[i].gz,
       chunkSize,
-      restart,
-      maxErrors
+      restart
     );
     logger.succeed(`Finished processing ${targetFiles[i].path}...`);
   }

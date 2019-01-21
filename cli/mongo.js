@@ -2,6 +2,7 @@ const Ajv = require("ajv");
 const objectGet = require("object-get");
 const MongoClient = require("mongodb").MongoClient;
 const logger = require("../util/logger");
+const fs = require("fs-extra");
 
 const processor = require("../processing/processor");
 const indexSpec = require("../config/mongoIndexSpec.json");
@@ -28,6 +29,8 @@ const validationSchema = {
 const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
 async function main(argv, client) {
+  let numInvalid = 0;
+
   if (argv.silent) {
     logger.mute();
   }
@@ -90,8 +93,28 @@ async function main(argv, client) {
       .compile(validationSchema[collection]);
   }
 
-  async function processEntries(chunk, collection) {
-    const invalidRows = [];
+  function handleInvalidRow(logPath, type, invalidRow) {
+    const mssg = `Could not process ${type} with id ${invalidRow.id}: node ${
+      invalidRow.reason
+      }`;
+
+    logger.warn(mssg);
+    fs.appendFileSync(
+      logPath,
+      `[${new Date().toISOString()}] ${mssg}\n           ${invalidRow.json}\n\n`
+    );
+
+    numInvalid ++;
+
+    if (numInvalid > argv['max-errors']) {
+      throw new Error(
+        `More than ${argv['max-errors']} rows failed to insert. Aborting processing.`
+      );
+    }
+  }
+
+  async function processEntries(chunk, collection, dumpFilePath) {
+    const logPath = `${dumpFilePath}.log`;
 
     const entries = chunk.map((entry, index) => {
       let valid = true;
@@ -113,7 +136,7 @@ async function main(argv, client) {
             return idTag && idTag.text;
           })();
 
-          invalidRows.push({
+          handleInvalidRow(logPath, collection, {
             json: JSON.stringify(entry),
             index,
             id,
@@ -187,15 +210,13 @@ async function main(argv, client) {
         }
       }
 
-      invalidRows.push({
+      handleInvalidRow(logPath, collection, {
         json: JSON.stringify(entry),
         index: originalIndex,
         id: doc.id,
         reason
       });
     }
-
-    return invalidRows;
   }
 
   await processor.processDumps(
@@ -204,8 +225,7 @@ async function main(argv, client) {
     collections,
     argv["chunk-size"],
     argv.restart,
-    argv["data-dir"],
-    argv["max-errors"]
+    argv["data-dir"]
   );
 
   logger.stopSpinner();
