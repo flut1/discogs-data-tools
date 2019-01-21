@@ -20,17 +20,17 @@ const formatters = {
 
 const validationSchema = {
   xml: {
-    artists: require("../schema/artist-xml.json"),
-    labels: require("../schema/label-xml.json"),
-    releases: require("../schema/release-xml.json"),
-    masters: require("../schema/master-xml.json"),
-    defs: require("../schema/defs.json")
+    artists: require("../schema/xml/artist-xml.json"),
+    labels: require("../schema/xml/label-xml.json"),
+    releases: require("../schema/xml/release-xml.json"),
+    masters: require("../schema/xml/master-xml.json"),
+    defs: require("../schema/xml/defs.json")
   },
   doc: {
-    artists: require("../schema/artist-doc.json"),
-    labels: require("../schema/label-doc.json"),
-    releases: require("../schema/release-doc.json"),
-    masters: require("../schema/master-doc.json")
+    artists: require("../schema/docs/artist-doc.json"),
+    labels: require("../schema/docs/label-doc.json"),
+    releases: require("../schema/docs/release-doc.json"),
+    masters: require("../schema/docs/master-doc.json")
   }
 };
 
