@@ -5,6 +5,8 @@ const dataManager = require("../dataManager");
 const { COLLECTIONS, DEFAULT_DATA_DIR } = require("../constants");
 
 /**
+ * Parse the data dump XML into plain JS objects and process them with
+ * a given function
  * @module processing/processor
  */
 

@@ -15,7 +15,9 @@
 that are easier to work with.</p>
 </dd>
 <dt><a href="#module_processing/processor">processing/processor</a></dt>
-<dd></dd>
+<dd><p>Parse the data dump XML into plain JS objects and process them with
+a given function</p>
+</dd>
 <dt><a href="#module_util/parseUtils">util/parseUtils</a></dt>
 <dd><p>Small helpers for parsing discogs data</p>
 </dd>
@@ -291,6 +293,8 @@ Format a release tag. See readme.md for information of how the data istransform
 <a name="module_processing/processor"></a>
 
 ## processing/processor
+Parse the data dump XML into plain JS objects and process them witha given function
+
 
 * [processing/processor](#module_processing/processor)
     * [~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart], [maxErrors])](#module_processing/processor..processDumpFile) ⇒ <code>Promise</code>
