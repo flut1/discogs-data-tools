@@ -1,6 +1,6 @@
 {
   "name": "discogs-data-tools",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tools to download and process Discogs data dumps",
   "main": "cli.js",
   "author": "Floris Bernard <floris.bernard@gmail.com> (https://github.com/flut1)",
