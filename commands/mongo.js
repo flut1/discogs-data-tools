@@ -172,16 +172,19 @@ async function main(argv, client) {
       const { entry, originalIndex, doc } = documents[e.index];
       let reason = "could not be written to MongoDB";
 
-      if (argv.bail) {
-        throw new Error(
-          `Unable to write document id=${originalIndex} to db:\n${e.code} ${
-            e.message
-          }`
-        );
-      }
-
       if (e.code === 11000) {
         reason = "had a key that already existed in the database";
+
+        logger.warn(`Skipping insert on ${collection} with id=${doc.id}. Duplicate key.`);
+        logger.warn(e.message);
+      } else {
+        if (argv.bail) {
+          throw new Error(
+            `Unable to write document id=${originalIndex} to db:\n${e.code} ${
+              e.message
+              }`
+          );
+        }
       }
 
       invalidRows.push({
