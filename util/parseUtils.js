@@ -98,6 +98,10 @@ function parseDuration(duration, target) {
  * @param {object} `target` for chaining
  */
 function parseReleaseDate(date, target) {
+  if (date.indexOf('/') >= 0) {
+    // eslint-disable-next-line no-param-reassign
+    date = date.replace(/\//g, '-');
+  }
   if (date.length === 4 && date.match(/^[\d]{4}$/)) {
     target.released = date;
   } else if (date.match(/^[\d]{4}-[\d]{2}-[\d]{2}$/)) {

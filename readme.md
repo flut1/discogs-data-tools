@@ -19,6 +19,33 @@ data dumps see: https://data.discogs.com/
 - Some dependencies are built using `node-gyp`, which has additional prerequisites. See the [node-gyp documentation](https://github.com/nodejs/node-gyp#Installation) for more info.
 - Run `npm install -g discogs-data-tools`
 
+## Data transformation
+Data from the database will be transformed when using the `mongo` cli command or when formatting using
+the `dumpFormatter` module. This is to fix some inconsistencies in the data and make it easier to
+work with:
+
+- All properties are converted to camelCase
+- All numeric string values are parsed to integers
+- Everywhere where artist or label names appear, they are transformed to multiple properties:
+  - The name as it appears in the Discogs dataset is stored as the `originalName` property
+  - The `name` property contains the name without any `(n)` numeric postfix
+  - The `nameIndex` property is set to the number inside the `(n)` numeric postfix if it exists.
+  Otherwise it is set to `1`
+- The `duration` field of a `track` is converted to a `number` (the number of seconds). The unformatted
+string is stored in the `originalDuration` property
+- Images objects are excluded as they do not contain URI. Instead an `imageCount` property is set
+which is equal to the number of images.
+- Empty string values are excluded
+- The `embed` property is removed from `video` (as it was always "true")
+- Entities that should have a `name` but have no name or an empty string as name are completely excluded.
+(there seems to be a small number of them anyway). The CLI outputs warnings when it excludes entities.
+- Incorrectly formatted release dates are transformed according to the Discogs Database Guidelines
+(either `YYYY` or `YYYY-MM-DD`). Release dates that cannot be transformed are removed.
+
+
+To see the exact schema of formatted documents, see the JSON schema in the [/schema/doc](./schema/doc)
+folder.
+
 ## CLI Usage
 ```
 discogs-data-tools <command> args

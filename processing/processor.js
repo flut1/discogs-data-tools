@@ -74,7 +74,7 @@ function processDumpFile(
         fs.readFileSync(progressFilePath, { encoding: "utf8" }),
         10
       );
-      logger.log(`some rows were already processed: skipping first ${toSkip}`);
+      logger.status(`some rows were already processed: skipping first ${toSkip}`, true);
     }
 
     const reader = new XMLParser(path, 1, { gzip: gz });

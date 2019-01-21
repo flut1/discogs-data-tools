@@ -464,7 +464,11 @@ function parseTracklist(trackNodes, target, type = "track") {
       }
     }
 
-    target.push(resTrack);
+    if (resTrack.title || resTrack.position) {
+      target.push(resTrack);
+    } else if (Object.keys(resTrack).length) {
+      logger.warn(`excluded track without title and position: ${JSON.stringify(resTrack)}`);
+    }
   }
 }
 
@@ -484,7 +488,8 @@ function formatRelease(release, includeImageObjects = false) {
     artists: [],
     extraArtists: [],
     styles: [],
-    tracks: [],
+    tracklist: [],
+    identifiers: [],
     companies: [],
     genres: [],
     labels: [],
@@ -526,7 +531,7 @@ function formatRelease(release, includeImageObjects = false) {
         break;
       case "tracklist":
         if (child.children) {
-          parseTracklist(child.children, res.tracks);
+          parseTracklist(child.children, res.tracklist);
         }
         break;
       case "videos":
@@ -564,11 +569,15 @@ function formatRelease(release, includeImageObjects = false) {
       case "labels":
         if (child.children) {
           for (const { attrs } of child.children) {
-            res.labels.push({
-              catno: attrs.catno,
+            const label = {
               id: parseIntSafe(attrs.id),
               name: attrs.name
-            });
+            };
+
+            if (attrs.catno) {
+              label.catno = attrs.catno;
+            }
+            res.labels.push(label);
           }
         }
         break;
@@ -576,11 +585,14 @@ function formatRelease(release, includeImageObjects = false) {
         if (child.children) {
           for (const { attrs, children } of child.children) {
             const resFormat = {
-              text: attrs.text,
               qty: parseIntSafe(attrs.qty),
               descriptions: [],
               name: attrs.name
             };
+
+            if (attrs.text) {
+              resFormat.name = attrs.text;
+            }
 
             if (children) {
               for (const formatChild of children) {
@@ -617,9 +629,17 @@ function formatRelease(release, includeImageObjects = false) {
                 case "entity_type":
                   resCompany.entityType = parseIntSafe(companyChild.text);
                   break;
-                case "name":
                 case "entity_type_name":
+                  if (companyChild.text) {
+                    resCompany.entityTypeName = companyChild.text;
+                  }
+                  break;
                 case "resource_url":
+                  if (companyChild.resourceUrl) {
+                    resCompany.entityTypeName = companyChild.text;
+                  }
+                  break;
+                case "name":
                 case "catno":
                   if (companyChild.text) {
                     resCompany[companyChild.tag] = companyChild.text;
@@ -641,14 +661,18 @@ function formatRelease(release, includeImageObjects = false) {
           for (const { attrs } of child.children) {
             const resIdentifier = {
               type: attrs.type,
-              valie: attrs.valie
+              value: attrs.value
             };
 
             if (attrs.description) {
               resIdentifier.description = attrs.description;
             }
 
-            res.formats.push(resIdentifier);
+            if (!resIdentifier.value) {
+              logger.warn(`dropped identifier with type "${attrs.type}" and no value`);
+            } else {
+              res.identifiers.push(resIdentifier);
+            }
           }
         }
         break;

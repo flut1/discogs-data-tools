@@ -4,8 +4,313 @@
   "description": "An release document formatted by dumpFormatter.js~formatRelease",
   "type": "object",
   "properties": {
-
+    "artists": {
+      "$ref": "#/definitions/artistRef"
+    },
+    "extraArtists": {
+      "$ref": "#/definitions/artistRef"
+    },
+    "companies": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "entityType": {
+            "type": "number"
+          },
+          "entityTypeName": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "catno": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "name": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "resourceUrl": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "entityType",
+          "entityTypeName"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "tracklist": {
+      "$ref": "#/definitions/tracklist"
+    },
+    "dataQuality": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "country": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "genres": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "id": {
+      "type": "number"
+    },
+    "imageCount": {
+      "type": "number"
+    },
+    "masterId": {
+      "type": "number"
+    },
+    "isMainRelease": {
+      "type": "boolean"
+    },
+    "images": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "labels": {
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "catno": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "type": "array"
+    },
+    "formats": {
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "descriptions": {
+            "type": "array",
+            "items": {
+              "pattern": "^[\\s\\S]+$",
+              "type": "string"
+            }
+          },
+          "qty": {
+            "type": "number"
+          }
+        },
+        "required": ["name", "qty", "descriptions"],
+        "additionalProperties": false
+      },
+      "type": "array"
+    },
+    "identifiers": {
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "type": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "description": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": ["type", "value"],
+        "additionalProperties": false
+      },
+      "type": "array"
+    },
+    "notes": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "styles": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "title": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "released": {
+      "pattern": "^[\\d]{4}(-[\\d]{2}-[\\d]{2})?$",
+      "type": "string"
+    },
+    "videos": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "src": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "title": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "duration",
+          "src"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
   },
   "additionalProperties": false,
-  "required": []
+  "definitions": {
+    "tracklist": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "position": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "title": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "subTracks": {
+            "$ref": "#/definitions/tracklist"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "originalDuration": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "artists": {
+            "$ref": "#/definitions/artistRef"
+          },
+          "extraArtists": {
+            "$ref": "#/definitions/artistRef"
+          }
+        },
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "artistRef": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "anv": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "pattern": "^[\\s\\S]+$",
+                "type": "string"
+              },
+              "nameIndex": {
+                "type": "number"
+              },
+              "originalName": {
+                "pattern": "^[\\s\\S]+$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "nameIndex",
+              "originalName"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "type": "number"
+          },
+          "tracks": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "join": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "role": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "name": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "nameIndex": {
+            "type": "number"
+          },
+          "originalName": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "nameIndex",
+          "originalName"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "imageCount",
+    "id",
+    "dataQuality",
+    "genres",
+    "artists",
+    "extraArtists",
+    "companies",
+    "formats",
+    "videos",
+    "styles",
+    "title"
+  ]
 }

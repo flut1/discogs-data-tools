@@ -1,88 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Master Doc",
+  "additionalProperties": false,
   "description": "An master document formatted by dumpFormatter.js~formatMaster",
-  "type": "object",
   "properties": {
-    "title": {
-      "pattern": "^[\\s\\S]+$",
-      "type": "string"
-    },
-    "images": {
-      "items": {
-        "pattern": "^[\\s\\S]+$",
-        "type": "object"
-      },
-      "type": "array"
-    },
-    "genres": {
-      "items": {
-        "pattern": "^[\\s\\S]+$",
-        "type": "string"
-      },
-      "type": "array"
-    },
-    "styles": {
-      "items": {
-        "pattern": "^[\\s\\S]+$",
-        "type": "string"
-      },
-      "type": "array"
-    },
-    "mainRelease": {
-      "type": "number"
-    },
-    "videos": {
-      "items": {
-        "type": "object",
-        "properties": {
-          "duration": {
-            "type": "number"
-          },
-          "src": {
-            "pattern": "^[\\s\\S]+$",
-            "type": "string"
-          },
-          "title": {
-            "pattern": "^[\\s\\S]+$",
-            "type": "string"
-          },
-          "description": {
-            "pattern": "^[\\s\\S]+$",
-            "type": "string"
-          }
-        },
-        "required": ["duration","src"],
-        "additionalProperties": false
-      },
-      "type": "array"
-    },
-    "year": {
-      "type": "number"
-    },
     "artists": {
-      "type": "array",
       "items": {
+        "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "number"
-          },
-          "name": {
-            "pattern": "^[\\s\\S]+$",
-            "type": "string"
-          },
-          "nameIndex": {
-            "type": "number"
-          },
-          "originalName": {
-            "pattern": "^[\\s\\S]+$",
-            "type": "string"
-          },
-          "join": {
-            "pattern": "^[\\s\\S]+$",
-            "type": "string"
-          },
           "anv": {
+            "additionalProperties": false,
             "properties": {
               "name": {
                 "pattern": "^[\\s\\S]+$",
@@ -96,15 +22,52 @@
                 "type": "string"
               }
             },
-            "type": "object",
-            "required": ["name", "nameIndex", "originalName"],
-            "additionalProperties": false
+            "required": [
+              "name",
+              "nameIndex",
+              "originalName"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "type": "number"
+          },
+          "join": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "name": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "nameIndex": {
+            "type": "number"
+          },
+          "originalName": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
           }
         },
-        "type": "object",
-        "required": ["id", "name", "nameIndex", "originalName"],
-        "additionalProperties": false
-      }
+        "required": [
+          "id",
+          "name",
+          "nameIndex",
+          "originalName"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "dataQuality": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "genres": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
+      },
+      "type": "array"
     },
     "id": {
       "type": "number"
@@ -112,16 +75,63 @@
     "imageCount": {
       "type": "number"
     },
-    "dataQuality": {
-      "pattern": "^[\\s\\S]+$",
-      "type": "string"
+    "images": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "mainRelease": {
+      "type": "number"
     },
     "notes": {
       "pattern": "^[\\s\\S]+$",
       "type": "string"
+    },
+    "styles": {
+      "items": {
+        "pattern": "^[\\s\\S]+$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "title": {
+      "pattern": "^[\\s\\S]+$",
+      "type": "string"
+    },
+    "videos": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "src": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          },
+          "title": {
+            "pattern": "^[\\s\\S]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "duration",
+          "src"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "year": {
+      "type": "number"
     }
   },
-  "additionalProperties": false,
   "required": [
     "imageCount",
     "id",
@@ -132,5 +142,7 @@
     "videos",
     "styles",
     "title"
-  ]
+  ],
+  "title": "Master Doc",
+  "type": "object"
 }
