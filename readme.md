@@ -7,17 +7,18 @@ Some utilities to download and process Discogs monthly data dumps.
 - Store entities in MongoDB collections
 
 You can use the NodeJS API if you want to decide what to do with the
-formatted JS objects yourself, instead of writing it to a MongoDB database.
+formatted JS objects yourself, instead of writing them to a MongoDB database.
 See [Node.JS API](#nodejs-api) below for an example.
 
 **This module is not officially affiliated with Discogs.** For license information on Discogs
 data dumps see: https://data.discogs.com/
 
 ## Motivation
-Discogs has its own API, but the way the data is structured make it difficult to look up information
-for some use cases. That's why the monthly data dumps are very useful: you can structure and query
-the data according to your application's needs. However, parsing the large and at some points somewhat
-inconsistent XML dumps into a database is not a trivial task. This tool is meant to help out with that.
+Discogs has a great API, but in some cases the way the data is structured makes it difficult to look
+up information without making too many API calls. That's why the monthly data dumps are very useful:
+you can structure and query the data according to the needs of your application. However, parsing the
+large and at some points somewhat inconsistent XML dumps into a database is not a trivial task.
+This tool is meant to help out with that.
 
 ## Installation
 
@@ -46,6 +47,8 @@ string is stored in the `originalDuration` property
 which is equal to the number of images.
 - Empty string values are excluded
 - The `embed` property is removed from `video` (as it was always "true")
+- Tracks that don't have a title or a position are excluded
+- Identifiers that only have a type but no value are excluded
 - Entities that should have a `name` but have no name or an empty string as name are completely excluded.
 (there seems to be a small number of them anyway). The CLI outputs warnings when it excludes entities.
 - Incorrectly formatted release dates are transformed according to the Discogs Database Guidelines
