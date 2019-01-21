@@ -1,13 +1,14 @@
 {
   "name": "discogs-data-tools",
-  "version": "1.0.0",
-  "description": "Tools to handle Discogs data dumps",
+  "version": "0.1.0",
+  "description": "Tools to download and process Discogs data dumps",
   "main": "cli.js",
   "author": "Floris Bernard <floris.bernard@gmail.com> (https://github.com/flut1)",
   "repository": {
     "type": "git",
     "url": "git@github.com:flut1/discogs-data-tools.git"
   },
+  "bin": "./cli/index.js",
   "keywords": [
     "discogs",
     "data",

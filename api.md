@@ -16,7 +16,7 @@ that are easier to work with.</p>
 </dd>
 <dt><a href="#module_processing/processor">processing/processor</a></dt>
 <dd><p>Parse the data dump XML into plain JS objects and process them with
-a given function</p>
+a given function. See readme.md for an example</p>
 </dd>
 <dt><a href="#module_util/parseUtils">util/parseUtils</a></dt>
 <dd><p>Small helpers for parsing discogs data</p>
@@ -293,17 +293,17 @@ Format a release tag. See readme.md for information of how the data istransform
 <a name="module_processing/processor"></a>
 
 ## processing/processor
-Parse the data dump XML into plain JS objects and process them witha given function
+Parse the data dump XML into plain JS objects and process them witha given function. See readme.md for an example
 
 
 * [processing/processor](#module_processing/processor)
-    * [~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart], [maxErrors])](#module_processing/processor..processDumpFile) ⇒ <code>Promise</code>
-    * [~processDumps(version, fn, [collections], [chunkSize], [restart], [dataDir], [maxErrors])](#module_processing/processor..processDumps) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart])](#module_processing/processor..processDumpFile) ⇒ <code>Promise</code>
+    * [~processDumps(version, fn, [collections], [chunkSize], [restart], [dataDir])](#module_processing/processor..processDumps) ⇒ <code>Promise.&lt;void&gt;</code>
     * [~processChunkFn](#module_processing/processor..processChunkFn) ⇒ <code>Promise</code>
 
 <a name="module_processing/processor..processDumpFile"></a>
 
-### processing/processor~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart], [maxErrors]) ⇒ <code>Promise</code>
+### processing/processor~processDumpFile(path, collection, fn, [gz], [chunkSize], [restart]) ⇒ <code>Promise</code>
 Processes an XML dump file using `node-expat` into plain objects. Every`chunkSize` rows the parser will pause and pass the result to the `fn`function. Once the `fn` function completes, parsing continues until theentire file is parsed.
 
 **Kind**: inner method of [<code>processing/processor</code>](#module_processing/processor)  
@@ -317,13 +317,12 @@ Processes an XML dump file using `node-expat` into plain objects. Every`chunkSi
 | [gz] | <code>boolean</code> | <code>true</code> | A boolean indicating if the dump is compressed in gzip format |
 | [chunkSize] | <code>number</code> | <code>1000</code> | The number of XML rows that are parsed by `node-expat` until `fn` is called. A bigger number may be more efficient, but costs more memory |
 | [restart] | <code>boolean</code> | <code>false</code> | By default, the processing progress is stored in a `.processing` file alongside the data dumps. If the processing is stopped, it will continue from that row once you call `processDumpFile` again. Set this to `true` to always start from the beginning. |
-| [maxErrors] | <code>number</code> | <code>100</code> | If a row fails to insert, details will be logged to a .log file. Once `maxErrors` number of rows have failed to insert, processing will abort and the returned Promise will be rejected. |
 
 **Example**  
 ```processDumpFile(  './discogs_20190101_artists.xml.gz',  'artists',  chunk => {     // process the results here. For this example, we just console.log them     chunk.forEach(row => console.log(row));     return Promise.resolve();  });```
 <a name="module_processing/processor..processDumps"></a>
 
-### processing/processor~processDumps(version, fn, [collections], [chunkSize], [restart], [dataDir], [maxErrors]) ⇒ <code>Promise.&lt;void&gt;</code>
+### processing/processor~processDumps(version, fn, [collections], [chunkSize], [restart], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
 Looks up the downloaded data dumps of a given version. Then calls `processDumpFile`on each of them.
 
 **Kind**: inner method of [<code>processing/processor</code>](#module_processing/processor)  
@@ -337,7 +336,6 @@ Looks up the downloaded data dumps of a given version. Then calls `processDumpFi
 | [chunkSize] | <code>number</code> | <code>1000</code> | 
 | [restart] | <code>boolean</code> | <code>false</code> | 
 | [dataDir] | <code>string</code> | <code>&quot;&#x27;/data&#x27;&quot;</code> | 
-| [maxErrors] | <code>number</code> | <code>100</code> | 
 
 <a name="module_processing/processor..processChunkFn"></a>
 
@@ -351,6 +349,7 @@ The signature of the `fn` function passed to `processDumpFile`
 | --- | --- | --- |
 | chunk | <code>Array.&lt;Object&gt;</code> | An array of plain objects as parsed by `node-expat` from XML |
 | collection | <code>string</code> | The type of collection ("artists", "labels", "masters" or "releases") |
+| path | <code>string</code> | The path to the dump file that is being processed |
 
 <a name="module_util/parseUtils"></a>
 

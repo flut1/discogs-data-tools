@@ -1,3 +1,5 @@
+# copy to .npmignore
+
 /data
 .idea
 node_modules

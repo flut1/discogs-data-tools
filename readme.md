@@ -54,7 +54,7 @@ Examples:
 
 ### verify command
 ```
-discogs-data-tools verfy <target> [...args]
+discogs-data-tools verify <target> [...args]
 
 Target (one required):
   --interactive, -i     Interactively select the target dump version                                 [boolean]
@@ -114,9 +114,7 @@ Examples:
 
 ### ls command
 ```
-discogs-data-tools ls
-
-List all downloaded data
+discogs-data-tools ls <target> [...args]
 
 Target (one required):
   --interactive, -i     Interactively select the target dump version                                 [boolean]

@@ -1,0 +1,12 @@
+# copied to .gitignore
+
+/data
+.idea
+node_modules
+*.tmp.js`on
+/example
+/*.log
+
+# .npmignore only
+api.md
+.gitignore
