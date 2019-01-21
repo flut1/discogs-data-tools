@@ -17,12 +17,12 @@ async function main(argv) {
       `Some data is not yet downloaded: ${collectionsToDownload.join(', ')}`
     );
 
-    await fetcher.ensureDumps(version, collections, !argv['no-progress'], argv['data-dir']);
+    await fetcher.ensureDumps(version, collections, !argv['hide-progress'], argv['data-dir']);
   } else {
     console.log('All data downloaded');
   }
 
-  if (!argv['no-verify']) {
+  if (!argv['skip-verification']) {
     try {
       await verify(version, collectionsToDownload, argv['data-dir']);
     } catch(e) {

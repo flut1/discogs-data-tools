@@ -34,8 +34,8 @@ Options:
   --collections, -c     Select which collections to target. If not given, will target all
                                                  [array] [choices: "artists", "labels", "masters", "releases"]
   --help                Show help                                                                    [boolean]
-  --no-progress, -n     Don't show a progress bar                                                    [boolean]
-  --no-verify           Skip verifying the dumps with the checksum provided by Discogs               [boolean]
+  --hide-progress, -n   Don't show a progress bar                                                    [boolean]
+  --skip-verify         Skip verifying the dumps with the checksum provided by Discogs               [boolean]
 
 Examples:
   discogs-data-tools fetch --target-version 20180101 --collections labels masters
@@ -81,9 +81,10 @@ Options:
   --chunk-size, -s            Number of rows in processing chunks. Larger size takes more memory.
                                                                                       [number] [default: 1000]
   --drop-existing-collection  Drop a collection if it already exists. Use with caution!              [boolean]
-  --no-index                  Don't create indexes on collections                                    [boolean]
-  --no-validate               Skip validation of XML nodes. Can considerably speed up processing, but you may
-                              get invalid rows                                                       [boolean]
+  --silent, -m                Mute all console output                                                [boolean]
+  --indexes                   Create indexes on collections                          [boolean] [default: true]
+  --skip-validation           Skip validation of XML nodes. Can considerably speed up processing, but you may
+                              get invalid rows                                       [boolean] [default: true]
   --max-errors, -e            Number of rows that could not be inserted before the command is aborted
                                                                                        [number] [default: 100]
   --bail, -b                  Immediately abort when a validation error occurs or a row failed to persist to
@@ -91,12 +92,12 @@ Options:
   --restart, -r               Don't continue processing from where it last stopped but restart at the first
                               row                                                                    [boolean]
   --database-name, -n         Name of the database to write to                   [string] [default: "discogs"]
-  --connection, -c            The MongoDB connection string                                 [array] [required]
+  --connection, -o            The MongoDB connection string                                [string] [required]
   --include-image-objects     Include image objects. By default, will only include the image count because
                               image objects in data dumps are missing the URI                        [boolean]
 
 Examples:
-  discogs-data-tools mongo --latest --connection mongodb://root:pw@127.0.0.1:27017
+  discogs-data-tools mongo --no-indexes --latest --connection mongodb://root:pw@127.0.0.1:27017
   discogs-data-tools mongo --target-version 20180401 --chunk-size 100 --connection mongodb://root:pw@127.0.0.1:27017
 ```
 

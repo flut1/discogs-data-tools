@@ -58,7 +58,7 @@ async function main(argv, client) {
     for (const collection of collections) {
       if (existingCollections.some(({ name }) => name === collection)) {
         logger.warn(
-          `>>>>>>\nWARNING! Dropping existing ${collection} collection in 5 sec!\n>>>>>>`
+          `WARNING! Dropping existing ${collection} collection in 5 sec!`
         );
 
         await wait(5000);
@@ -67,7 +67,7 @@ async function main(argv, client) {
     }
   }
 
-  if (!argv["no-index"]) {
+  if (argv["indexes"]) {
     for (const collection of collections) {
       logger.status(`Ensuring indexes on ${collection} collection...`);
 
@@ -95,7 +95,7 @@ async function main(argv, client) {
 
     const entries = chunk.map((entry, index) => {
       let valid = true;
-      if (!argv["no-validate"]) {
+      if (!argv["skip-validation"]) {
         valid = validators[collection](entry, {
           verbose: true,
           extendRefs: "fail"
