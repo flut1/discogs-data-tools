@@ -1,8 +1,8 @@
 const Ajv = require("ajv");
 const objectGet = require("object-get");
-const MongoClient = require("mongodb").MongoClient;
-const logger = require("../util/logger");
+const { MongoClient } = require("mongodb");
 const fs = require("fs-extra");
+const logger = require("../util/logger");
 
 const processor = require("../processing/processor");
 const indexSpec = require("../config/mongoIndexSpec.json");
@@ -19,11 +19,19 @@ const formatters = {
 };
 
 const validationSchema = {
-  artists: require("../schema/artist-xml.json"),
-  labels: require("../schema/label-xml.json"),
-  releases: require("../schema/release-xml.json"),
-  masters: require("../schema/master-xml.json"),
-  defs: require("../schema/defs.json")
+  xml: {
+    artists: require("../schema/artist-xml.json"),
+    labels: require("../schema/label-xml.json"),
+    releases: require("../schema/release-xml.json"),
+    masters: require("../schema/master-xml.json"),
+    defs: require("../schema/defs.json")
+  },
+  doc: {
+    artists: require("../schema/artist-doc.json"),
+    labels: require("../schema/label-doc.json"),
+    releases: require("../schema/release-doc.json"),
+    masters: require("../schema/master-doc.json")
+  }
 };
 
 const wait = timeout => new Promise(resolve => setTimeout(resolve, timeout));
@@ -60,17 +68,19 @@ async function main(argv, client) {
 
     for (const collection of collections) {
       if (existingCollections.some(({ name }) => name === collection)) {
-        logger.warn(
-          `WARNING! Dropping existing ${collection} collection in 5 sec!`
+        logger.status(
+          `WARNING! Dropping existing ${collection} collection in 5 sec!`,
+          true
         );
 
         await wait(5000);
+        logger.succeed(`Collection ${collection} dropped`);
         await db.collection(collection).drop();
       }
     }
   }
 
-  if (argv["indexes"]) {
+  if (argv.indexes) {
     for (const collection of collections) {
       logger.status(`Ensuring indexes on ${collection} collection...`);
 
@@ -80,23 +90,30 @@ async function main(argv, client) {
   }
 
   const ajv = new Ajv({ verbose: true });
-  ajv.addSchema(validationSchema.defs);
+  ajv.addSchema(validationSchema.xml.defs);
   if (!argv["include-image-objects"]) {
     // no need to verify the item content
-    delete validationSchema.defs.definitions.imagesTag.properties.children
+    delete validationSchema.xml.defs.definitions.imagesTag.properties.children
       .items;
   }
-  const validators = {};
+  const xmlValidators = {};
+  const docValidators = {};
 
-  for (const collection of collections) {
-    validators[collection] = ajv
-      .compile(validationSchema[collection]);
+  if (!argv["skip-validation"]) {
+    for (const collection of collections) {
+      xmlValidators[collection] = ajv.compile(validationSchema.xml[collection]);
+    }
+  }
+  if (argv["validate-docs"]) {
+    for (const collection of collections) {
+      docValidators[collection] = ajv.compile(validationSchema.doc[collection]);
+    }
   }
 
   function handleInvalidRow(logPath, type, invalidRow) {
     const mssg = `Could not process ${type} with id ${invalidRow.id}: node ${
       invalidRow.reason
-      }`;
+    }`;
 
     logger.warn(mssg);
     fs.appendFileSync(
@@ -104,11 +121,13 @@ async function main(argv, client) {
       `[${new Date().toISOString()}] ${mssg}\n           ${invalidRow.json}\n\n`
     );
 
-    numInvalid ++;
+    numInvalid++;
 
-    if (numInvalid > argv['max-errors']) {
+    if (numInvalid > argv["max-errors"]) {
       throw new Error(
-        `More than ${argv['max-errors']} rows failed to insert. Aborting processing.`
+        `More than ${
+          argv["max-errors"]
+        } rows failed to insert. Aborting processing.`
       );
     }
   }
@@ -119,7 +138,7 @@ async function main(argv, client) {
     const entries = chunk.map((entry, index) => {
       let valid = true;
       if (!argv["skip-validation"]) {
-        valid = validators[collection](entry, {
+        valid = xmlValidators[collection](entry, {
           verbose: true,
           extendRefs: "fail"
         });
@@ -148,7 +167,7 @@ async function main(argv, client) {
               `Invalid row with id ${id}: \n\n${JSON.stringify(entry).substring(
                 0,
                 40
-              )}\n\n${validators[collection].errors
+              )}\n\n${xmlValidators[collection].errors
                 .map(({ dataPath, message, schemaPath }) => {
                   let targetData = "(unable to find target data)";
                   try {
@@ -175,11 +194,48 @@ async function main(argv, client) {
     });
 
     const documents = entries
-      .filter(doc => doc.valid)
-      .map(entry => ({
-        ...entry,
-        doc: formatters[collection](entry.entry, argv["include-image-objects"])
-      }));
+      .filter(entry => entry.valid)
+      .map(entry => {
+        const doc = formatters[collection](
+          entry.entry,
+          argv["include-image-objects"]
+        );
+
+        if (argv["validate-docs"]) {
+          const valid = docValidators[collection](entry, {
+            verbose: true,
+            extendRefs: "fail"
+          });
+
+          if (!valid) {
+            throw new Error(
+              `Invalid document with id ${doc.id}: \n\n${JSON.stringify(
+                doc
+              ).substring(0, 40)}\n\n${docValidators[collection].errors
+                .map(({ dataPath, message, schemaPath }) => {
+                  let targetData = "(unable to find target data)";
+                  try {
+                    targetData = objectGet(
+                      doc,
+                      dataPath.replace(/^[^.]+\./, "")
+                    );
+                  } catch (e) {
+                    // nothing
+                  }
+                  return ` >>> ${message}:\n${JSON.stringify(
+                    targetData
+                  )}\n${schemaPath}\n`;
+                })
+                .join("\n")}\n`
+            );
+          }
+        }
+
+        return {
+          ...entry,
+          doc
+        };
+      });
 
     try {
       await db.collection(collection).bulkWrite(
@@ -198,16 +254,16 @@ async function main(argv, client) {
       if (e.code === 11000) {
         reason = "had a key that already existed in the database";
 
-        logger.warn(`Skipping insert on ${collection} with id=${doc.id}. Duplicate key.`);
+        logger.warn(
+          `Skipping insert on ${collection} with id=${doc.id}. Duplicate key.`
+        );
         logger.warn(e.message);
-      } else {
-        if (argv.bail) {
-          throw new Error(
-            `Unable to write document id=${originalIndex} to db:\n${e.code} ${
-              e.message
-              }`
-          );
-        }
+      } else if (argv.bail) {
+        throw new Error(
+          `Unable to write document id=${originalIndex} to db:\n${e.code} ${
+            e.message
+            }`
+        );
       }
 
       handleInvalidRow(logPath, collection, {
@@ -233,12 +289,12 @@ async function main(argv, client) {
   await client.close();
 }
 
-module.exports = function(argv) {
+module.exports = function mongo(argv) {
   // Create a new MongoClient
   const client = new MongoClient(argv.connection);
 
   main(argv, client).catch(e => {
-    logger.error('error during processing');
+    logger.error("error during processing");
     logger.stopSpinner();
     console.error(`\n${e.stack}\n`);
 

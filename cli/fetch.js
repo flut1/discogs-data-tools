@@ -32,6 +32,6 @@ async function main(argv) {
   }
 }
 
-module.exports = function(argv) {
+module.exports = function fetch(argv) {
   main(argv).catch(e => console.error(e));
 };

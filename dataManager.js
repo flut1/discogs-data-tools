@@ -96,8 +96,10 @@ function globDumps(dataDir = DEFAULT_DATA_DIR) {
       const match = file.match(/discogs_([^_]+)_([^.]+)\.(xml|txt)/);
       if (match) {
         if (!result[match[1]]) {
+          // eslint-disable-next-line no-param-reassign
           result[match[1]] = {};
         }
+        // eslint-disable-next-line no-param-reassign
         result[match[1]][match[2]] = file;
       }
 

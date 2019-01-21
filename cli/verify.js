@@ -3,7 +3,7 @@ const dataManager = require("../dataManager");
 const getVersionFromArgv = require("./getVersionFromArgv");
 const { COLLECTIONS } = require('../constants');
 
-module.exports = async function(argv) {
+module.exports = async function verifyCli(argv) {
   const collections = argv.collections || COLLECTIONS;
   const version = await getVersionFromArgv(argv);
   const dumpFiles = dataManager.findData(version, collections, argv['data-dir']);

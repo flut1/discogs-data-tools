@@ -1,7 +1,7 @@
 const request = require("request-promise-native");
 const xml2js = require("xml2js");
 const idx = require("idx");
-const _ = require("lodash");
+const lodash = require("lodash");
 const { promisify } = require("es6-promisify");
 const logger = require("./util/logger");
 
@@ -42,17 +42,16 @@ function getChecksumURL(version) {
 }
 
 function createS3QueryUrl(prefix = S3B_ROOT_DIR, marker) {
-  let s3_rest_url = BUCKET_URL;
-  s3_rest_url += "?delimiter=/";
+  let s3RestUrl = BUCKET_URL;
+  s3RestUrl += "?delimiter=/";
 
   if (prefix) {
-    prefix = prefix.replace(/\/$/, "") + "/";
-    s3_rest_url += "&prefix=" + prefix;
+    s3RestUrl += `&prefix=${prefix.replace(/\/$/, "")}/`;
   }
   if (marker) {
-    s3_rest_url += "&marker=" + marker;
+    s3RestUrl += `&marker=${marker}`;
   }
-  return s3_rest_url;
+  return s3RestUrl;
 }
 
 async function requestListing(yearPrefix) {
@@ -144,8 +143,8 @@ function parseFileNames(filenames) {
     };
   });
 
-  return _.mapValues(_.groupBy(parsed, _ => _.year), r =>
-    _.keyBy(r, _ => _.type)
+  return lodash.mapValues(lodash.groupBy(parsed, _ => _.year), r =>
+    lodash.keyBy(r, _ => _.type)
   );
 }
 

@@ -12,7 +12,8 @@ module.exports = yargs
     },
     "target-version": {
       alias: "t",
-      describe: "Manually pass the name of the target dump version. ie: \"20180101\"",
+      describe:
+        'Manually pass the name of the target dump version. ie: "20180101"',
       type: "string"
     },
     interactive: {
@@ -33,15 +34,15 @@ module.exports = yargs
       type: "array"
     }
   })
-  .group(['interactive', 'latest', 'target-version'], 'Target (one required):')
+  .group(["interactive", "latest", "target-version"], "Target (one required):")
   .conflicts("l", "i")
   .conflicts("l", "t")
   .conflicts("i", "t")
   .command(
     "fetch",
     "Fetch data dump files from Discogs.",
-    y => {
-      return y
+    y =>
+      y
         .options({
           "hide-progress": {
             alias: "n",
@@ -54,11 +55,10 @@ module.exports = yargs
             type: "boolean"
           }
         })
-        .usage('$0 fetch <target> [...args]')
+        .usage("$0 fetch <target> [...args]")
         .example(
           "$0 fetch --target-version 20180101 --collections labels masters"
-        );
-    },
+        ),
     argv => {
       require("../cli/fetch")(argv);
     }
@@ -68,12 +68,11 @@ module.exports = yargs
     "Verify dump files that have previously been downloaded. " +
       "This uses the checksum available on the website. " +
       "Note: by default, the 'fetch' command already verifies",
-    y => {
-      return y
-        .usage('$0 verify <target> [...args]')
+    y =>
+      y
+        .usage("$0 verify <target> [...args]")
         .example("$0 verify --latest")
-        .example("$0 verify --target-version 20180101 --collections releases");
-    },
+        .example("$0 verify --target-version 20180101 --collections releases"),
     argv => {
       require("../cli/verify")(argv);
     }
@@ -81,7 +80,7 @@ module.exports = yargs
   .command(
     "ls",
     "List all downloaded data",
-    y => y.usage('$0 ls <target> [...args]'),
+    y => y.usage("$0 ls <target> [...args]"),
     argv => {
       require("../cli/ls")(argv);
     }
@@ -89,11 +88,11 @@ module.exports = yargs
   .command(
     "mongo",
     "Import data dumps into a mongo database. " +
-    "Dumps should already have been downloaded using the 'fetch' command. " +
-    "Each '.xml.gz' file of the data dumps are stored in their own MongoDB collection. " +
-    "By default, will also create some indexes on the new collections.",
-    y => {
-      return y
+      "Dumps should already have been downloaded using the 'fetch' command. " +
+      "Each '.xml.gz' file of the data dumps are stored in their own MongoDB collection. " +
+      "By default, will also create some indexes on the new collections.",
+    y =>
+      y
         .options({
           "chunk-size": {
             alias: "s",
@@ -121,6 +120,12 @@ module.exports = yargs
             describe:
               "Skip validation of XML nodes. " +
               "Can considerably speed up processing, but you may get invalid rows",
+            type: "boolean"
+          },
+          "validate-docs": {
+            describe:
+              "perform additional validation on the objects after they" +
+              "have been formatted. Used for development, not necessary on usage",
             type: "boolean"
           },
           "max-errors": {
@@ -161,20 +166,19 @@ module.exports = yargs
             type: "boolean"
           }
         })
-        .usage('$0 mongo <target> [...args]')
+        .usage("$0 mongo <target> [...args]")
         .example(
           "$0 mongo --no-indexes --latest --connection mongodb://root:pw@127.0.0.1:27017"
         )
         .example(
           "$0 mongo --target-version 20180401 --restart --connection mongodb://root:pw@localhost:27017"
-        );
-    },
+        ),
     argv => {
       require("../cli/mongo")(argv);
     }
   )
   .demandCommand(1, 1)
-  .updateStrings({ 'Options:': 'Optional args:'})
+  .updateStrings({ "Options:": "Optional args:" })
   .usage(
     '$0 <command> <target> [...args]\nFor help on a command run "$0 <command> help"'
   )

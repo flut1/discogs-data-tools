@@ -40,7 +40,7 @@ function fetchDump(
     });
 
     progress(request(url))
-      .on("progress", function(state) {
+      .on("progress", (state) => {
         if (showProgress) {
           if (!started) {
             bar.start(state.size.total, 0);
@@ -50,14 +50,14 @@ function fetchDump(
           }
         }
       })
-      .on("error", function(err) {
+      .on("error", (err) => {
         if (showProgress) {
           bar.stop();
         }
         removeExitHandler();
         reject(new Error(`Error getting dump: ${err}`));
       })
-      .on("end", function() {
+      .on("end", () => {
         if (showProgress) {
           bar.stop();
         }
@@ -142,10 +142,10 @@ async function ensureChecksum(version, dataDir = DEFAULT_DATA_DIR) {
 
     await new Promise((resolve, reject) => {
       request(url)
-        .on("error", function(err) {
+        .on("error", (err) => {
           reject(new Error(`Error getting checksum file: ${err}`));
         })
-        .on("end", function() {
+        .on("end", () => {
           console.log("Checksum file fetched");
           resolve();
         })

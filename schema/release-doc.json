@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Release Doc",
+  "description": "An release document formatted by dumpFormatter.js~formatRelease",
+  "type": "object",
+  "properties": {
+
+  },
+  "additionalProperties": false,
+  "required": []
+}
