@@ -61,5 +61,25 @@
       "partialFilterExpression": { "year": { "$exists": true } }
     }
   ],
-  "releases": [{ "key": { "id": 1 }, "unique": true }]
+  "releases": [
+    { "key": { "id": 1 }, "unique": true },
+    { "key": { "title": "text" } },
+    { "key": { "artists.id": 1 } },
+    { "key": { "artists.name": 1 } },
+    { "key": { "companies.id": 1 } },
+    { "key": { "companies.name": 1 } },
+    { "key": { "labels.catno": 1 } },
+    { "key": { "labels.id": 1 } },
+    { "key": { "labels.name": 1 } },
+    {
+      "key": { "masterId": 1, "isMainRelease": 1 },
+      "partialFilterExpression": { "masterId": { "$exists": true } }
+    },
+    { "key": { "genres": 1 } },
+    { "key": { "styles": 1 } },
+    {
+      "key": { "released": 1 },
+      "partialFilterExpression": { "released": { "$exists": true } }
+    }
+  ]
 }
