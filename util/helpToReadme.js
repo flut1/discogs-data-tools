@@ -2,7 +2,16 @@ const { fork } = require("child_process");
 const fs = require("fs-extra");
 const path = require("path");
 
-const commands = ["fetch", "verify", "mongo", "ls"];
+const readmePath = path.join(__dirname, "../readme.md");
+const readmeContents = fs.readFileSync(readmePath, { encoding: "utf8" });
+const commands = [];
+const commandRegex = /<!-- CLI: ?([a-zA-Z]+) -->[\s\S]+?<!-- \/CLI -->/g;
+let match;
+
+// eslint-disable-next-line no-cond-assign
+while (match = commandRegex.exec(readmeContents)) {
+  commands.push(match[1]);
+}
 
 Promise.all(
   commands.map(
@@ -22,20 +31,14 @@ Promise.all(
         });
       })
   )
-).then(output => {
-  const readmePath = path.join(__dirname, "../readme.md");
-  const readmeContents = fs.readFileSync(readmePath, { encoding: "utf8" });
-  const newContents = readmeContents.replace(
-    /<!-- CLI -->[\s\S]+<!-- \/CLI -->/,
-    `<!-- CLI -->\n${output
-      .map(
-        (help, index) =>
-          `\n### ${commands[index]} command\n\`\`\`\n${help
-            .trim()
-            .replace(/cli/g, "discogs-data-tools")}\n\`\`\``
-      )
-      .join("\n")}\n<!-- /CLI -->`
-  );
+).then((output) => {
+  let newContents = readmeContents;
+  output.forEach((commandOutput, index) => {
+    newContents = newContents.replace(
+      new RegExp(`<!-- CLI: ?(${commands[index]}) -->[\\s\\S]+?<!-- \\/CLI -->`, 'g'),
+      `<!-- CLI: ${commands[index]} -->\n\`\`\`\n${commandOutput.trim().replace(/cli/g, "discogs-data-tools")}\n\`\`\`\n<!-- /CLI -->`
+    );
+  });
 
   fs.writeFileSync(readmePath, newContents, { encoding: "utf8" });
 });

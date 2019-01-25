@@ -77,10 +77,9 @@ See the command-specific documentation below. Every command requires you to
 specify a target dump version. This can be done with either the `--interactive` (`-i`),
 `--latest` (`-l`) or `--target-version` (`-t`) argument.
 
-<!-- below section is automatically generated. Do not modify -->
-<!-- CLI -->
 
 ### fetch command
+<!-- CLI: fetch -->
 ```
 discogs-data-tools fetch <target> [...args]
 
@@ -101,8 +100,10 @@ Optional args:
 Examples:
   discogs-data-tools fetch --target-version 20180101 --collections labels masters
 ```
+<!-- /CLI -->
 
 ### verify command
+<!-- CLI: verify -->
 ```
 discogs-data-tools verify <target> [...args]
 
@@ -122,8 +123,13 @@ Examples:
   discogs-data-tools verify --latest
   discogs-data-tools verify --target-version 20180101 --collections releases
 ```
+<!-- /CLI -->
 
 ### mongo command
+> **Please note:** this command will **overwrite** existing documents in
+> your collection, if it already exists
+
+<!-- CLI: mongo -->
 ```
 discogs-data-tools mongo <target> [...args]
 
@@ -165,8 +171,10 @@ Examples:
 
 IMPORTANT: please note that existing documents in MongoDB collections with the same name will be replaced
 ```
+<!-- /CLI -->
 
 ### ls command
+<!-- CLI: ls -->
 ```
 discogs-data-tools ls <target> [...args]
 
