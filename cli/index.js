@@ -3,6 +3,7 @@ const yargs = require("yargs");
 const { COLLECTIONS } = require("../constants");
 
 module.exports = yargs
+  .strict()
   .options({
     "data-dir": {
       alias: "d",
