@@ -231,7 +231,7 @@
                       "additionalProperties": false
                     }
                   },
-                  "required": ["tag", "text", "attrs"]
+                  "required": ["tag", "attrs"]
                 }
               }
             },
