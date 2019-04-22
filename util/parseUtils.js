@@ -1,4 +1,4 @@
-const logger = require('./logger');
+import * as logger from './logger';
 
 /**
  * Small helpers for parsing discogs data
@@ -10,7 +10,7 @@ const logger = require('./logger');
  * @param str {string} The string to parse
  * @returns {number}
  */
-function parseIntSafe(str) {
+export function parseIntSafe(str) {
   const res = parseInt(str, 10);
   // eslint-disable-next-line no-restricted-globals
   if (isNaN(res)) {
@@ -32,7 +32,7 @@ function parseIntSafe(str) {
  * @param target {object} An object to store the results on
  * @returns {object} A reference to target
  */
-function parseDiscogsName(name, target) {
+export function parseDiscogsName(name, target) {
   if (!name) {
     return target;
   }
@@ -68,7 +68,7 @@ function parseDiscogsName(name, target) {
  * @param target {object} The target object to store results on
  * @returns {object} `target` for chaining
  */
-function parseDuration(duration, target) {
+export function parseDuration(duration, target) {
   if (duration) {
     target.originalDuration = duration;
 
@@ -97,7 +97,7 @@ function parseDuration(duration, target) {
  * @param date {string} The date string to parse
  * @param {object} `target` for chaining
  */
-function parseReleaseDate(date, target) {
+export function parseReleaseDate(date, target) {
   if (date.indexOf('/') >= 0) {
     // eslint-disable-next-line no-param-reassign
     date = date.replace(/\//g, '-');
@@ -117,10 +117,3 @@ function parseReleaseDate(date, target) {
   }
   return target;
 }
-
-module.exports = {
-  parseIntSafe,
-  parseDiscogsName,
-  parseDuration,
-  parseReleaseDate
-};

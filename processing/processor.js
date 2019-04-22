@@ -1,8 +1,8 @@
-const fs = require("fs-extra");
-const XMLParser = require("./XMLParser");
-const logger = require("../util/logger");
-const dataManager = require("../dataManager");
-const { COLLECTIONS, DEFAULT_DATA_DIR } = require("../constants");
+import fs from 'fs-extra';
+import XMLParser from './XMLParser';
+import * as logger from '../util/logger';
+import { findData } from '../dataManager';
+import { COLLECTIONS, DEFAULT_DATA_DIR } from "../constants";
 
 /**
  * Parse the data dump XML into plain JS objects and process them with
@@ -56,7 +56,7 @@ const { COLLECTIONS, DEFAULT_DATA_DIR } = require("../constants");
  * );
  * ```
  */
-function processDumpFile(
+export function processDumpFile(
   path,
   collection,
   fn,
@@ -145,7 +145,7 @@ function processDumpFile(
  * @param [dataDir='/data'] {string}
  * @returns {Promise<void>}
  */
-async function processDumps(
+export async function processDumps(
   version,
   fn,
   collections = COLLECTIONS,
@@ -153,7 +153,7 @@ async function processDumps(
   restart = false,
   dataDir = DEFAULT_DATA_DIR
 ) {
-  const targetFiles = dataManager.findData(version, collections, dataDir);
+  const targetFiles = findData(version, collections, dataDir);
 
   for (let i = 0; i < targetFiles.length; i++) {
     if (!targetFiles[i]) {
@@ -172,5 +172,3 @@ async function processDumps(
     logger.succeed(`Finished processing ${targetFiles[i].path}...`);
   }
 }
-
-module.exports = { processDumps, processDumpFile };

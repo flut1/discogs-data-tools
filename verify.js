@@ -1,9 +1,9 @@
-const path = require("path");
-const sumchecker = require("sumchecker");
-const { ensureChecksum } = require("./fetcher");
-const { COLLECTIONS } = require("./constants");
+import path from 'path';
+import sumchecker from 'sumchecker';
+import { ensureChecksum } from './fetcher';
+import { COLLECTIONS } from './constants';
 
-async function verify(version, collections = COLLECTIONS, dataDir) {
+export async function verify(version, collections = COLLECTIONS, dataDir) {
   const checksumPath = await ensureChecksum(version, dataDir);
 
   console.log("Verifying with checksum...");
@@ -15,5 +15,3 @@ async function verify(version, collections = COLLECTIONS, dataDir) {
   );
   console.log("All ok!");
 }
-
-module.exports = { verify };

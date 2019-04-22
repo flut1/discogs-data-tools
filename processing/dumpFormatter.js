@@ -1,10 +1,10 @@
-const {
+import {
   parseIntSafe,
   parseDiscogsName,
   parseDuration,
   parseReleaseDate
-} = require("../util/parseUtils");
-const logger = require("../util/logger");
+} from "../util/parseUtils";
+import * as logger from "../util/logger";
 
 /**
  * Helpers to transform on the dumps parsed by XMLParser into plain objects
@@ -22,7 +22,7 @@ const logger = require("../util/logger");
  * object (even though they do not contain URI)
  * @returns {object}
  */
-function formatLabel(label, includeImageObjects = false) {
+export function formatLabel(label, includeImageObjects = false) {
   const res = {
     imageCount: 0,
     urls: [],
@@ -106,7 +106,7 @@ function formatLabel(label, includeImageObjects = false) {
  * object (even though they do not contain URI)
  * @returns {object}
  */
-function formatArtist(artist, includeImageObjects = false) {
+export function formatArtist(artist, includeImageObjects = false) {
   const res = {
     imageCount: 0,
     urls: [],
@@ -237,7 +237,7 @@ function formatArtist(artist, includeImageObjects = false) {
  * object (even though they do not contain URI)
  * @returns {object}
  */
-function formatMaster(master, includeImageObjects = false) {
+export function formatMaster(master, includeImageObjects = false) {
   const res = {
     id: parseIntSafe(master.attrs.id),
     imageCount: 0,
@@ -467,7 +467,9 @@ function parseTracklist(trackNodes, target, type = "track") {
     if (resTrack.title || resTrack.position) {
       target.push(resTrack);
     } else if (Object.keys(resTrack).length) {
-      logger.warn(`excluded track without title and position: ${JSON.stringify(resTrack)}`);
+      logger.warn(
+        `excluded track without title and position: ${JSON.stringify(resTrack)}`
+      );
     }
   }
 }
@@ -481,7 +483,7 @@ function parseTracklist(trackNodes, target, type = "track") {
  * object (even though they do not contain URI)
  * @returns {object}
  */
-function formatRelease(release, includeImageObjects = false) {
+export function formatRelease(release, includeImageObjects = false) {
   const res = {
     id: parseIntSafe(release.attrs.id),
     imageCount: 0,
@@ -669,7 +671,9 @@ function formatRelease(release, includeImageObjects = false) {
             }
 
             if (!resIdentifier.value) {
-              logger.warn(`dropped identifier with type "${attrs.type}" and no value`);
+              logger.warn(
+                `dropped identifier with type "${attrs.type}" and no value`
+              );
             } else {
               res.identifiers.push(resIdentifier);
             }
@@ -710,5 +714,3 @@ function formatRelease(release, includeImageObjects = false) {
 
   return res;
 }
-
-module.exports = { formatLabel, formatArtist, formatMaster, formatRelease };

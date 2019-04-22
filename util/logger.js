@@ -1,9 +1,9 @@
-const ora = require("ora");
+import ora from 'ora';
 
 let spinner = null;
 let muted = false;
 
-function startSpinner() {
+export function startSpinner() {
   if (!spinner) {
     spinner = ora();
   }
@@ -13,18 +13,18 @@ function startSpinner() {
   }
 }
 
-function stopSpinner() {
+export function stopSpinner() {
   if (spinner) {
     spinner.stop();
     spinner = null;
   }
 }
 
-function mute() {
+export function mute() {
   muted = true;
 }
 
-function log(mssg) {
+export function log(mssg) {
   if (!muted) {
     if (spinner) {
       spinner.info(mssg).start();
@@ -34,7 +34,7 @@ function log(mssg) {
   }
 }
 
-function succeed(mssg) {
+export function succeed(mssg) {
   if (!muted) {
     if (spinner) {
       spinner.succeed(mssg).start();
@@ -44,7 +44,7 @@ function succeed(mssg) {
   }
 }
 
-function error(mssg) {
+export function error(mssg) {
   if (!muted) {
     if (spinner) {
       spinner.fail(mssg).start();
@@ -54,7 +54,7 @@ function error(mssg) {
   }
 }
 
-function warn(mssg) {
+export function warn(mssg) {
   if (!muted) {
     if (spinner) {
       spinner.warn(mssg).start();
@@ -64,7 +64,7 @@ function warn(mssg) {
   }
 }
 
-function status(mssg, fallbackLog = false) {
+export function status(mssg, fallbackLog = false) {
   if (!muted) {
     if (spinner) {
       spinner.text = mssg;
@@ -73,5 +73,3 @@ function status(mssg, fallbackLog = false) {
     }
   }
 }
-
-module.exports = { log, warn, error, mute, startSpinner, stopSpinner, status, succeed };

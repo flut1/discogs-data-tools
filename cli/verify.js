@@ -1,12 +1,12 @@
-const { verify } = require("../verify");
-const dataManager = require("../dataManager");
-const getVersionFromArgv = require("./getVersionFromArgv");
-const { COLLECTIONS } = require('../constants');
+import { verify } from "../verify";
+import { findData } from "../dataManager";
+import getVersionFromArgv from "./getVersionFromArgv";
+import { COLLECTIONS } from "../constants";
 
-module.exports = async function verifyCli(argv) {
+export default async function verifyCli(argv) {
   const collections = argv.collections || COLLECTIONS;
   const version = await getVersionFromArgv(argv);
-  const dumpFiles = dataManager.findData(version, collections, argv['data-dir']);
+  const dumpFiles = findData(version, collections, argv["data-dir"]);
 
   for (let i = 0; i < dumpFiles.length; i++) {
     if (!dumpFiles[i]) {
@@ -15,7 +15,5 @@ module.exports = async function verifyCli(argv) {
     }
   }
 
-  verify(version, collections, argv["data-dir"]).catch(e =>
-    console.error(e)
-  );
-};
+  verify(version, collections, argv["data-dir"]).catch(e => console.error(e));
+}

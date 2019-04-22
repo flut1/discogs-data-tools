@@ -4,12 +4,12 @@
  *
  * Modification to pick target nodes based on depth instead of name
  */
-const expat = require('node-expat');
-const fs = require('fs');
-const events = require('events');
-const zlib = require('zlib');
+import expat from 'node-expat';
+import fs from 'fs';
+import events from 'events';
+import zlib from 'zlib';
 
-class XMLParser extends events.EventEmitter {
+export default class XMLParser extends events.EventEmitter {
   constructor(filename, targetDepth, options) {
     super();
     // eslint-disable-next-line no-param-reassign
@@ -128,5 +128,3 @@ class XMLParser extends events.EventEmitter {
     }
   }
 }
-
-module.exports = XMLParser;

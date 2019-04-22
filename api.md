@@ -104,18 +104,18 @@ Manage data dump files that have already been downloaded
 
 
 * [dataManager](#module_dataManager)
-    * [~getXMLPath(version, collection, [gz], [dataDir])](#module_dataManager..getXMLPath) ⇒ <code>string</code>
-    * [~getChecksumPath(version, [dataDir])](#module_dataManager..getChecksumPath) ⇒ <code>string</code>
-    * [~findXML(version, collection, [gz], [dataDir])](#module_dataManager..findXML) ⇒ <code>Object</code> \| <code>null</code>
-    * [~findData(version, collections, [dataDir])](#module_dataManager..findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
-    * [~globDumps([dataDir])](#module_dataManager..globDumps) ⇒ <code>Object</code>
+    * [.getXMLPath(version, collection, [gz], [dataDir])](#module_dataManager.getXMLPath) ⇒ <code>string</code>
+    * [.getChecksumPath(version, [dataDir])](#module_dataManager.getChecksumPath) ⇒ <code>string</code>
+    * [.findXML(version, collection, [gz], [dataDir])](#module_dataManager.findXML) ⇒ <code>Object</code> \| <code>null</code>
+    * [.findData(version, collections, [dataDir])](#module_dataManager.findData) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+    * [.globDumps([dataDir])](#module_dataManager.globDumps) ⇒ <code>Object</code>
 
-<a name="module_dataManager..getXMLPath"></a>
+<a name="module_dataManager.getXMLPath"></a>
 
-### dataManager~getXMLPath(version, collection, [gz], [dataDir]) ⇒ <code>string</code>
+### dataManager.getXMLPath(version, collection, [gz], [dataDir]) ⇒ <code>string</code>
 Get the path where a data XML is saved
 
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
+**Kind**: static method of [<code>dataManager</code>](#module_dataManager)  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -124,24 +124,24 @@ Get the path where a data XML is saved
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
-<a name="module_dataManager..getChecksumPath"></a>
+<a name="module_dataManager.getChecksumPath"></a>
 
-### dataManager~getChecksumPath(version, [dataDir]) ⇒ <code>string</code>
+### dataManager.getChecksumPath(version, [dataDir]) ⇒ <code>string</code>
 Get the path to where the checksum file for a specified version is stored
 
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
+**Kind**: static method of [<code>dataManager</code>](#module_dataManager)  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | version | <code>string</code> |  | The exact version name, eg '20180101' |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
-<a name="module_dataManager..findXML"></a>
+<a name="module_dataManager.findXML"></a>
 
-### dataManager~findXML(version, collection, [gz], [dataDir]) ⇒ <code>Object</code> \| <code>null</code>
+### dataManager.findXML(version, collection, [gz], [dataDir]) ⇒ <code>Object</code> \| <code>null</code>
 Looks up an existing data xml on disk
 
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
+**Kind**: static method of [<code>dataManager</code>](#module_dataManager)  
 **Returns**: <code>Object</code> \| <code>null</code> - An object of the form `{ path: string, gz: boolean }`if the file was found, null otherwise  
 
 | Param | Type | Default | Description |
@@ -151,12 +151,12 @@ Looks up an existing data xml on disk
 | [gz] | <code>boolean</code> | <code>false</code> | If this is the compressed file (.xml.gz) or non-compressed (.gz) |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
-<a name="module_dataManager..findData"></a>
+<a name="module_dataManager.findData"></a>
 
-### dataManager~findData(version, collections, [dataDir]) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
+### dataManager.findData(version, collections, [dataDir]) ⇒ <code>Array.&lt;(Object\|null)&gt;</code>
 Looks up the xml files on disk for a given version
 
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
+**Kind**: static method of [<code>dataManager</code>](#module_dataManager)  
 **Returns**: <code>Array.&lt;(Object\|null)&gt;</code> - An array of results for each type:An object of the form `{ path: string, gz: boolean }` if the file was found,null otherwise  
 
 | Param | Type | Default | Description |
@@ -165,12 +165,12 @@ Looks up the xml files on disk for a given version
 | collections | <code>Array.&lt;string&gt;</code> |  | An array of types to get. Possible options: "artists", "labels", "masters" or "releases".  Defaults to all types |
 | [dataDir] | <code>string</code> | <code>&quot;\&quot;./data\&quot;&quot;</code> | Root directory where `discogs-data-tools` stores data files. Defaults to ./data relative to working directory |
 
-<a name="module_dataManager..globDumps"></a>
+<a name="module_dataManager.globDumps"></a>
 
-### dataManager~globDumps([dataDir]) ⇒ <code>Object</code>
+### dataManager.globDumps([dataDir]) ⇒ <code>Object</code>
 List all data downloaded to the data directory
 
-**Kind**: inner method of [<code>dataManager</code>](#module_dataManager)  
+**Kind**: static method of [<code>dataManager</code>](#module_dataManager)  
 **Returns**: <code>Object</code> - A map containing all downloaded files  
 
 | Param | Type | Default | Description |
@@ -184,16 +184,16 @@ Download data dumps and show download progress
 
 
 * [fetcher](#module_fetcher)
-    * [~ensureDump(version, collection, [showProgress], [dataDir])](#module_fetcher..ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
-    * [~ensureDumps(version, [collections], [showProgress], [dataDir])](#module_fetcher..ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
-    * [~ensureChecksum(version, [dataDir])](#module_fetcher..ensureChecksum) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.ensureDump(version, collection, [showProgress], [dataDir])](#module_fetcher.ensureDump) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.ensureDumps(version, [collections], [showProgress], [dataDir])](#module_fetcher.ensureDumps) ⇒ <code>Promise.&lt;void&gt;</code>
+    * [.ensureChecksum(version, [dataDir])](#module_fetcher.ensureChecksum) ⇒ <code>Promise.&lt;string&gt;</code>
 
-<a name="module_fetcher..ensureDump"></a>
+<a name="module_fetcher.ensureDump"></a>
 
-### fetcher~ensureDump(version, collection, [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
+### fetcher.ensureDump(version, collection, [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
 Ensures a data dump file is downloaded to ./data/<version>/. Doesnothing if a file already exists. Does not verify the file.
 
-**Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
+**Kind**: static method of [<code>fetcher</code>](#module_fetcher)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - A Promise that completes when all data isdownloaded  
 
 | Param | Type | Default | Description |
@@ -203,12 +203,12 @@ Ensures a data dump file is downloaded to ./data/<version>/. Doesnothing if a f
 | [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 | [dataDir] | <code>string</code> |  | Set to overwrite the default data directory where dumps are stored (./data) |
 
-<a name="module_fetcher..ensureDumps"></a>
+<a name="module_fetcher.ensureDumps"></a>
 
-### fetcher~ensureDumps(version, [collections], [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
+### fetcher.ensureDumps(version, [collections], [showProgress], [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
 Ensures all the specified collections of a specific data dump version aredownloaded to the given data directory
 
-**Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
+**Kind**: static method of [<code>fetcher</code>](#module_fetcher)  
 **Returns**: <code>Promise.&lt;void&gt;</code> - A Promise that completes when all data isdownloaded  
 
 | Param | Type | Default | Description |
@@ -218,12 +218,12 @@ Ensures all the specified collections of a specific data dump version aredownlo
 | [showProgress] | <code>boolean</code> | <code>false</code> | Show a progress indicator. For usage in an interactive CLI. On a server you probably want this set to false |
 | [dataDir] | <code>string</code> |  | Set to overwrite the default data directory where dumps are stored (./data) |
 
-<a name="module_fetcher..ensureChecksum"></a>
+<a name="module_fetcher.ensureChecksum"></a>
 
-### fetcher~ensureChecksum(version, [dataDir]) ⇒ <code>Promise.&lt;void&gt;</code>
+### fetcher.ensureChecksum(version, [dataDir]) ⇒ <code>Promise.&lt;string&gt;</code>
 Ensures that the CHECKSUM file for a given version is downloaded
 
-**Kind**: inner method of [<code>fetcher</code>](#module_fetcher)  
+**Kind**: static method of [<code>fetcher</code>](#module_fetcher)  
 
 | Param | Type | Description |
 | --- | --- | --- |

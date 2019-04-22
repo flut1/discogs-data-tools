@@ -1,4 +1,2 @@
-module.exports = {
-  COLLECTIONS: ["artists", "labels", "masters", "releases"],
-  DEFAULT_DATA_DIR: './data'
-};
+export const COLLECTIONS = ["artists", "labels", "masters", "releases"];
+export const DEFAULT_DATA_DIR = './data';

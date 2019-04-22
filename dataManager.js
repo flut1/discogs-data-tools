@@ -1,10 +1,10 @@
-const fs = require("fs-extra");
-const path = require("path");
-const globCallback = require('glob');
-const { promisify } = require("es6-promisify");
-const { COLLECTIONS, DEFAULT_DATA_DIR } = require('./constants');
+import fs from 'fs-extra';
+import path from 'path';
+import globCallback from 'glob';
+import util from 'util';
+import { COLLECTIONS, DEFAULT_DATA_DIR } from "./constants";
 
-const glob = promisify(globCallback);
+const glob = util.promisify(globCallback);
 
 /**
  * Manage data dump files that have already been downloaded
@@ -22,7 +22,7 @@ const glob = promisify(globCallback);
  * stores data files. Defaults to ./data relative to working directory
  * @returns {string}
  */
-function getXMLPath(version, collection, gz = false, dataDir = DEFAULT_DATA_DIR) {
+export function getXMLPath(version, collection, gz = false, dataDir = DEFAULT_DATA_DIR) {
   return path.resolve(
     dataDir,
     version,
@@ -37,7 +37,7 @@ function getXMLPath(version, collection, gz = false, dataDir = DEFAULT_DATA_DIR)
  * stores data files. Defaults to ./data relative to working directory
  * @returns {string}
  */
-function getChecksumPath(version, dataDir = DEFAULT_DATA_DIR) {
+export function getChecksumPath(version, dataDir = DEFAULT_DATA_DIR) {
   return path.resolve(
     dataDir,
     version,
@@ -57,7 +57,7 @@ function getChecksumPath(version, dataDir = DEFAULT_DATA_DIR) {
  * @returns {Object|null} An object of the form `{ path: string, gz: boolean }`
  * if the file was found, null otherwise
  */
-function findXML(version, collection, gz = false, dataDir = DEFAULT_DATA_DIR) {
+export function findXML(version, collection, gz = false, dataDir = DEFAULT_DATA_DIR) {
   const targetPath = getXMLPath(version, collection, gz, dataDir);
   if (fs.existsSync(targetPath)) {
     return { path: targetPath, gz };
@@ -76,7 +76,7 @@ function findXML(version, collection, gz = false, dataDir = DEFAULT_DATA_DIR) {
  * An object of the form `{ path: string, gz: boolean }` if the file was found,
  * null otherwise
  */
-function findData(version, collections = COLLECTIONS, dataDir = DEFAULT_DATA_DIR) {
+export function findData(version, collections = COLLECTIONS, dataDir = DEFAULT_DATA_DIR) {
   return collections.map(
     collection =>
       findXML(version, collection, true, dataDir) ||
@@ -90,7 +90,7 @@ function findData(version, collections = COLLECTIONS, dataDir = DEFAULT_DATA_DIR
  * stores data files. Defaults to ./data relative to working directory
  * @returns {Object} A map containing all downloaded files
  */
-function globDumps(dataDir = DEFAULT_DATA_DIR) {
+export function globDumps(dataDir = DEFAULT_DATA_DIR) {
   return glob('*/discogs_*.@(xml|txt)?(.gz)', { cwd: path.resolve( dataDir) })
     .then(files => files.reduce((result, file) => {
       const match = file.match(/discogs_([^_]+)_([^.]+)\.(xml|txt)/);
@@ -106,12 +106,3 @@ function globDumps(dataDir = DEFAULT_DATA_DIR) {
       return result;
     }, {}));
 }
-
-module.exports = {
-  findXML,
-  globDumps,
-  getXMLPath,
-  getChecksumPath,
-  findData,
-  COLLECTIONS
-};

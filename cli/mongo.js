@@ -1,21 +1,27 @@
-const Ajv = require("ajv");
-const objectGet = require("object-get");
-const { MongoClient } = require("mongodb");
-const fs = require("fs-extra");
-const logger = require("../util/logger");
+import Ajv from 'ajv';
+import objectGet from 'object-get';
+import MongoClient from 'mongodb';
+import fs from 'fs-extra';
+import * as logger from '../util/logger';
 
-const processor = require("../processing/processor");
+import { processDumps } from "../processing/processor";
+import {
+  formatArtist,
+  formatLabel,
+  formatMaster,
+  formatRelease
+} from "../processing/dumpFormatter";
+import getVersionFromArgv from "./getVersionFromArgv";
+
+import { COLLECTIONS } from "../constants";
+
 const indexSpec = require("../config/mongoIndexSpec.json");
-const dumpFormatter = require("../processing/dumpFormatter");
-const getVersionFromArgv = require("./getVersionFromArgv");
-
-const { COLLECTIONS } = require("../constants");
 
 const formatters = {
-  artists: dumpFormatter.formatArtist,
-  labels: dumpFormatter.formatLabel,
-  masters: dumpFormatter.formatMaster,
-  releases: dumpFormatter.formatRelease
+  artists: formatArtist,
+  labels: formatLabel,
+  masters: formatMaster,
+  releases: formatRelease
 };
 
 const validationSchema = {
@@ -279,7 +285,7 @@ async function main(argv, client) {
     }
   }
 
-  await processor.processDumps(
+  await processDumps(
     version,
     processEntries,
     collections,
@@ -293,7 +299,7 @@ async function main(argv, client) {
   await client.close();
 }
 
-module.exports = function mongo(argv) {
+export default function mongo(argv) {
   // Create a new MongoClient
   const client = new MongoClient(argv.connection);
 
@@ -304,4 +310,4 @@ module.exports = function mongo(argv) {
 
     return client.close();
   });
-};
+}

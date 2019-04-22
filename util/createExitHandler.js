@@ -38,4 +38,4 @@ const createExitHandler = (callback = () => {}) => {
   }
 };
 
-module.exports = createExitHandler;
+export default createExitHandler;

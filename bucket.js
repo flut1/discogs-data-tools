@@ -1,16 +1,16 @@
-const request = require("request-promise-native");
-const xml2js = require("xml2js");
-const idx = require("idx");
-const lodash = require("lodash");
-const { promisify } = require("es6-promisify");
-const logger = require("./util/logger");
+import request from 'request-promise-native';
+import xml2js from 'xml2js';
+import idx from 'idx';
+import lodash from 'lodash';
+import util from 'util';
+import * as logger from './util/logger';
 
 /**
  * Lookup available data dumps on the S3 bucket
  * @module bucket
  */
 
-const parseString = promisify(xml2js.parseString);
+const parseString = util.promisify(xml2js.parseString);
 
 const BUCKET_URL = "https://discogs-data.s3-us-west-2.amazonaws.com";
 const S3B_ROOT_DIR = "data/";
@@ -22,7 +22,7 @@ const S3B_ROOT_DIR = "data/";
  * "masters" or "releases"
  * @returns {string}
  */
-function getDumpURL(version, collection) {
+export function getDumpURL(version, collection) {
   return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
     0,
     4
@@ -34,7 +34,7 @@ function getDumpURL(version, collection) {
  * @param version {string} The exact version name, eg '20180101'
  * @returns {string}
  */
-function getChecksumURL(version) {
+export function getChecksumURL(version) {
   return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
     0,
     4
@@ -82,7 +82,7 @@ async function requestListing(yearPrefix) {
  * paths on the bucket.
  * @returns {Promise<Array<{path:string, year:number}>>}
  */
-async function fetchYearListings() {
+export async function fetchYearListings() {
   logger.status("Fetching year listings...", true);
 
   const parsed = await await requestListing();
@@ -110,7 +110,7 @@ async function fetchYearListings() {
  * "data/2016/"
  * @returns {Promise<Array<string>>} An array of paths
  */
-async function fetchFileListing(yearPrefix) {
+export async function fetchFileListing(yearPrefix) {
   logger.status("Fetching file listings...", true);
 
   const parsed = await requestListing(yearPrefix);
@@ -129,7 +129,7 @@ async function fetchFileListing(yearPrefix) {
  * @returns {Object} An object with keys for each year and an array of parsed
  * path objects as values.
  */
-function parseFileNames(filenames) {
+export function parseFileNames(filenames) {
   const parsed = filenames.map(path => {
     const match = path.match(/discogs_([\d]+)_([^.]+)\.xml/);
     if (!match) {
@@ -152,7 +152,7 @@ function parseFileNames(filenames) {
  * Gets the name of the latest version available in the S3 bucket
  * @returns {Promise<string>} A promise that resolves with the version name
  */
-async function getLatestVersion() {
+export async function getLatestVersion() {
   const years = await fetchYearListings();
   const files = await fetchFileListing(years[0].path);
   const versions = parseFileNames(files);
@@ -162,12 +162,3 @@ async function getLatestVersion() {
 
   return versionNames[0].toString();
 }
-
-module.exports = {
-  fetchYearListings,
-  getDumpURL,
-  getChecksumURL,
-  getLatestVersion,
-  fetchFileListing,
-  parseFileNames
-};

@@ -1,9 +1,14 @@
-const inquirer = require("inquirer");
-const bucket = require("../bucket");
-const logger = require("../util/logger");
+import inquirer from "inquirer";
+import {
+  fetchFileListing,
+  fetchYearListings,
+  parseFileNames,
+  getLatestVersion
+} from "../bucket";
+import * as logger from "../util/logger";
 
 async function getYear() {
-  const years = await bucket.fetchYearListings();
+  const years = await fetchYearListings();
 
   const { year } = await inquirer.prompt([
     {
@@ -19,8 +24,8 @@ async function getYear() {
 async function getVersionInteractive() {
   const year = await getYear();
 
-  const files = await bucket.fetchFileListing(`data/${year}/`);
-  const versions = bucket.parseFileNames(files);
+  const files = await fetchFileListing(`data/${year}/`);
+  const versions = parseFileNames(files);
 
   const { version } = await inquirer.prompt([
     {
@@ -33,11 +38,11 @@ async function getVersionInteractive() {
   return version;
 }
 
-module.exports = async function getVersionFromArgv(argv) {
+export default async function getVersionFromArgv(argv) {
   let version = argv["target-version"];
 
   if (argv.latest) {
-    version = await bucket.getLatestVersion();
+    version = await getLatestVersion();
     logger.succeed(`Latest version is "${version}"`);
   }
 
@@ -60,4 +65,4 @@ module.exports = async function getVersionFromArgv(argv) {
   }
 
   return version;
-};
+}

@@ -1,7 +1,7 @@
-const path = require('path');
-const { globDumps } = require('../dataManager');
+import path from 'path';
+import { globDumps } from "../dataManager";
 
-module.exports = async function ls(argv) {
+export default async function ls(argv) {
   const results = Object.entries(await globDumps(argv['data-dir']));
 
   if (!results.length) {

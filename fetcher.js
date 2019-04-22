@@ -1,12 +1,12 @@
-const fs = require("fs-extra");
-const request = require("request");
-const cliProgress = require("cli-progress");
-const progress = require("request-progress");
-const path = require("path");
-const dataManager = require("./dataManager");
-const bucket = require("./bucket");
-const createExitHandler = require("./util/createExitHandler");
-const { COLLECTIONS, DEFAULT_DATA_DIR } = require("./constants");
+import fs from 'fs-extra';
+import request from 'request';
+import cliProgress from 'cli-progress';
+import progress from 'request-progress';
+import path from 'path';
+import { getXMLPath, getChecksumPath, findData } from './dataManager';
+import { getDumpURL, getChecksumURL } from './bucket';
+import createExitHandler from './util/createExitHandler';
+import { COLLECTIONS, DEFAULT_DATA_DIR } from "./constants";
 
 /**
  * Download data dumps and show download progress
@@ -20,8 +20,8 @@ function fetchDump(
   dataDir = DEFAULT_DATA_DIR
 ) {
   return new Promise((resolve, reject) => {
-    const url = bucket.getDumpURL(version, collection);
-    const targetPath = dataManager.getXMLPath(
+    const url = getDumpURL(version, collection);
+    const targetPath = getXMLPath(
       version,
       collection,
       true,
@@ -83,13 +83,13 @@ function fetchDump(
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
-function ensureDump(
+export function ensureDump(
   version,
   collection,
   showProgress = false,
   dataDir = DEFAULT_DATA_DIR
 ) {
-  const [existingData] = dataManager.findData(version, [collection], dataDir);
+  const [existingData] = findData(version, [collection], dataDir);
 
   if (!existingData) {
     return fetchDump(version, collection, showProgress, dataDir);
@@ -112,7 +112,7 @@ function ensureDump(
  * @returns {Promise<void>} A Promise that completes when all data is
  * downloaded
  */
-async function ensureDumps(
+export async function ensureDumps(
   version,
   collections = COLLECTIONS,
   showProgress = false,
@@ -128,15 +128,15 @@ async function ensureDumps(
  * @param version {string} The exact version name, eg '20180101'
  * @param [dataDir] {string} Set to overwrite the default data directory
  * where dumps are stored (./data)
- * @returns {Promise<void>}
+ * @returns {Promise<string>}
  */
-async function ensureChecksum(version, dataDir = DEFAULT_DATA_DIR) {
-  const checksumPath = dataManager.getChecksumPath(version, dataDir);
+export async function ensureChecksum(version, dataDir = DEFAULT_DATA_DIR) {
+  const checksumPath = getChecksumPath(version, dataDir);
 
   if (fs.existsSync(checksumPath)) {
     console.log(`Checksum file exists at ${checksumPath}`);
   } else {
-    const url = bucket.getChecksumURL(version);
+    const url = getChecksumURL(version);
     fs.ensureDirSync(path.dirname(checksumPath));
     console.log(`Fetching ${url}`);
 
@@ -155,5 +155,3 @@ async function ensureChecksum(version, dataDir = DEFAULT_DATA_DIR) {
 
   return checksumPath;
 }
-
-module.exports = { ensureDump, ensureDumps, ensureChecksum };

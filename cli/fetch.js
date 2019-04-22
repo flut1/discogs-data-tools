@@ -1,14 +1,14 @@
-const dataManager = require("../dataManager");
-const fetcher = require("../fetcher");
-const { verify } = require("../verify");
-const { COLLECTIONS } = require('../constants');
-const getVersionFromArgv = require('./getVersionFromArgv');
+import { findData } from '../dataManager';
+import { ensureDumps } from '../fetcher';
+import { verify } from '../verify';
+import { COLLECTIONS } from "../constants";
+import getVersionFromArgv from './getVersionFromArgv';
 
 async function main(argv) {
   const version = await getVersionFromArgv(argv);
 
   const collections = argv.collections || COLLECTIONS;
-  const existingData = dataManager.findData(version, collections, argv['data-dir']);
+  const existingData = findData(version, collections, argv['data-dir']);
   const collectionsToDownload = collections.filter(
     (_, index) => !existingData[index]
   );
@@ -17,7 +17,7 @@ async function main(argv) {
       `Some data is not yet downloaded: ${collectionsToDownload.join(', ')}`
     );
 
-    await fetcher.ensureDumps(version, collections, !argv['hide-progress'], argv['data-dir']);
+    await ensureDumps(version, collections, !argv['hide-progress'], argv['data-dir']);
   } else {
     console.log('All data downloaded');
   }
@@ -32,6 +32,6 @@ async function main(argv) {
   }
 }
 
-module.exports = function fetch(argv) {
+export default function fetch(argv) {
   main(argv).catch(e => console.error(e));
 };
