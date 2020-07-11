@@ -25,13 +25,13 @@ export interface Video {
 }
 
 export interface Master {
+  id: number;
   mainRelease: number;
   artists: Array<ArtistRef>;
   styles: Array<string>;
   genres: Array<string>;
   videos: Array<Video>;
   title: string;
-  id: number;
   year?: number;
   dataQuality?: string;
   notes?: string;

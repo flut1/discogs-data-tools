@@ -7,6 +7,7 @@ import { getDumpURL, getLatestVersion } from "../dumps";
 import { masterTransformer } from "../xmlTransformer/masterTransformers";
 import XMLTransformerStream from "../xmlTransformer/XMLTransformerStream";
 import { Master } from "../collections";
+import ElasticWriteStream from "../storage/elastic/ElasticWriteStream";
 
 const REQ_HEADERS = { "Accept-Encoding": "br,gzip,deflate" };
 
@@ -17,6 +18,9 @@ async function stream(args: any) {
 
   const gunzip = zlib.createUnzip();
   const xmlParser = new expat.Parser("UTF-8");
+  const elasticStream = new ElasticWriteStream<Master>('http://localhost:9200', 'master');
+
+  // await elasticStream.createIndices();
 
   return new Promise<void>((resolve) => {
     const xmlTransformStream = new XMLTransformerStream(
@@ -24,19 +28,12 @@ async function stream(args: any) {
       "master",
       masterTransformer
     );
-
-    let count = 0;
-    xmlTransformStream.on("data", (data: Master) => {
-      count++;
-      if (count % 1000 === 0) {
-        console.log(data);
-      }
-    });
-
-    xmlTransformStream.on("end", () => {
+    elasticStream.on("end", () => {
       console.log("END");
       resolve();
     });
+
+    xmlTransformStream.pipe(elasticStream);
 
     https.get(dumpURL, { headers: REQ_HEADERS }, (response) => {
       pipeline(response, gunzip, xmlParser, (error) => {

@@ -1,4 +1,5 @@
 import { Readable } from "stream";
+import { IGNORE_NODE } from "./xmlTransformer";
 export default class XMLTransformerStream extends Readable {
     constructor(parser, itemTag, transformer, opts) {
         super(Object.assign(Object.assign({}, opts), { objectMode: true }));
@@ -7,6 +8,7 @@ export default class XMLTransformerStream extends Readable {
         this.transformer = transformer;
         this.currentTransformer = null;
         this.currentItemStartIndex = 0;
+        this.nonItemNodes = [];
         parser.on("startElement", this.tryCatcher(this.onElementStart));
         parser.on("endElement", this.tryCatcher(this.onElementEnd));
         parser.on("text", this.tryCatcher(this.onText));
@@ -29,7 +31,9 @@ export default class XMLTransformerStream extends Readable {
         if (name !== this.itemTag) {
             if (this.currentTransformer) {
                 this.currentTransformer.onElementStart(name, attributes);
+                return;
             }
+            this.nonItemNodes.push(name);
             return;
         }
         if (this.currentTransformer) {
@@ -40,12 +44,17 @@ export default class XMLTransformerStream extends Readable {
     }
     onElementEnd(name) {
         if (!this.currentTransformer) {
-            throw new Error(`Unexpected element end </${name}>, no tag <${this.itemTag}> open`);
+            if (!this.nonItemNodes.length || this.nonItemNodes.pop() !== name) {
+                throw new Error(`Unexpected element end </${name}>, no tag <${this.itemTag}> open`);
+            }
+            return null;
         }
         const result = this.currentTransformer.onElementEnd(name);
         if (result !== null) {
             this.currentTransformer = null;
-            this.push(result);
+            if (result !== IGNORE_NODE) {
+                this.push(result);
+            }
         }
         return result;
     }

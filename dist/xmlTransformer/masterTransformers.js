@@ -1,6 +1,6 @@
 import { createXMLTransformer, ignoreNodeTransformer, XMLTransformerError } from "./xmlTransformer";
 import { childResultsToSingular, withRequiredProperties } from "./helpers";
-import { createListTransformer, intElementTransformer, textElementTransformer, } from "./commonTransformers";
+import { createListTransformer, intElementTransformer, textElementTransformer, yearElementTransformer, } from "./commonTransformers";
 import { artistsTransformer } from "./artistTransformers";
 export const genresTransformer = createListTransformer("genre", textElementTransformer);
 export const stylesTransformer = createListTransformer("style", textElementTransformer);
@@ -32,15 +32,13 @@ export const masterTransformer = createXMLTransformer({
     artists: artistsTransformer,
     genres: genresTransformer,
     styles: stylesTransformer,
-    year: intElementTransformer,
+    year: yearElementTransformer,
     title: textElementTransformer,
     data_quality: textElementTransformer,
     videos: videosTransformer,
     notes: textElementTransformer,
 })((childResults, { attributes }) => {
-    const { main_release: mainRelease, artists = [], styles = [], genres = [], videos = [], year, 
-    // notes,
-    title, data_quality: dataQuality } = childResultsToSingular(childResults, "main_release", "artists", "styles", "genres", "notes", "videos", "year", "data_quality", "title");
+    const { main_release: mainRelease, artists = [], styles = [], genres = [], videos = [], year, notes, title, data_quality: dataQuality } = childResultsToSingular(childResults, "main_release", "artists", "styles", "genres", "notes", "videos", "year", "data_quality", "title");
     if (!attributes || !attributes.id) {
         throw new XMLTransformerError(`Expected attribute "id"`);
     }
@@ -48,6 +46,5 @@ export const masterTransformer = createXMLTransformer({
     if (isNaN(id)) {
         throw new XMLTransformerError(`attribute "id" couldn't be parsed to integer`);
     }
-    const notes = '';
     return withRequiredProperties({ mainRelease, artists, styles, year, title, genres, dataQuality, videos, id, notes }, "mainRelease", "id", "title");
 });

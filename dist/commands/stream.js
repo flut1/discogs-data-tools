@@ -14,6 +14,7 @@ import { pipeline } from "stream";
 import { getDumpURL, getLatestVersion } from "../dumps";
 import { masterTransformer } from "../xmlTransformer/masterTransformers";
 import XMLTransformerStream from "../xmlTransformer/XMLTransformerStream";
+import ElasticWriteStream from "../storage/elastic/ElasticWriteStream";
 const REQ_HEADERS = { "Accept-Encoding": "br,gzip,deflate" };
 function stream(args) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -22,19 +23,15 @@ function stream(args) {
         console.log("getting", dumpURL);
         const gunzip = zlib.createUnzip();
         const xmlParser = new expat.Parser("UTF-8");
+        const elasticStream = new ElasticWriteStream('http://localhost:9200', 'master');
+        // await elasticStream.createIndices();
         return new Promise((resolve) => {
             const xmlTransformStream = new XMLTransformerStream(xmlParser, "master", masterTransformer);
-            let count = 0;
-            xmlTransformStream.on('data', (data) => {
-                count++;
-                if (count % 1000 === 0) {
-                    console.log(data);
-                }
-            });
-            xmlTransformStream.on('end', () => {
-                console.log('END');
+            elasticStream.on("end", () => {
+                console.log("END");
                 resolve();
             });
+            xmlTransformStream.pipe(elasticStream);
             https.get(dumpURL, { headers: REQ_HEADERS }, (response) => {
                 pipeline(response, gunzip, xmlParser, (error) => {
                     if (error) {
@@ -46,49 +43,6 @@ function stream(args) {
                 });
             });
         });
-        // const xmlParser = new expat.Parser("UTF-8");
-        // const gunzip = zlib.createUnzip();
-        //
-        // const transformer = getRootTransformer("masters", (err, master) => {
-        //   if (err) {
-        //     console.error(err);
-        //     process.exit(1);
-        //   }
-        //   console.log(master);
-        // });
-        // const transformerState = transformer("root", {});
-        // xmlParser.on("startElement", transformerState.onElementStart);
-        // xmlParser.on("endElement", transformerState.onElementEnd);
-        // xmlParser.on("text", transformerState.onText);
-        // https.get(dumpURL, { headers: REQ_HEADERS }, (response) => {
-        //   pipeline(response, gunzip, xmlParser, (err) => {
-        //     console.error("Error while parsing XML response:");
-        //     console.error(err);
-        //     process.exit(1);
-        //   });
-        // });
-        // const xmlParser = new expat.Parser("UTF-8");
-        // const transformer = getRootTransformer("masters", (err, master) => {
-        //   if (err) {
-        //     console.error(err);
-        //     process.exit(1);
-        //   }
-        //   console.log(master);
-        // });
-        // const stringDecoder = new StringDecoderTransform('ascii');
-        // const transformerState = transformer("root", {});
-        // xmlParser.on("startElement", transformerState.onElementStart);
-        // xmlParser.on("endElement", transformerState.onElementEnd);
-        // xmlParser.on("text", transformerState.onText);
-        // const stream = fs.createReadStream('./smallermasters.xml');
-        // pipeline(stream, xmlParser, (err) => {
-        //   if (err) {
-        //     console.error("Error while parsing XML response:");
-        //     console.error(err);
-        //     console.error(xmlParser.getError());
-        //     process.exit(1);
-        //   }
-        // });
     });
 }
 export default stream;

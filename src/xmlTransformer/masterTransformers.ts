@@ -4,7 +4,7 @@ import { childResultsToSingular, withRequiredProperties } from "./helpers";
 import {
   createListTransformer,
   intElementTransformer,
-  textElementTransformer,
+  textElementTransformer, yearElementTransformer,
 } from "./commonTransformers";
 import { artistsTransformer } from "./artistTransformers";
 
@@ -58,7 +58,7 @@ export const masterTransformer = createXMLTransformer({
   artists: artistsTransformer,
   genres: genresTransformer,
   styles: stylesTransformer,
-  year: intElementTransformer,
+  year: yearElementTransformer,
   title: textElementTransformer,
   data_quality: textElementTransformer,
   videos: videosTransformer,
