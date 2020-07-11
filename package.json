@@ -1,8 +1,7 @@
 {
   "name": "discogs-data-tools",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Tools to download and process Discogs data dumps",
-  "main": "cli.js",
   "author": "Floris Bernard <floris.bernard@gmail.com> (https://github.com/flut1)",
   "repository": {
     "type": "git",
@@ -15,43 +14,43 @@
     "parser",
     "utils"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
-    "prettify": "prettier --write \"*.js\"",
+    "compile": "tsc --project .",
+    "dev": "npm run compile && node cli/index",
+    "prettify": "prettier --write \"src/*.js\"",
     "lint": "eslint .",
-    "help-to-readme": "node util/helpToReadme",
-    "docs": "jsdoc2md ./*.js ./*/*.js > api.md",
-    "prepublish": "npm run help-to-readme && npm run docs"
+    "help-to-readme": "node scripts/help-to-readme.js",
+    "docs": "jsdoc2md src/*.js > api.md"
   },
+  "main": "src/index.js",
+  "module": "main.js",
   "engines": {
-    "node": ">=8.2.1"
+    "node": ">=12.18.1"
   },
   "dependencies": {
-    "ajv": "^6.7.0",
-    "cli-progress": "^2.1.1",
-    "es6-promisify": "^6.0.1",
-    "eslint-config-prettier": "^3.6.0",
-    "fs-extra": "^7.0.1",
-    "glob": "^7.1.3",
-    "idx": "^2.5.2",
-    "inquirer": "^6.2.1",
-    "lodash": "^4.17.11",
-    "mongodb": "^3.1.10",
-    "node-expat": "^2.3.17",
-    "object-get": "^2.1.0",
-    "ora": "^3.0.0",
-    "request": "^2.88.0",
-    "request-progress": "^3.0.0",
-    "request-promise-native": "^1.0.5",
-    "sumchecker": "^2.0.2",
-    "xml2js": "^0.4.19",
-    "yargs": "^12.0.5"
+    "@elastic/elasticsearch": "^7.8.0",
+    "esm": "^3.2.25",
+    "fs-extra": "^9.0.1",
+    "idx": "^2.5.6",
+    "lodash-es": "^4.17.15",
+    "node-expat": "^2.3.18",
+    "node-fetch": "^2.6.0",
+    "xml2js": "^0.4.23",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "eslint": "^5.12.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "jsdoc-to-markdown": "^4.0.1",
-    "prettier": "^1.15.3"
+    "@types/lodash-es": "^4.17.3",
+    "@types/node": "^14.0.14",
+    "@types/node-expat": "^2.3.1",
+    "@types/node-fetch": "^2.5.7",
+    "@types/xml2js": "^0.4.5",
+    "eslint": "^7.3.1",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jsdoc-to-markdown": "^6.0.1",
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.6"
   }
 }

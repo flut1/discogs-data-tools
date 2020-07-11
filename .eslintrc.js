@@ -1,11 +1,15 @@
 module.exports = {
-  extends: ["airbnb-base", "prettier"],
+  extends: ["plugin:prettier/recommended"],
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+  },
+  plugins: ["import"],
   rules: {
-    "linebreak-style": 0,
-    "no-console": 0,
-    "no-plusplus": 0,
-    "no-restricted-syntax": 0,
-    "no-await-in-loop": 0,
-    "global-require": 0
-  }
+    "prettier/prettier": "error",
+  },
+  env: {
+    node: true,
+  },
+  root: true,
 };

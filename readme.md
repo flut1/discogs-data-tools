@@ -81,114 +81,14 @@ specify a target dump version. This can be done with either the `--interactive` 
 ### fetch command
 <!-- CLI: fetch -->
 ```
-discogs-data-tools fetch <target> [...args]
+discogs-data-tools [command]
 
-Target (one required):
-  --interactive, -i     Interactively select the target dump version                                 [boolean]
-  --latest, -l          Automatically select the latest version                                      [boolean]
-  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
+Commands:
+  discogs-data-tools stream  Stream a data dump from discogs and directly process it into your database
 
-Optional args:
-  --version            Show version number                                                           [boolean]
-  --data-dir, -d       Root directory where dumps and related files are stored.   [string] [default: "./data"]
-  --collections, -c    Select which collections to target. If not given, will target all
-                                                 [array] [choices: "artists", "labels", "masters", "releases"]
-  --help               Show help                                                                     [boolean]
-  --hide-progress, -n  Don't show a progress bar                                                     [boolean]
-  --skip-verify        Skip verifying the dumps with the checksum provided by Discogs                [boolean]
-
-Examples:
-  discogs-data-tools fetch --target-version 20180101 --collections labels masters
-```
-<!-- /CLI -->
-
-### verify command
-<!-- CLI: verify -->
-```
-discogs-data-tools verify <target> [...args]
-
-Target (one required):
-  --interactive, -i     Interactively select the target dump version                                 [boolean]
-  --latest, -l          Automatically select the latest version                                      [boolean]
-  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
-
-Optional args:
-  --version          Show version number                                                             [boolean]
-  --data-dir, -d     Root directory where dumps and related files are stored.     [string] [default: "./data"]
-  --collections, -c  Select which collections to target. If not given, will target all
-                                                 [array] [choices: "artists", "labels", "masters", "releases"]
-  --help             Show help                                                                       [boolean]
-
-Examples:
-  discogs-data-tools verify --latest
-  discogs-data-tools verify --target-version 20180101 --collections releases
-```
-<!-- /CLI -->
-
-### mongo command
-> **Please note:** this command will **overwrite** existing documents in
-> your collection, if it already exists
-
-<!-- CLI: mongo -->
-```
-discogs-data-tools mongo <target> [...args]
-
-Target (one required):
-  --interactive, -i     Interactively select the target dump version                                 [boolean]
-  --latest, -l          Automatically select the latest version                                      [boolean]
-  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
-
-Optional args:
-  --version                   Show version number                                                    [boolean]
-  --data-dir, -d              Root directory where dumps and related files are stored.
-                                                                                  [string] [default: "./data"]
-  --collections, -c           Select which collections to target. If not given, will target all
-                                                 [array] [choices: "artists", "labels", "masters", "releases"]
-  --help                      Show help                                                              [boolean]
-  --chunk-size, -s            Number of rows in processing chunks. Larger size takes more memory.
-                                                                                      [number] [default: 1000]
-  --drop-existing-collection  Drop a collection if it already exists. Use with caution!              [boolean]
-  --silent, -m                Mute all console output                                                [boolean]
-  --indexes                   Create indexes on collections                          [boolean] [default: true]
-  --skip-validation           Skip validation of XML nodes. Can considerably speed up processing, but you may
-                              get invalid rows                                                       [boolean]
-  --validate-docs             perform additional validation on the objects after theyhave been formatted. Used
-                              for development, not necessary on usage                                [boolean]
-  --max-errors, -e            Number of rows that could not be inserted before the command is aborted
-                                                                                       [number] [default: 100]
-  --bail, -b                  Immediately abort when a validation error occurs or a row failed to persist to
-                              the database                                                           [boolean]
-  --restart, -r               Don't continue processing from where it last stopped but restart at the first
-                              row                                                                    [boolean]
-  --database-name, -n         Name of the database to write to                   [string] [default: "discogs"]
-  --connection, -o            The MongoDB connection string                                [string] [required]
-  --include-image-objects     Include image objects. By default, will only include the image count because
-                              image objects in data dumps are missing the URI                        [boolean]
-
-Examples:
-  discogs-data-tools mongo --no-indexes --latest --connection mongodb://root:pw@127.0.0.1:27017
-  discogs-data-tools mongo --target-version 20180401 --restart --connection mongodb://root:pw@localhost:27017
-
-IMPORTANT: please note that existing documents in MongoDB collections with the same name will be replaced
-```
-<!-- /CLI -->
-
-### ls command
-<!-- CLI: ls -->
-```
-discogs-data-tools ls <target> [...args]
-
-Target (one required):
-  --interactive, -i     Interactively select the target dump version                                 [boolean]
-  --latest, -l          Automatically select the latest version                                      [boolean]
-  --target-version, -t  Manually pass the name of the target dump version. ie: "20180101"             [string]
-
-Optional args:
-  --version          Show version number                                                             [boolean]
-  --data-dir, -d     Root directory where dumps and related files are stored.     [string] [default: "./data"]
-  --collections, -c  Select which collections to target. If not given, will target all
-                                                 [array] [choices: "artists", "labels", "masters", "releases"]
-  --help             Show help                                                                       [boolean]
+Options:
+  --version  Show version number                                                                     [boolean]
+  --help     Show help                                                                               [boolean]
 ```
 <!-- /CLI -->
 

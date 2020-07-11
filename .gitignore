@@ -1,8 +1,7 @@
 # copy to .npmignore
-
 /data
 .idea
 node_modules
 *.tmp.json
-/example
 /*.log
+/buildcache

@@ -1,10 +1,8 @@
 # copied to .gitignore
-
 /data
 .idea
 node_modules
-*.tmp.js`on
-/example
+*.tmp.json
 /*.log
 
 # .npmignore only
