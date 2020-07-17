@@ -1,6 +1,7 @@
 import {Readable, ReadableOptions} from "stream";
-import {IGNORE_NODE, XMLTransformer} from "./xmlTransformer";
 import {Parser} from "node-expat";
+
+import {IGNORE_NODE, XMLTransformer} from "./xmlTransformer";
 
 export default class XMLTransformerStream<T> extends Readable implements XMLTransformer.State<T> {
   private currentTransformer: XMLTransformer.State<T> | null = null;

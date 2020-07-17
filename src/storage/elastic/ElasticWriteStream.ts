@@ -1,5 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 import { Writable } from "stream";
+
 import wait from "../../util/wait";
 
 export default class ElasticWriteStream<

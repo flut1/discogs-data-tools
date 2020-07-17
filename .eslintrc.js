@@ -1,13 +1,36 @@
 module.exports = {
-  extends: ["plugin:prettier/recommended"],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: "module",
   },
-  plugins: ["import"],
+  parser: '@typescript-eslint/parser',
+  plugins: ["import", "@typescript-eslint"],
   rules: {
-    "prettier/prettier": "error",
+    /* imports */
+    'sort-imports': ['error', {ignoreDeclarationSort: true}],
+    'import/no-cycle': ['error'],
+    'import/order': [
+      'error',
+      {
+        groups: [
+          ['builtin', 'external'],
+          ['parent'],
+          ['sibling', 'index'],
+        ],
+        'newlines-between': 'always',
+      },
+    ],
+    'import/no-useless-path-segments': ['error'],
+    'import/no-unresolved': ['error'],
+    /* typescript */
+    "@typescript-eslint/explicit-module-boundary-types": "off",
   },
+  extends: [
+    'eslint:recommended',
+    "plugin:import/typescript",
+    'plugin:@typescript-eslint/recommended',
+    'prettier/@typescript-eslint'
+  ],
   env: {
     node: true,
   },

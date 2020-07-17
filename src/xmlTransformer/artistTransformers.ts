@@ -1,6 +1,7 @@
-import {createXMLTransformer, IGNORE_NODE, XMLTransformerError} from "./xmlTransformer";
-import {createListTransformer, intElementTransformer, textElementTransformer} from "./commonTransformers";
 import {ArtistRef} from "../collections";
+
+import {IGNORE_NODE, XMLTransformerError, createXMLTransformer} from "./xmlTransformer";
+import {createListTransformer, intElementTransformer, textElementTransformer} from "./commonTransformers";
 import {childResultsToSingular, withRequiredProperties} from "./helpers";
 
 export const nameTransformer = createXMLTransformer({})<{

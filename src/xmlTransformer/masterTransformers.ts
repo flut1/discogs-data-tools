@@ -1,5 +1,6 @@
-import {createXMLTransformer, ignoreNodeTransformer, XMLTransformerError} from "./xmlTransformer";
 import {Master, Video} from "../collections";
+
+import {XMLTransformerError, createXMLTransformer, ignoreNodeTransformer} from "./xmlTransformer";
 import { childResultsToSingular, withRequiredProperties } from "./helpers";
 import {
   createListTransformer,

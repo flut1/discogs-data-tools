@@ -24,10 +24,12 @@
     "docs": "jsdoc2md src/*.js > api.md",
     "help-to-readme": "node scripts/help-to-readme.js",
     "lint": "eslint .",
+    "fix": "eslint src --fix --ext ts,tsx",
     "prettify": "prettier --write \"src/*.js\""
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
     "esm": "^3.2.25",
     "fs-extra": "^9.0.1",
     "idx": "^2.5.6",
@@ -46,6 +48,7 @@
     "@types/node-fetch": "^2.5.7",
     "@types/react": "^16.9.42",
     "@types/xml2js": "^0.4.5",
+    "@typescript-eslint/parser": "^3.6.1",
     "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",

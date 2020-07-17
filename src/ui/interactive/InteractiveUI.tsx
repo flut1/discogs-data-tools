@@ -1,6 +1,8 @@
-import DiscogsDataToolsUI from "../DiscogsDataToolsUI";
 import React, { useEffect, useState } from "react";
-import {Box, Instance as InkInstance, render, Text} from "ink";
+import {Box, Instance as InkInstance, Text, render} from "ink";
+
+import DiscogsDataToolsUI from "../DiscogsDataToolsUI";
+
 import TextBar from "./TextBar";
 
 interface ProgressProps {

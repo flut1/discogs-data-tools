@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {DOMElement} from "ink/build/dom";
-import {Box, measureElement, Text} from "ink";
+import {Box, Text, measureElement} from "ink";
 
 const TextBar: React.FC<{
     filledRatio: number;

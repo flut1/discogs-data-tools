@@ -1,4 +1,4 @@
-import {createXMLTransformer, IGNORE_NODE, XMLTransformer, XMLTransformerError,} from "./xmlTransformer";
+import {IGNORE_NODE, XMLTransformer, XMLTransformerError, createXMLTransformer,} from "./xmlTransformer";
 
 export const intElementTransformer = createXMLTransformer({})(
   (_, { textContent }) => {
