@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2017",
+    "lib": ["ESNext"],
+    "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "lib": ["ESNext"],
     "strict": true,
+    "pretty": true,
     "noFallthroughCasesInSwitch": true,
     "incremental": true,
     "tsBuildInfoFile": "./buildcache/ts",
-    "allowSyntheticDefaultImports": true,
-    "outDir": "./dist",
+    "outDir": "./lib",
     "jsx": "react"
   },
   "include": [

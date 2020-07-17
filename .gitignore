@@ -5,3 +5,4 @@ node_modules
 *.tmp.json
 /*.log
 /buildcache
+lib

@@ -8,3 +8,4 @@ node_modules
 # .npmignore only
 api.md
 .gitignore
+src

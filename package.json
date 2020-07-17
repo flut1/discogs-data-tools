@@ -2,32 +2,29 @@
   "name": "discogs-data-tools",
   "version": "0.3.0",
   "description": "Tools to download and process Discogs data dumps",
-  "author": "Floris Bernard <floris.bernard@gmail.com> (https://github.com/flut1)",
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:flut1/discogs-data-tools.git"
-  },
-  "bin": "./cli/index.js",
   "keywords": [
     "discogs",
     "data",
     "parser",
     "utils"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:flut1/discogs-data-tools.git"
+  },
   "license": "MIT",
+  "author": "Floris Bernard <floris.bernard@gmail.com> (https://github.com/flut1)",
+  "main": "index.js",
+  "module": "lib/main.js",
+  "bin": "cli/discogs-data-tools.js",
   "scripts": {
     "compile": "tsc --project .",
     "dev": "npm run compile && node cli/index",
     "dev-latest": "npm run compile && node cli/index stream --dump-version 20200703 --progress",
-    "prettify": "prettier --write \"src/*.js\"",
-    "lint": "eslint .",
+    "docs": "jsdoc2md src/*.js > api.md",
     "help-to-readme": "node scripts/help-to-readme.js",
-    "docs": "jsdoc2md src/*.js > api.md"
-  },
-  "main": "src/index.js",
-  "module": "main.js",
-  "engines": {
-    "node": ">=12.18.1"
+    "lint": "eslint .",
+    "prettify": "prettier --write \"src/*.js\""
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",
@@ -56,5 +53,9 @@
     "jsdoc-to-markdown": "^6.0.1",
     "prettier": "^2.0.5",
     "typescript": "^3.9.6"
-  }
+  },
+  "engines": {
+    "node": ">=12.18.1"
+  },
+  "sideEffects": false
 }
