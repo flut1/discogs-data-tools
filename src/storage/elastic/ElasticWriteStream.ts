@@ -1,19 +1,23 @@
 import { Client } from "@elastic/elasticsearch";
-import { Writable, WritableOptions } from "stream";
+import { Writable } from "stream";
 import wait from "../../util/wait";
 
 export default class ElasticWriteStream<
   T extends { id: number }
 > extends Writable {
-  private client: Client;
+  private client: Client | undefined;
 
-  constructor(nodeAddress: string, public index: string) {
+  constructor(public index: string) {
     super({
       objectMode: true,
       highWaterMark: 10000,
     });
+  }
 
-    this.client = new Client({ node: nodeAddress });
+  public async initializeClient(nodeAddress: string) {
+    if (!this.client) {
+      this.client = new Client({ node: nodeAddress });
+    }
   }
 
   public _writev(
@@ -21,7 +25,6 @@ export default class ElasticWriteStream<
     callback: (error?: Error | null) => void
   ): void {
     this.cork();
-    console.log("_writev", chunks.length);
 
     const putDocs = this.putDocs(chunks.map((c) => c.chunk)).then(() => {
       callback();
@@ -32,7 +35,53 @@ export default class ElasticWriteStream<
     });
   }
 
+  public async putDocs(docs: Array<T>) {
+    if (!this.client) {
+      throw new Error('ElasticSearch client not initialized');
+    }
+
+    const body = docs.flatMap(({ id, ...docRest }) => [
+      { index: { _index: this.index, _id: id } },
+      {
+        ...docRest,
+      },
+    ]);
+
+    const { body: bulkResponse } = await this.client.bulk({
+      refresh: "true",
+      body,
+    });
+
+    // console.log(`Indexed ${docs.length} documents in index "${this.index}"`);
+    this.emit('indexed', docs.length);
+
+    if (bulkResponse.errors) {
+      const erroredDocuments: Array<any> = [];
+      // The items array has the same order of the dataset we just indexed.
+      // The presence of the `error` key indicates that the operation
+      // that we did for the document has failed.
+      bulkResponse.items.forEach((action: any, i: number) => {
+        const operation = Object.keys(action)[0];
+        if (action[operation].error) {
+          erroredDocuments.push({
+            // If the status is 429 it means that you can retry the document,
+            // otherwise it's very likely a mapping error, and you should
+            // fix the document before to try it again.
+            status: action[operation].status,
+            error: action[operation].error,
+            operation: body[i * 2],
+            document: body[i * 2 + 1],
+          });
+        }
+      });
+      console.log(erroredDocuments);
+    }
+  }
+
   public async createIndices() {
+    if (!this.client) {
+      throw new Error('ElasticSearch client not initialized');
+    }
     const { body: respDeleteIndex } = await this.client.indices.delete({
       index: '*',
     });
@@ -107,44 +156,5 @@ export default class ElasticWriteStream<
     // console.log(resp);
 
     throw new Error("NIOPE");
-  }
-
-  public async putDocs(docs: Array<T>) {
-    const body = docs.flatMap(({ id, ...docRest }) => [
-      { index: { _index: this.index } },
-      {
-        id: id,
-        ...docRest,
-      },
-    ]);
-
-    const { body: bulkResponse } = await this.client.bulk({
-      refresh: "true",
-      body,
-    });
-
-    console.log(`Indexed ${docs.length} documents in index "${this.index}"`);
-
-    if (bulkResponse.errors) {
-      const erroredDocuments: Array<any> = [];
-      // The items array has the same order of the dataset we just indexed.
-      // The presence of the `error` key indicates that the operation
-      // that we did for the document has failed.
-      bulkResponse.items.forEach((action: any, i: number) => {
-        const operation = Object.keys(action)[0];
-        if (action[operation].error) {
-          erroredDocuments.push({
-            // If the status is 429 it means that you can retry the document,
-            // otherwise it's very likely a mapping error, and you should
-            // fix the document before to try it again.
-            status: action[operation].status,
-            error: action[operation].error,
-            operation: body[i * 2],
-            document: body[i * 2 + 1],
-          });
-        }
-      });
-      console.log(erroredDocuments);
-    }
   }
 }

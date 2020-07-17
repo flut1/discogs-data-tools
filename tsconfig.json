@@ -9,7 +9,8 @@
     "incremental": true,
     "tsBuildInfoFile": "./buildcache/ts",
     "allowSyntheticDefaultImports": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "jsx": "react"
   },
   "include": [
     "src/**/*.ts"

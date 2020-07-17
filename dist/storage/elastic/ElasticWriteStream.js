@@ -22,17 +22,22 @@ import { Client } from "@elastic/elasticsearch";
 import { Writable } from "stream";
 import wait from "../../util/wait";
 export default class ElasticWriteStream extends Writable {
-    constructor(nodeAddress, index) {
+    constructor(index) {
         super({
             objectMode: true,
             highWaterMark: 10000,
         });
         this.index = index;
-        this.client = new Client({ node: nodeAddress });
+    }
+    initializeClient(nodeAddress) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.client) {
+                this.client = new Client({ node: nodeAddress });
+            }
+        });
     }
     _writev(chunks, callback) {
         this.cork();
-        console.log("_writev", chunks.length);
         const putDocs = this.putDocs(chunks.map((c) => c.chunk)).then(() => {
             callback();
         });
@@ -40,8 +45,52 @@ export default class ElasticWriteStream extends Writable {
             this.uncork();
         });
     }
+    putDocs(docs) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.client) {
+                throw new Error('ElasticSearch client not initialized');
+            }
+            const body = docs.flatMap((_a) => {
+                var { id } = _a, docRest = __rest(_a, ["id"]);
+                return [
+                    { index: { _index: this.index, _id: id } },
+                    Object.assign({}, docRest),
+                ];
+            });
+            const { body: bulkResponse } = yield this.client.bulk({
+                refresh: "true",
+                body,
+            });
+            // console.log(`Indexed ${docs.length} documents in index "${this.index}"`);
+            this.emit('indexed', docs.length);
+            if (bulkResponse.errors) {
+                const erroredDocuments = [];
+                // The items array has the same order of the dataset we just indexed.
+                // The presence of the `error` key indicates that the operation
+                // that we did for the document has failed.
+                bulkResponse.items.forEach((action, i) => {
+                    const operation = Object.keys(action)[0];
+                    if (action[operation].error) {
+                        erroredDocuments.push({
+                            // If the status is 429 it means that you can retry the document,
+                            // otherwise it's very likely a mapping error, and you should
+                            // fix the document before to try it again.
+                            status: action[operation].status,
+                            error: action[operation].error,
+                            operation: body[i * 2],
+                            document: body[i * 2 + 1],
+                        });
+                    }
+                });
+                console.log(erroredDocuments);
+            }
+        });
+    }
     createIndices() {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!this.client) {
+                throw new Error('ElasticSearch client not initialized');
+            }
             const { body: respDeleteIndex } = yield this.client.indices.delete({
                 index: '*',
             });
@@ -110,43 +159,6 @@ export default class ElasticWriteStream extends Writable {
             // });
             // console.log(resp);
             throw new Error("NIOPE");
-        });
-    }
-    putDocs(docs) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const body = docs.flatMap((_a) => {
-                var { id } = _a, docRest = __rest(_a, ["id"]);
-                return [
-                    { index: { _index: this.index } },
-                    Object.assign({ id: id }, docRest),
-                ];
-            });
-            const { body: bulkResponse } = yield this.client.bulk({
-                refresh: "true",
-                body,
-            });
-            console.log(`Indexed ${docs.length} documents in index "${this.index}"`);
-            if (bulkResponse.errors) {
-                const erroredDocuments = [];
-                // The items array has the same order of the dataset we just indexed.
-                // The presence of the `error` key indicates that the operation
-                // that we did for the document has failed.
-                bulkResponse.items.forEach((action, i) => {
-                    const operation = Object.keys(action)[0];
-                    if (action[operation].error) {
-                        erroredDocuments.push({
-                            // If the status is 429 it means that you can retry the document,
-                            // otherwise it's very likely a mapping error, and you should
-                            // fix the document before to try it again.
-                            status: action[operation].status,
-                            error: action[operation].error,
-                            operation: body[i * 2],
-                            document: body[i * 2 + 1],
-                        });
-                    }
-                });
-                console.log(erroredDocuments);
-            }
         });
     }
 }

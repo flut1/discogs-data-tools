@@ -7,7 +7,6 @@ export default class XMLTransformerStream extends Readable {
         this.itemTag = itemTag;
         this.transformer = transformer;
         this.currentTransformer = null;
-        this.currentItemStartIndex = 0;
         this.nonItemNodes = [];
         parser.on("startElement", this.tryCatcher(this.onElementStart));
         parser.on("endElement", this.tryCatcher(this.onElementEnd));
@@ -39,7 +38,6 @@ export default class XMLTransformerStream extends Readable {
         if (this.currentTransformer) {
             throw new Error(`Cannot start new element <${name}>, tag <${this.itemTag}> is still open`);
         }
-        this.currentItemStartIndex = this.parser.getCurrentByteIndex();
         this.currentTransformer = this.transformer(name, attributes);
     }
     onElementEnd(name) {

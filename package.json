@@ -18,6 +18,7 @@
   "scripts": {
     "compile": "tsc --project .",
     "dev": "npm run compile && node cli/index",
+    "dev-latest": "npm run compile && node cli/index stream --dump-version 20200703 --progress",
     "prettify": "prettier --write \"src/*.js\"",
     "lint": "eslint .",
     "help-to-readme": "node scripts/help-to-readme.js",
@@ -33,9 +34,11 @@
     "esm": "^3.2.25",
     "fs-extra": "^9.0.1",
     "idx": "^2.5.6",
+    "ink": "github:flut1/ink#typescript-box-ref-module",
     "lodash-es": "^4.17.15",
     "node-expat": "^2.3.18",
     "node-fetch": "^2.6.0",
+    "react": "^16.13.1",
     "xml2js": "^0.4.23",
     "yargs": "^15.3.1"
   },
@@ -44,6 +47,7 @@
     "@types/node": "^14.0.14",
     "@types/node-expat": "^2.3.1",
     "@types/node-fetch": "^2.5.7",
+    "@types/react": "^16.9.42",
     "@types/xml2js": "^0.4.5",
     "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",

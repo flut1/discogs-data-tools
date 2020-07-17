@@ -4,7 +4,6 @@ import {Parser} from "node-expat";
 
 export default class XMLTransformerStream<T> extends Readable implements XMLTransformer.State<T> {
   private currentTransformer: XMLTransformer.State<T> | null = null;
-  private currentItemStartIndex: number = 0;
   private nonItemNodes: Array<string> = [];
 
   constructor(
@@ -47,7 +46,6 @@ export default class XMLTransformerStream<T> extends Readable implements XMLTran
     if (this.currentTransformer) {
       throw new Error(`Cannot start new element <${name}>, tag <${this.itemTag}> is still open`);
     }
-    this.currentItemStartIndex = this.parser.getCurrentByteIndex();
     this.currentTransformer = this.transformer(name, attributes);
   }
 

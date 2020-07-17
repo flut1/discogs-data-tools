@@ -11,10 +11,14 @@ module.exports = yargs
     (y) =>
       y
         .options({
-          "dump-version": {
-            alias: "d",
-            type: "string",
-          },
+            "dump-version": {
+                alias: "d",
+                type: "string",
+            },
+            progress: {
+                alias: "p",
+                type: "boolean",
+            },
         })
         .usage("$0 test <target> [...args]")
         .example("$0 stream"),
