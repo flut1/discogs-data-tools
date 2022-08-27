@@ -6,3 +6,6 @@ node_modules
 *.tmp.json
 /example
 /*.log
+
+# Python related stuff needed to build native C libs
+.venv

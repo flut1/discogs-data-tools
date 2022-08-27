@@ -12,7 +12,7 @@ const logger = require("./util/logger");
 
 const parseString = promisify(xml2js.parseString);
 
-const BUCKET_URL = "https://discogs-data.s3-us-west-2.amazonaws.com";
+const BUCKET_URL = "https://discogs-data-dumps.s3-us-west-2.amazonaws.com";
 const S3B_ROOT_DIR = "data/";
 
 /**
@@ -23,7 +23,7 @@ const S3B_ROOT_DIR = "data/";
  * @returns {string}
  */
 function getDumpURL(version, collection) {
-  return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
+  return `${BUCKET_URL}/data/${version.substring(
     0,
     4
   )}/discogs_${version}_${collection}.xml.gz`;
@@ -35,7 +35,7 @@ function getDumpURL(version, collection) {
  * @returns {string}
  */
 function getChecksumURL(version) {
-  return `https://discogs-data.s3-us-west-2.amazonaws.com/data/${version.substring(
+  return `${BUCKET_URL}/data/${version.substring(
     0,
     4
   )}/discogs_${version}_CHECKSUM.txt`;

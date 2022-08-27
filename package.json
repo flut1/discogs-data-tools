@@ -1,6 +1,6 @@
 {
   "name": "discogs-data-tools",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tools to download and process Discogs data dumps",
   "main": "cli.js",
   "author": "Floris Bernard <floris.bernard@gmail.com> (https://github.com/flut1)",
@@ -21,37 +21,38 @@
     "lint": "eslint .",
     "help-to-readme": "node util/helpToReadme",
     "docs": "jsdoc2md ./*.js ./*/*.js > api.md",
-    "prepublish": "npm run help-to-readme && npm run docs"
+    "prepublish": "npm run help-to-readme && npm run docs",
+    "cli": "node ./cli/index.js"
   },
   "engines": {
     "node": ">=8.2.1"
   },
   "dependencies": {
-    "ajv": "^6.7.0",
-    "cli-progress": "^2.1.1",
+    "ajv": "^6.12.6",
+    "cli-progress": "^3.11.2",
     "es6-promisify": "^6.0.1",
     "eslint-config-prettier": "^3.6.0",
     "fs-extra": "^7.0.1",
     "glob": "^7.1.3",
     "idx": "^2.5.2",
-    "inquirer": "^6.2.1",
-    "lodash": "^4.17.11",
-    "mongodb": "^3.1.10",
-    "node-expat": "^2.3.17",
+    "inquirer": "^7.3.3",
+    "lodash": "^4.17.21",
+    "mongodb": "^4.9.0",
+    "node-expat": "^2.4.0",
     "object-get": "^2.1.0",
-    "ora": "^3.0.0",
-    "request": "^2.88.0",
+    "ora": "^3.4.0",
+    "request": "^2.88.2",
     "request-progress": "^3.0.0",
-    "request-promise-native": "^1.0.5",
-    "sumchecker": "^2.0.2",
+    "request-promise-native": "^1.0.9",
+    "sumchecker": "^3.0.1",
     "xml2js": "^0.4.19",
-    "yargs": "^12.0.5"
+    "yargs": "^13.3.2"
   },
   "devDependencies": {
-    "eslint": "^5.12.1",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "jsdoc-to-markdown": "^4.0.1",
+    "eslint": "^8.22.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jsdoc-to-markdown": "^7.1.1",
     "prettier": "^1.15.3"
   }
 }

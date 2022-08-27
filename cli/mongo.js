@@ -247,7 +247,7 @@ async function main(argv, client) {
           updateOne: {
             filter: { id: doc.id },
             upsert: true,
-            update: doc
+            update: { $set: doc }
           }
         }))
       );
